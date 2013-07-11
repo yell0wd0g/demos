@@ -20,7 +20,7 @@ button {
 <video id="vid3" autoplay="true"></video>
 <video id="vid4" autoplay="true"></video>
 <br/>
-<button id="btn" onclick="start1()">Start Lowres (160x120)</button>
+<button id="btn" onclick="start1()">Start Screen Cap (0x0)</button>
 <button id="btn" onclick="start2()">Start Midres (320x240)</button>
 <button id="btn" onclick="start3()">Start NormRes 4:3 (640x480)</button>
 <button id="btn" onclick="start4()">Start HighRes (960x720)</button>
@@ -28,8 +28,8 @@ button {
 video1= document.getElementById("vid1");
  var constraints1 ={
   "audio": false, "video": { "mandatory": {
-    "minWidth": "160", "maxWidth": "160", "minHeight": "120", "maxHeight": "120",
-    "minFrameRate": "30"
+    "minWidth": "0", "maxWidth": "0", "minHeight": "0", "maxHeight": "0",
+    chromeMediaSource: "screen"
    },
    "optional": []
   }
