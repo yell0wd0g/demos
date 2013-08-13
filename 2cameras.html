@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- saved from url=(0070)http://webrtc.googlecode.com/svn/trunk/samples/js/demos/html/gum1.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>getUserMedia Demo 2</title>
+<style>
+video {
+    border:5px solid black;
+    width:400px;
+    height:300px;
+}
+button {
+    font: 18px sans-serif;
+    padding: 8px;
+}
+</style>
+</head>
+<body>
+  <div>
+    <h1>Test opening and combination of capture devices</h1>
+    <p>
+    This page tries to open two cameras identified by ID. 
+    If there's less than two cameras connected to the browser, it won't work 
+    correctly :) and if there's more than two, the first two will be used.
+    </p>
+  </div>
+<video id="vid1" autoplay="true"></video>
+<video id="vid2" autoplay="true"></video>
+<br/>
+<button id="btn1" onclick="start1()">Start Cam 1</button>
+<button id="btn2" onclick="start2()">Start Cam 2</button>
+<script>
+video1 = document.getElementById("vid1");
+video2 = document.getElementById("vid2");
+
+
+var id = new Array();
+function refreshSources() {
+  MediaStreamTrack.getSources(function(sourceInfos) {
+    var video_count = 0;
+    for (var i = 0; i < sourceInfos.length; i++) {
+      if (sourceInfos[i].kind == 'video') 
+        id[video_count++] = sourceInfos[i].id; 
+    }
+  });
+}
+refreshSources();
+
+
+function start1() {
+  var constraints = {};
+  constraints.audio = false;
+  constraints.video = {optional: [{sourceId: id[0]}]};
+  navigator.webkitGetUserMedia(constraints, gotStream1,  getUserMediaError); 
+  btn1.disabled = true;
+}
+function gotStream1(stream) {
+  video1.src = webkitURL.createObjectURL(stream);
+}
+function start2() {
+  var constraints = {};
+  constraints.audio = false;
+  constraints.video = {optional: [{sourceId: id[1]}]};
+  navigator.webkitGetUserMedia(constraints, gotStream2,  getUserMediaError); 
+  btn2.disabled = true;
+}
+function gotStream2(stream) {
+  video2.src = webkitURL.createObjectURL(stream);
+}
+
+function getUserMediaError(e) {
+  alert('Error during webkitGetUserMedia: '+e);
+}
+
+</script>
+
+
+
+</body></html>
