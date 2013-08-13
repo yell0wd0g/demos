@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Device enumeration API</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <div>
+    <h1>Test out Device Enumeration</h1>
+    <p><strong>Requires Chrome Canary! (30.0.1568.0 or higher) + Device
+      Enumeration flag!</strong><br/>
+    This page gives you an option of available audio and video input devices
+    and allows you to choose a combination for playback. Audio and video from
+    the selected devices will be rendered in a video tag below.
+    </p>
+    <p>
+      To use:
+    </p>
+    <ol>
+      <li><a
+        href="https://www.google.com/intl/en/chrome/browser/canary.html">Get
+        latest Chrome Canary</a>.
+      <li>Go to chrome://flags and turn on Device Enumeration. Relaunch Chrome.
+      <li>Use UI below to switch up your devices!
+    </ol>
+
+    <video width="500" autoplay></video> <br/>
+    Audio source: <select id="audiosrc"></select>
+    Video source: <select id="videosrc"></select><br/>
+    <button id="change_button">Start audio + video!</button>
+    <button id="video_only_button">Start video!</button>
+    <button id="audio_only_button">Start audio!</button>
+    <button id="refresh">Refresh sources</button>
+  </div>
+
+<script>
+var video = document.querySelector('video');
+var button = document.getElementById('change_button');
+var video_only_button = document.getElementById('video_only_button');
+var audio_only_button = document.getElementById('audio_only_button');
+var r_button = document.getElementById('refresh');
+var audio_select = document.getElementById("audiosrc");
+var video_select = document.getElementById("videosrc");
+
+refreshSources();
+
+function refreshSources() {
+  MediaStreamTrack.getSources(function(sourceInfos) {
+    var audio_count = 0;
+    var video_count = 0;
+    audio_select.disabled = true;
+    video_select.disabled = true;
+    audio_select.innerHTML = '';
+    video_select.innerHTML = '';
+    for (var i = 0; i < sourceInfos.length; i++) {
+      var option = document.createElement("option");
+      option.value = sourceInfos[i].id;
+      option.text = sourceInfos[i].label;
+      if (sourceInfos[i].kind == 'audio') {
+        audio_count++;
+        if (option.text == '') {
+          option.text = 'Audio ' + audio_count;
+        }
+        audio_select.appendChild(option);
+      } else {
+        video_count++;
+        if (option.text == '') {
+          option.text = 'Video ' + video_count;
+        }
+        video_select.appendChild(option);
+      }
+    }
+    audio_select.disabled = false;
+    video_select.disabled = false;
+  });
+}
+
+button.onclick = function() { setSourcesFromField(true, true); };
+video_only_button.onclick = function() { setSourcesFromField(false, true) };
+audio_only_button.onclick = function() { setSourcesFromField(true, false) };
+
+function setSourcesFromField(use_audio, use_video) {
+  var audio_source = null;
+  var video_source = null;
+  if (audio_select.options.length > 0 && use_audio) {
+    audio_source = audio_select.options[audio_select.selectedIndex].value;
+  }
+  if (video_select.options.length > 0 && use_video) {
+    video_source = video_select.options[video_select.selectedIndex].value;
+  }
+  setWebCamAndMic(audio_source, video_source);
+};
+
+r_button.onclick = function() {
+  refreshSources();
+};
+
+var lastMediaStream = null;
+function setWebCamAndMic(audiosource, videosource) {
+  var constraints = {};
+  if (audiosource) {
+    constraints.audio = {optional: [{sourceId: audiosource}]};
+    } else {
+    constraints.audio = false;
+  }
+  if (videosource) {
+    constraints.video = {optional: [{sourceId: videosource}]};
+    } else {
+    constraints.video = false;
+  }
+
+  navigator.webkitGetUserMedia(
+    constraints,
+
+    function(localMediaStream) {
+      video.src = window.URL.createObjectURL(localMediaStream);
+      if (lastMediaStream)
+        lastMediaStream.stop();
+      lastMediaStream = localMediaStream;
+    },
+
+    function(err) {
+      console.log('The following error occurred when trying to use getUserMedia: ' + err);
+    }
+  );
+}
+
+
+</script>
+</body>
+</html>
+
