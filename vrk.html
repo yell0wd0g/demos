@@ -109,13 +109,14 @@ function setWebCamAndMic(audiosource, videosource) {
     constraints.video = false;
   }
 
+  if (lastMediaStream)
+    lastMediaStream.stop();
+
   navigator.webkitGetUserMedia(
     constraints,
 
     function(localMediaStream) {
       video.src = window.URL.createObjectURL(localMediaStream);
-      if (lastMediaStream)
-        lastMediaStream.stop();
       lastMediaStream = localMediaStream;
     },
 
