@@ -15,11 +15,6 @@ button {
 </style>
 </head>
 <body>
-  <div>
-    Open a camera in different resolutions and framerates, simultaneously and in different orders. 
-    For screen capture, flag must be enabled and the protocol must be HTTPS.
-    </p>
-  </div>
 <button id="btn" onclick="start2()" font-size: 50px>320x240 @5-20fps</button>
 <button id="btn" onclick="start3()">640x480</button>
 <button id="btn" onclick="start4()">1280x720</button>
@@ -29,6 +24,13 @@ button {
 <video id="vid3" autoplay="true" width="320" height="240"></video>
 <video id="vid4" autoplay="true" width="320" height="240"></video>
 <video id="vidZ" autoplay="true" width="320" height="240"></video>
+<br/>
+<div>
+    Open a camera in different resolutions and framerates, simultaneously and in different orders. 
+    For screen capture, flag must be enabled and the protocol must be HTTPS.
+    </p>
+  </div>
+
 <script>
 video2= document.getElementById("vid2");
  var constraints2 ={
