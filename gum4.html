@@ -18,7 +18,7 @@ button {
 <button id="btn" onclick="start2()" font-size: 50px>320x240 @5-20fps</button>
 <button id="btn" onclick="start3()">640x480</button>
 <button id="btn" onclick="start4()">1280x720</button>
-<button id="btn" onclick="startZ()">Screen capture (10000x10000)@ 30fps</button>
+<button id="btn" onclick="startZ()">960x720</button>
 <br/>
 <video id="vid2" autoplay="true" width="320" height="240"></video>
 <video id="vid3" autoplay="true" width="320" height="240"></video>
@@ -55,8 +55,7 @@ video4= document.getElementById("vid4");
 videoZ= document.getElementById("vidZ");
  var constraintsZ ={
   "audio": false, "video": { "mandatory": {
-    "minWidth": "10000", "maxWidth": "10000", "minHeight": "10000", "maxHeight": "10000",
-    "minFrameRate": "30", chromeMediaSource: "screen"
+    "minWidth": "960", "maxWidth": "960", "minHeight": "720", "maxHeight": "720"
    },
    "optional": []
   }
