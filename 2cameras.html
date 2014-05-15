@@ -37,7 +37,7 @@ var id = new Array();
 function refreshSources() {
   MediaStreamTrack.getSources(function(sourceInfos) {
     var video_count = 0;
-    for (var i = 0; i < sourceInfos.length; i++) {
+    for (var i = sourceInfos.length -1; i != 0; i--) {
       if (sourceInfos[i].kind == 'video') 
         id[video_count++] = sourceInfos[i].id; 
     }
