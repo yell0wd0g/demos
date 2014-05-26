@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!-- saved from url=(0070)http://webrtc.googlecode.com/svn/trunk/samples/js/demos/html/gum1.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>getUserMedia Demo Z</title>
+<style>
+video {
+    border:5px solid black;
+    width:400px;
+    height:300px;
+}
+button {
+    font: 18px sans-serif;
+    padding: 8px;
+}
+</style>
+</head>
+<body>
+  <div>
+    <h1>Test opening and combination of capture devices</h1>
+    <p>
+    This page allows to open a camera in different resolutions and framerates 
+    simultaneously and in different orders. For screen capture, flag must be
+    enabled and the protocol must be HTTPS.
+    </p>
+  </div>
+<video id="vid2" autoplay="true"></video>
+<video id="vid3" autoplay="true"></video>
+<video id="vid4" autoplay="true"></video>
+<video id="vidZ" autoplay="true"></video>
+<br/>
+<button id="btn" onclick="start2()">Start Midres 4:3 (320x240) @ 5-15fps</button>
+<button id="btn" onclick="start3()">Start NormRes 4:3 (640x480)</button>
+<button id="btn" onclick="start4()">Start HighRes 16:9(1280x720)</button>
+<button id="btn" onclick="startZ()">Start Screen capture (10000x10000) @ 30fps</button>
+<script>
+video2= document.getElementById("vid2");
+ var constraints2 ={
+  "audio": true, "video": { "mandatory": {
+    "minWidth": "320", "maxWidth": "320", "minHeight": "240", "maxHeight": "240",
+    "minFrameRate":"5", "maxFrameRate": "10
+   },
+   "optional": []
+  }
+ }
+video3 = document.getElementById("vid3");
+
+video4= document.getElementById("vid4");
+ var constraints4 ={
+  "audio": true, "video": { "mandatory": {
+    "minWidth": "1280", "maxWidth": "1280", "minHeight": "720", "maxHeight": "720",
+   },
+   "optional": []
+  }
+ }
+
+videoZ= document.getElementById("vidZ");
+ var constraintsZ ={
+  "audio": false, "video": { "mandatory": {
+    "minWidth": "10000", "maxWidth": "10000", "minHeight": "10000", "maxHeight": "10000",
+    "minFrameRate": "30", chromeMediaSource: "screen"
+   },
+   "optional": []
+  }
+ }
+
+
+function startZ() {
+  navigator.webkitGetUserMedia(constraintsZ, gotStreamZ,   getUserMediaError); 
+  btn.disabled = true;
+}
+function gotStreamZ(stream) {
+  videoZ.src = webkitURL.createObjectURL(stream);
+}
+function start2() {
+  navigator.webkitGetUserMedia(constraints2, gotStream2,  getUserMediaError); 
+  btn.disabled = true;
+}
+function gotStream2(stream) {
+  video2.src = webkitURL.createObjectURL(stream);
+}
+function start3() {
+  navigator.webkitGetUserMedia({video:true}, gotStream3,  getUserMediaError); 
+  btn.disabled = true;
+}
+function gotStream3(stream) {
+  video3.src = webkitURL.createObjectURL(stream);
+}
+function start4() {
+  navigator.webkitGetUserMedia(constraints4, gotStream4,  getUserMediaError); 
+  btn.disabled = true;
+}
+function gotStream4(stream) {
+  video4.src = webkitURL.createObjectURL(stream);
+}
+
+function getUserMediaError(e) {
+  alert('Error during webkitGetUserMedia: '+e);
+}
+
+</script>
+
+
+
+</body></html>
