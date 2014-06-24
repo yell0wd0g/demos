@@ -10,11 +10,13 @@ function errorCallback(error){
 }
 
 function gotColorStream(stream) {
+  console.log('Got Colour camera');
   var video2 = document.getElementById('vid2');
   video2.src = webkitURL.createObjectURL(stream);
 }
 
 function gotDepthStream(stream) {
+  console.log('Got Depth camera');
   var video1 = document.getElementById('vid1');
   video1.src = webkitURL.createObjectURL(stream);
 }
@@ -28,19 +30,16 @@ function gotSources(sources) {
     if (sources[i].kind != 'video')
       continue;
     console.log('Source ' + i + ' id: ' + sources[i].id + ' label: ' + sources[i].label);
-    if ((sources[i].label.indexOf("Senz3D") == -1) && (sources[i].label.indexOf("Depth") == -1))
-      continue;
-    console.log('I like this camera!\n');
-
     ids.push(sources[i].id);
   }
-  var depthSourceId = ids[2];
-  var colorSourceId = ids[0];
+  var depthSourceId = ids[5];
+  var colorSourceId = ids[1];
   var depthConstraints = {
   		video: {
 		           optional: [{sourceId: depthSourceId}]
 		       }
   };
+  console.log('Trying to open Depth camera: ' + depthSourceId);
   navigator.webkitGetUserMedia(depthConstraints, gotDepthStream, errorCallback);
 
   var colorConstraints = {
@@ -48,6 +47,7 @@ function gotSources(sources) {
                optional: [{sourceId: colorSourceId}]
            }
   };
+  console.log('Trying to open Colour camera: ' + colorSourceId);
   navigator.webkitGetUserMedia(colorConstraints, gotColorStream, errorCallback);
 }
 
