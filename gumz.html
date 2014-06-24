@@ -27,7 +27,7 @@ function gotSources(sources) {
   for (var i = 0; i < sources.length; ++i) {
     if (sources[i].kind != 'video')
       continue;
-    console.log('Source ' + i + ' id: ' + sources[i].id + ' label: ' + sources[i].label + '\n');
+    console.log('Source ' + i + ' id: ' + sources[i].id + ' label: ' + sources[i].label);
     if ((sources[i].label.indexOf("Senz3D") == -1) && (sources[i].label.indexOf("Depth") == -1))
       continue;
     console.log('I like this camera!\n');
