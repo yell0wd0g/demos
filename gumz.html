@@ -25,8 +25,11 @@ function gotSources(sources) {
   window.sources = sources;
   var ids = [];
   for (var i = 0; i < sources.length; ++i) {
-  	if (sources[i].kind != 'video')
-  		continue;
+    if (sources[i].kind != 'video')
+      continue;
+    if ((sources[i].label.indexOf("Senz3D") == -1) && (sources[i].label.indexOf("Depth") == -1))
+      continue;
+
     console.log('Source ' + i + ' id: ' + sources[i].id + ' label: ' + sources[i].label + '\n');
     ids.push(sources[i].id);
   }
