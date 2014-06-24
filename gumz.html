@@ -36,17 +36,15 @@ function gotSources(sources) {
   var colorSourceId = ids[1];
 
   var colorConstraints = {
-      video: {
-               optional: [{sourceId: colorSourceId}]
-           }
+    video: { "mandatory": { "maxWidth": "320", "maxHeight": "240", },
+             "optional": [{sourceId: colorSourceId}] }
   };
   console.log('Trying to open Colour camera: ' + colorSourceId);
   navigator.webkitGetUserMedia(colorConstraints, gotColorStream, errorCallback);
 
   var depthConstraints = {
-  		video: {
-		           optional: [{sourceId: depthSourceId}]
-		       }
+    video: { "mandatory": { "maxWidth": "320", "maxHeight": "240", },
+             "optional": [{sourceId: depthSourceId}] }
   };
   console.log('Trying to open Depth camera: ' + depthSourceId);
   navigator.webkitGetUserMedia(depthConstraints, gotDepthStream, errorCallback);
