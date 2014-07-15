@@ -1,0 +1,130 @@
+  <!DOCTYPE html>
+  <html>
+  <head>
+  <meta name='description' content='Simple MediaStreamTrack onmute/onunmute
+  listener demo, based originally on simpl.js demo from Sam Dutton.' />
+  <meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1'>
+  <meta http-equiv='X-UA-Compatible' content='chrome=1' />
+  <base target='_blank'>
+  <title>MediaStreamTrack onmute/onunmute</title>
+ 	<style>
+    div.select {
+      margin: 0 0 1em 0;
+    }
+    label {
+      color: white;
+    }
+    </style>
+
+  </head>
+  <body>
+  <div id='container'>
+
+    <h1>MediaStreamTrack onmute/onunmute etc.</h1>
+    <video muted autoplay width="320" height="240"></video>
+
+    <div class='select'>
+      <label for='videoSource'>Video source: </label>
+      <select id='videoSource'></select>
+    </div>
+
+    <br>
+    <textarea id="textarea" name="textarea" rows="10" cols="60">
+    </textarea>
+
+    <button style="background: #064;" onclick="toggleEnable();">Enable/Disable track</button>
+  </div>
+  <script>
+
+  var videoElement = document.querySelector("video");
+  var videoSelect = document.querySelector("select#videoSource");
+  var startButton = document.querySelector("button#start");
+
+  navigator.getUserMedia = navigator.getUserMedia ||
+    navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+  function gotSources(sourceInfos) {
+    for (var i = 0; i != sourceInfos.length; ++i) {
+      var sourceInfo = sourceInfos[i];
+      var option = document.createElement("option");
+      option.value = sourceInfo.id;
+      if (sourceInfo.kind === 'video') {
+        option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
+        videoSelect.appendChild(option);
+      } else {
+        console.log('Some other kind of source: ', sourceInfo);
+      }
+    }
+  }
+
+  function successCallback(stream) {
+    window.stream = stream; // make stream available to console
+    videoElement.src = window.URL.createObjectURL(stream);
+    videoElement.play();
+
+    grabTracksAndDoStuff(stream);
+  }
+
+  function errorCallback(error){
+    console.log("navigator.getUserMedia error: ", error);
+  }
+
+  function start(){
+    if (!!window.stream) {
+      videoElement.src = null;
+      window.stream.stop();
+    }
+    var videoSource = videoSelect.value;
+    var constraints = {
+      video: {
+        optional: [{sourceId: videoSource}]
+      }
+    };
+    navigator.getUserMedia(constraints, successCallback, errorCallback);
+  }
+
+  function grabTracksAndDoStuff(stream) {
+    tracks = stream.getVideoTracks();
+    document.getElementById('textarea').value = 'Track running corresponds to ' +
+      tracks[0].label;
+    if (tracks[0].enabled)
+      document.getElementById('textarea').value += '\nTrack is enabled XD';
+    else
+      document.getElementById('textarea').value += '\nTrack is NOT enabled :?';
+    if (tracks[0].muted)
+      document.getElementById('textarea').value += '\nTrack is muted :?';
+    else
+      document.getElementById('textarea').value += '\nTrack is NOT muted XD';
+    tracks[0].onended = onEndedHandler;
+    tracks[0].onmute = onMuteHandler;
+    tracks[0].onunmute = onUnmuteHandler;
+  }
+
+  function onEndedHandler(track) {
+    document.getElementById('textarea').value += '\nReceived track onended.';
+  }
+  function onMuteHandler(track) {
+    document.getElementById('textarea').value += '\nReceived track onmute';
+  }
+  function onUnmuteHandler(track) {
+    document.getElementById('textarea').value += '\nReceived track onunmute.';
+  }
+
+  function toggleEnable() {
+    window.stream.getVideoTracks()[0].enabled =
+         !window.stream.getVideoTracks()[0].enabled;
+  }
+
+  if (typeof MediaStreamTrack === 'undefined'){
+    alert('This browser does not support MediaStreamTrack.\n\nTry Chrome Canary.');
+  } else {
+    MediaStreamTrack.getSources(gotSources);
+  }
+
+  videoSelect.onchange = start;
+
+  start();
+
+</script>
+</body>
+</html>
