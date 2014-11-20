@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>getUserMedia Demo 1080p</title>
+<style>
+video {
+    border:5px solid black;
+}
+button {
+    font: 18px sans-serif;
+    padding: 8px;
+}
+</style>
+</head>
+<body>
+<button id="btn" onclick="start()" font-size: 50px>720 capture</button>
+<br/>
+<video id="vid" autoplay="true" width="1280" height="720"></video>
+<br/>
+<div>
+    Open a camera in 720 and render on a video tag of the same size.
+</div>
+
+<script>
+video= document.getElementById("vid");
+var constraints ={
+  "audio": false, "video": { "mandatory": {
+    "minWidth": "1280", "maxWidth": "1280", "minHeight": "720", "maxHeight": "720",
+   },
+   "optional": []
+  }
+}
+
+function start() {
+  navigator.webkitGetUserMedia(constraints, gotStream,  getUserMediaError); 
+  btn.disabled = true;
+}
+
+function gotStream(stream) {
+  video.src = webkitURL.createObjectURL(stream);
+}
+
+function getUserMediaError(e) {
+  alert('Error during webkitGetUserMedia: '+ e);
+}
+
+</script>
+
+
+
+</body></html>
