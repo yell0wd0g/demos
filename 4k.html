@@ -14,7 +14,7 @@ button {
 <body>
 <button id="btn" onclick="start()" font-size: 50px>2160p (4K) capture</button>
 <br/>
-<video id="vid" autoplay="true" width="3860" height="2160"></video>
+<video id="vid" autoplay="true" width="3840" height="2160"></video>
 <br/>
 <div>
     Open a camera in 2160p (4K) and render on a video tag of the same size.
@@ -24,7 +24,7 @@ button {
 video= document.getElementById("vid");
 var constraints ={
   "audio": false, "video": { "mandatory": {
-    "minWidth": "3860", "maxWidth": "3860", "minHeight": "2160", "maxHeight": "2160",
+    "minWidth": "3840", "maxWidth": "3840", "minHeight": "2160", "maxHeight": "2160",
    },
    "optional": []
   }
