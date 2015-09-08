@@ -15,8 +15,8 @@
     console.error('User media request denied with error code ' + error.code);
   }
   function recorderOnDataAvailable(event) {
-    console_assert(event.data.size > 0, 'Recorded data size should be > 0');
-    console_assert(recorder.state == "recording", "State should be 'recording'");
+    console.assert(event.data.size > 0, 'Recorded data size should be > 0');
+    console.assert(recorder.state == "recording", "State should be 'recording'");
 
     // TODO(mcasas): Let the test record for a while.
     // TODO(mcasas): Consider storing the recorded data and playing it back.
