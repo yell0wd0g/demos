@@ -29,7 +29,7 @@
     document.getElementById("view1").src = webkitURL.createObjectURL(s);
 
     try {
-      recorder = new MediaRecorder(stream);
+      recorder = new MediaRecorder(stream, "video/vp8");
     } catch (e) {
       console.assert(false, 'Exception while creating MediaRecorder: ' + e);
     }
