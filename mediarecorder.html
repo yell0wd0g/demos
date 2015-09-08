@@ -2,25 +2,43 @@
 <html>
 <head>
   <script type="text/javascript">
-  var errors = []
+
   var stream
+  var recorder
+
   function requestVideo() {
     navigator.webkitGetUserMedia({video: true, audio: false},
                                  getUserMediaOkCallback,
                                  getUserMediaFailedCallback);
   }
   function getUserMediaFailedCallback(error) {
-    errors.push('User media request denied with error code ' + error.code);
+    console.error('User media request denied with error code ' + error.code);
+  }
+  function recorderOnDataAvailable(event) {
+    console_assert(event.data.size > 0, 'Recorded data size should be > 0');
+    console_assert(recorder.state == "recording", "State should be 'recording'");
+
+    // TODO(mcasas): Let the test record for a while.
+    // TODO(mcasas): Consider storing the recorded data and playing it back.
+  }
+  function recorderOnStop() {
+    console.error('Recording stopped.')
   }
   function getUserMediaOkCallback(s) {
     stream = s
     document.getElementById("view1").src = webkitURL.createObjectURL(s);
-  }
-  function checkForErrors() {
-    if (errors.length > 0) {
-      throw errors.join("\n");
+
+    try {
+      recorder = new MediaRecorder(stream);
+    } catch (e) {
+      console.assert(false, 'Exception while creating MediaRecorder: ' + e);
     }
+    console_assert(recorder.state == "inactive");
+    recorder.ondataavailable = recorderOnDataAvailable;
+    recorder.onstop = recorderOnStop;
+    recorder.start(); 
   }
+
   </script>
 </head>
 <body onload="requestVideo();">
