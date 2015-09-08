@@ -33,7 +33,7 @@
     } catch (e) {
       console.assert(false, 'Exception while creating MediaRecorder: ' + e);
     }
-    console_assert(recorder.state == "inactive");
+    console.assert(recorder.state == "inactive");
     recorder.ondataavailable = recorderOnDataAvailable;
     recorder.onstop = recorderOnStop;
     recorder.start(); 
