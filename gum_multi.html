@@ -49,7 +49,8 @@ function capture() {
   }
   btn.disabled = true;
 }
-function gotStream(stream) {
+function gotStream(stream) {    
+  console.log("Got video device");
   var video_tag = document.createElement('video');
   video_tage.src = webkitURL.createObjectURL(stream);
 }
