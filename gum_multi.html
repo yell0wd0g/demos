@@ -39,6 +39,7 @@ function refreshSources() {
 refreshSources();
 
 function capture() {
+  console.log("Requesting " + camera_ids.length + " video device(s)");
   for (var count = camera_ids.length -1; count != 0; count--) {
     var constraints = {};
     console.log("Requesting video device #" + count);
