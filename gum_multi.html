@@ -26,6 +26,8 @@ function refreshSources() {
     var count = 0;
     document.getElementById('textarea').value = "";
     for (var sourceInfo in sourceInfos) {
+      console.log( " hi : " + sourceInfo.kind);
+
       if (sourceInfo.kind != 'video') 
         continue;
       camera_ids[count++] = sourceInfo;
