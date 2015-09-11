@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- saved from url=(0070)http://webrtc.googlecode.com/svn/trunk/samples/js/demos/html/gum1.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Multiple cameras getUserMedia() demo</title>
+<style>
+video { border:5px solid black; width:400px; height:300px; }
+button { font: 18px sans-serif; padding: 8px; }
+</style>
+</head>
+<body>
+  <div>
+    <h1>Test opening and combination of video capture devices</h1>
+    <p>
+    This page tries to open two cameras identified by ID. 
+    If there's less than two cameras connected to the browser, it won't work 
+    correctly :) and if there's more than two, the first two will be used.
+    </p>
+  </div>
+<textarea id="textarea" name="textarea" rows="3" cols="60"></textarea>
+<br/>  
+<button id="btn" onclick="capture()">Start Video Capture(s)</button>
+<script>
+var camera_ids = new Array();
+function refreshSources() {
+  MediaStreamTrack.getSources(function(sourceInfos) {
+    var video_count = 0;
+    for (var i = sourceInfos.length -1; i != 0; i--) {
+      var sourceInfo = sourceInfos[i];
+      if (sourceInfos[i].kind != 'video') 
+       continue;
+      camera_ids[video_count++] = sourceInfo; 
+      document.getElementById('textarea').value += "capture device #" 
+          + video_count + " : " + sourceInfo.label;
+    }
+  });
+}
+refreshSources();
+
+function capture() {
+  for (var camera_id = camera_ids.length -1; camera_id != 0; camera_id--) {
+    var constraints = {};
+    constraints.audio = false;
+    constraints.video = {optional: [{sourceId: camera_ids[camera_id]}]};
+    navigator.webkitGetUserMedia(constraints, gotStream,  getUserMediaError); 
+  }
+  btn.disabled = true;
+}
+function gotStream(stream) {
+  var video_tag = document.createElement('video');
+  video_tage.src = webkitURL.createObjectURL(stream);
+}
+function getUserMediaError(e) {
+  console.assert(false, 'Error during webkitGetUserMedia: '+ e);
+}
+
+</script>
+</body>
+</html>
