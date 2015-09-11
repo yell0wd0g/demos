@@ -29,7 +29,7 @@ function refreshSources() {
       var sourceInfo = sourceInfos[i];
       if (sourceInfos[i].kind == 'video') {
         camera_ids[count++] = sourceInfo;
-        console.log("capture device #" + count + " : " + sourceInfo.label);
+        console.log("Found video device #" + count + " : " + sourceInfo.label);
         document.getElementById('textarea').value += "capture device #" 
             + count + " : " + sourceInfo.label + "\n";
       }
@@ -39,8 +39,9 @@ function refreshSources() {
 refreshSources();
 
 function capture() {
-  for (var camera_id = camera_ids.length -1; camera_id != 0; camera_id--) {
+  for (var count = camera_ids.length -1; count != 0; count--) {
     var constraints = {};
+    console.log("Requesting video device #" + count);
     constraints.audio = false;
     constraints.video = {optional: [{sourceId: camera_ids[camera_id]}]};
     navigator.webkitGetUserMedia(constraints, gotStream,  getUserMediaError); 
