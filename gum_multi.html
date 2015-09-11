@@ -23,13 +23,15 @@ button { font: 18px sans-serif; padding: 8px; }
 var camera_ids = new Array();
 function refreshSources() {
   MediaStreamTrack.getSources(function(sourceInfos) {
-    var video_count = 0;
+    var count = 0;
+    document.getElementById('textarea').value = "";
     for (var i = sourceInfos.length -1; i != 0; i--) {
       var sourceInfo = sourceInfos[i];
       if (sourceInfos[i].kind != 'video') {
-        camera_ids[video_count++] = sourceInfo; 
+        camera_ids[count++] = sourceInfo;
+        console.log("capture device #" + count + " : " + sourceInfo.label);
         document.getElementById('textarea').value += "capture device #" 
-            + video_count + " : " + sourceInfo.label + "\n";
+            + count + " : " + sourceInfo.label + "\n";
       }
     }
   });
