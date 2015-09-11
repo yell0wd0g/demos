@@ -27,7 +27,7 @@ function refreshSources() {
     document.getElementById('textarea').value = "";
     for (var i = sourceInfos.length -1; i != 0; i--) {
       var sourceInfo = sourceInfos[i];
-      if (sourceInfos[i].kind != 'video') {
+      if (sourceInfos[i].kind == 'video') {
         camera_ids[count++] = sourceInfo;
         console.log("capture device #" + count + " : " + sourceInfo.label);
         document.getElementById('textarea').value += "capture device #" 
