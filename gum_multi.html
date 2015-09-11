@@ -16,7 +16,7 @@ button { font: 18px sans-serif; padding: 8px; }
     correctly :) and if there's more than two, the first two will be used.
     </p>
   </div>
-<textarea id="textarea" name="textarea" rows="2" cols="60" style="border: none"></textarea>
+<textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
 <br/>  
 <button id="btn" onclick="capture()">Start Video Capture(s)</button>
 <script>
@@ -25,14 +25,13 @@ function refreshSources() {
   MediaStreamTrack.getSources(function(sourceInfos) {
     var count = 0;
     document.getElementById('textarea').value = "";
-    for (var i = sourceInfos.length -1; i != 0; i--) {
-      var sourceInfo = sourceInfos[i];
-      if (sourceInfos[i].kind == 'video') {
-        camera_ids[count++] = sourceInfo;
-        console.log("Found video device #" + count + " : " + sourceInfo.label);
-        document.getElementById('textarea').value += "capture device #" 
-            + count + " : " + sourceInfo.label + "\n";
-      }
+    for (var sourceInfo in sourceInfos) {
+      if (sourceInfo.kind != 'video') 
+        continue;
+      camera_ids[count++] = sourceInfo;
+      var message = "Video capture dev # "+ count + " : " + sourceInfo.label;
+      console.log(message);
+      document.getElementById('textarea').value += message "\n";
     }
   });
 }
@@ -40,11 +39,10 @@ refreshSources();
 
 function capture() {
   console.log("Requesting " + camera_ids.length + " video device(s)");
-  for (var count = camera_ids.length -1; count != 0; count--) {
-    var constraints = {};
-    console.log("Requesting video device #" + count);
-    constraints.audio = false;
-    constraints.video = {optional: [{sourceId: camera_ids[camera_id]}]};
+  for (var camera_id in camera_ids) {
+    var constraints = "{audio : false," + 
+                      " video : { optional : [ {sourceId: " + camera_id " }]}";
+    console.log("Requesting getUserMedia: " + constraints);
     navigator.webkitGetUserMedia(constraints, gotStream,  getUserMediaError); 
   }
   btn.disabled = true;
