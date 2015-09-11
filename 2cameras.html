@@ -36,7 +36,7 @@ function refreshSources() {
       if (sourceInfos[i].kind != 'video') 
        continue;
       id[video_count++] = sourceInfo; 
-      document.getElementById('textarea').value += sourceInfo.label +
+      document.getElementById('textarea').value += sourceInfo.label;
     }
   });
 }
