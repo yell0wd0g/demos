@@ -31,7 +31,7 @@ function refreshSources() {
       camera_ids[count++] = sourceInfo;
       var message = "Video capture dev # "+ count + " : " + sourceInfo.label;
       console.log(message);
-      document.getElementById('textarea').value += message "\n";
+      document.getElementById('textarea').value += message + "\n";
     }
   });
 }
@@ -39,9 +39,9 @@ refreshSources();
 
 function capture() {
   console.log("Requesting " + camera_ids.length + " video device(s)");
-  for (var camera_id in camera_ids) {
+  for (var id in camera_ids) {
     var constraints = "{audio : false," + 
-                      " video : { optional : [ {sourceId: " + camera_id " }]}";
+                      " video : { optional : [ {sourceId: " + id  + " }]}";
     console.log("Requesting getUserMedia: " + constraints);
     navigator.webkitGetUserMedia(constraints, gotStream,  getUserMediaError); 
   }
