@@ -30,7 +30,7 @@ function refreshSources() {
        continue;
       camera_ids[video_count++] = sourceInfo; 
       document.getElementById('textarea').value += "capture device #" 
-          + video_count + " : " + sourceInfo.label;
+          + video_count + " : " + sourceInfo.label + "\n";
     }
   });
 }
