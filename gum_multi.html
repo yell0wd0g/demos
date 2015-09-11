@@ -26,11 +26,11 @@ function refreshSources() {
     var video_count = 0;
     for (var i = sourceInfos.length -1; i != 0; i--) {
       var sourceInfo = sourceInfos[i];
-      if (sourceInfos[i].kind != 'video') 
-       continue;
-      camera_ids[video_count++] = sourceInfo; 
-      document.getElementById('textarea').value += "capture device #" 
-          + video_count + " : " + sourceInfo.label + "\n";
+      if (sourceInfos[i].kind != 'video') {
+        camera_ids[video_count++] = sourceInfo; 
+        document.getElementById('textarea').value += "capture device #" 
+            + video_count + " : " + sourceInfo.label + "\n";
+      }
     }
   });
 }
