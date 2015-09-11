@@ -25,6 +25,7 @@
     console.error('Recording stopped.')
   }
   function getUserMediaOkCallback(s) {
+    console.log("getUserMedia succeeded");
     stream = s
     document.getElementById("view1").src = webkitURL.createObjectURL(s);
 
@@ -37,6 +38,8 @@
     recorder.ondataavailable = recorderOnDataAvailable;
     recorder.onstop = recorderOnStop;
     recorder.start(); 
+    console.log("Recorder is started");
+    console.assert(recorder.state == "recording");
   }
 
   </script>
