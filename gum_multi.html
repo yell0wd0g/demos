@@ -41,8 +41,9 @@ refreshSources();
 function capture() {
   console.log("Requesting " + cameraIds.length + " video device(s)");
   for (var index in cameraIds) {
-    var constraints = {audio : false, 
-                       video : { optional : [ { sourceId: cameraIds[index].id }]}};
+    var constraints = {audio : false, video : true };
+    constraints.video.optional.push({sourceId: cameraIds[index].id});
+
     console.log("Requesting getUserMedia: " + constraints);
     navigator.webkitGetUserMedia(constraints, gotStream,  getUserMediaError); 
   }
