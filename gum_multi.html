@@ -44,8 +44,10 @@ function capture() {
     var constraints = {audio : false, video : true };
     constraints.video = { optional : { sourceId: cameraIds[index].id } };
 
-    console.log("Requesting getUserMedia: " + constraints);
-    navigator.webkitGetUserMedia(constraints, gotStream,  getUserMediaError); 
+    console.log("Requesting getUserMedia: " + JSON.stringify(constraints));
+    navigator.webkitGetUserMedia(JSON.stringify(constraints), 
+                                 gotStream,  
+                                 getUserMediaError); 
   }
   btn.disabled = true;
 }
