@@ -20,17 +20,16 @@ button { font: 18px sans-serif; padding: 8px; }
 <br/>  
 <button id="btn" onclick="capture()">Start Video Capture(s)</button>
 <script>
-var camera_ids = new Array();
+var cameraIds = new Array();
 function refreshSources() {
   MediaStreamTrack.getSources(function(sourceInfos) {
     var count = 0;
     document.getElementById('textarea').value = "";
     for (var index in sourceInfos) {
       var sourceInfo = sourceInfos[index];
-      console.log( " hi : " + sourceInfo.label + " " + sourceInfo.kind);
       if (sourceInfo.kind != 'video') 
         continue;
-      camera_ids[count++] = sourceInfo;
+      cameraIds[count++] = sourceInfo;
       var message = "Video capture dev # "+ count + " : " + sourceInfo.label;
       console.log(message);
       document.getElementById('textarea').value += message + "\n";
@@ -40,11 +39,12 @@ function refreshSources() {
 refreshSources();
 
 function capture() {
-  console.log("Requesting " + camera_ids.length + " video device(s)");
-  for (var index in camera_ids) {
-    var sourceId = camera_ids[index].id;
-    var constraints = "{audio : false," + 
-                      " video : { optional : [ {sourceId: " + sourceId  + " }]}";
+  console.log("Requesting " + cameraIds.length + " video device(s)");
+  for (var index in cameraIds) {
+    var sourceId = cameraIds[index].id;
+    var constraints;
+    constraints.audio = false;
+    constraints.video = { optional : [ {sourceId: sourceId }]};
     console.log("Requesting getUserMedia: " + constraints);
     navigator.webkitGetUserMedia(constraints, gotStream,  getUserMediaError); 
   }
@@ -53,7 +53,7 @@ function capture() {
 function gotStream(stream) {    
   console.log("Got video device");
   var video_tag = document.createElement('video');
-  video_tage.src = webkitURL.createObjectURL(stream);
+  video_tag.src = webkitURL.createObjectURL(stream);
 }
 function getUserMediaError(e) {
   console.assert(false, 'Error during webkitGetUserMedia: '+ e);
