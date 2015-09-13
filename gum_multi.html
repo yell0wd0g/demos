@@ -9,16 +9,15 @@ button { font: 18px sans-serif; padding: 8px; }
 </head>
 <body>
   <div>
-    <h1>Test opening and combination of video capture devices</h1>
+    <h1>Test opening all video capture devices</h1>
     <p>
-    This page tries to open two cameras identified by ID. 
-    If there's less than two cameras connected to the browser, it won't work 
-    correctly :) and if there's more than two, the first two will be used.
+    This page lists all Video Capture devices and tries to open each of them in sequence.
     </p>
   </div>
 <textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
 <br/>  
 <button id="btn" onclick="capture()">Start Video Capture(s)</button>
+<br/>
 <script>
 var cameraIds = new Array();
 function refreshSources() {
