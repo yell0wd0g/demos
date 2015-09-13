@@ -15,32 +15,15 @@ button {
 </style>
 </head>
 <body>
-<button id="btn1" onclick="start1()" font-size: 50px>320x240 @5-20fps</button>
-<button id="btn2" onclick="start2()">640x480</button>
-<button id="btn3" onclick="start3()">1280x720</button>
-<button id="btn4" onclick="start4()">960x720</button>
+<div> Open a camera in different resolutions and framerates, simultaneously and in different orders. 
+</div>
+<button id="btn1">320x240 @5-20fps</button>
+<button id="btn2">640x480</button>
+<button id="btn3">1280x720</button>
+<button id="btn4">960x720</button>
 <br/>
-<video id="vid1" autoplay="true" width="240" height="180"></video>
-<video id="vid2" autoplay="true" width="240" height="180"></video>
-<video id="vid3" autoplay="true" width="240" height="180"></video>
-<video id="vid4" autoplay="true" width="240" height="180"></video>
-<br/>
-<div>
-    Open a camera in different resolutions and framerates, simultaneously and in different orders. 
-    For screen capture, flag must be enabled and the protocol must be HTTPS.
-    </p>
-  </div>
 
 <script>
-var video1 = document.getElementById("vid1");
-var video2 = document.getElementById("vid2");
-var video3 = document.getElementById("vid3");
-var video4 = document.getElementById("vid4");
-var btn1 =  document.getElementById("btn1");
-var btn2 =  document.getElementById("btn2");
-var btn3 =  document.getElementById("btn3");
-var btn4 =  document.getElementById("btn4");
-
 var constraints320x240 = {
   "audio": false,
   "video": {
@@ -54,7 +37,8 @@ var constraints320x240 = {
     },
     "optional": []
   }
-}
+};
+
 var constraints1280x720 = {
   "audio": false,
   "video": {
@@ -66,7 +50,20 @@ var constraints1280x720 = {
     },
     "optional": []
   }
-}
+};
+
+var constraints640x480 = {
+  "audio": false,
+  "video": {
+    "mandatory": {
+      "minWidth": "640",
+      "maxWidth": "640",
+      "minHeight": "480",
+      "maxHeight": "480",
+    },
+    "optional": []
+  }
+};
 
 var constraints960x720 = {
   "audio": false,
@@ -79,50 +76,36 @@ var constraints960x720 = {
     },
     "optional": []
   }
-}
+};
 
-function start1() {
-  navigator.webkitGetUserMedia(constraints320x240, gotStream1, getUserMediaError);
-  btn1.disabled = true;
-}
+function makeGetStreamX(constraints, button) {
+  return function() {
+    navigator.webkitGetUserMedia(constraints, gotStream, getUserMediaError);
+    button.disabled = true;
+  };
+};
 
-function gotStream1(stream) {
-  video1.src = webkitURL.createObjectURL(stream);
-}
-
-function start2() {
-  navigator.webkitGetUserMedia({ video: true }, gotStream2, getUserMediaError);
-  btn2.disabled = true;
-}
-
-function gotStream2(stream) {
-  video2.src = webkitURL.createObjectURL(stream);
-}
-
-function start3() {
-  navigator.webkitGetUserMedia(constraints1280x720, gotStream3, getUserMediaError);
-  btn3.disabled = true;
-}
-
-function gotStream3(stream) {
-  video3.src = webkitURL.createObjectURL(stream);
-}
-
-function start4() {
-  navigator.webkitGetUserMedia(constraints960x720, gotStream4, getUserMediaError);
-  btn4.disabled = true;
-}
-
-function gotStream4(stream) {
-  video4.src = webkitURL.createObjectURL(stream);
+function gotStream(stream) {
+  console.log("Got video device capturing");
+  var video_tag = document.createElement('video');
+  video_tag.src = webkitURL.createObjectURL(stream);
+  document.body.appendChild(video_tag);
+  video_tag.play();
 }
 
 function getUserMediaError(e) {
   console.assert(false, 'Error during webkitGetUserMedia: '+e);
 }
 
+var btn1 = document.getElementById("btn1");
+var btn2 = document.getElementById("btn2");
+var btn3 = document.getElementById("btn3");
+var btn4 = document.getElementById("btn4");
+
+btn1.onclick = makeGetStreamX(constraints320x240, btn1);
+btn2.onclick = makeGetStreamX(constraints640x480, btn2);
+btn3.onclick = makeGetStreamX(constraints1280x720, btn3);
+btn4.onclick = makeGetStreamX(constraints960x720, btn4);
+
 </script>
-
-
-
 </body></html>
