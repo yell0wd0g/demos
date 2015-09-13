@@ -53,6 +53,9 @@ function gotStream(stream) {
   console.log("Got video device");
   var video_tag = document.createElement('video');
   video_tag.src = webkitURL.createObjectURL(stream);
+  
+  document.body.appendChild(video_tag);
+  video_tag.play();
 }
 function getUserMediaError(e) {
   console.assert(false, 'Error during webkitGetUserMedia: '+ e);
