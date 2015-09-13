@@ -15,15 +15,15 @@ button {
 </style>
 </head>
 <body>
-<button id="btn" onclick="start2()" font-size: 50px>320x240 @5-20fps</button>
-<button id="btn" onclick="start3()">640x480</button>
-<button id="btn" onclick="start4()">1280x720</button>
-<button id="btn" onclick="startZ()">960x720</button>
+<button id="btn1" onclick="start1()" font-size: 50px>320x240 @5-20fps</button>
+<button id="btn2" onclick="start2()">640x480</button>
+<button id="btn3" onclick="start3()">1280x720</button>
+<button id="btn4" onclick="start4()">960x720</button>
 <br/>
-<video id="vid2" autoplay="true" width="320" height="240"></video>
-<video id="vid3" autoplay="true" width="320" height="240"></video>
-<video id="vid4" autoplay="true" width="320" height="240"></video>
-<video id="vidZ" autoplay="true" width="320" height="240"></video>
+<video id="vid1" autoplay="true" width="240" height="180"></video>
+<video id="vid2" autoplay="true" width="240" height="180"></video>
+<video id="vid3" autoplay="true" width="240" height="180"></video>
+<video id="vid4" autoplay="true" width="240" height="180"></video>
 <br/>
 <div>
     Open a camera in different resolutions and framerates, simultaneously and in different orders. 
@@ -32,67 +32,93 @@ button {
   </div>
 
 <script>
-video2= document.getElementById("vid2");
- var constraints2 ={
-  "audio": false, "video": { "mandatory": {
-    "minWidth": "320", "maxWidth": "320", "minHeight": "240", "maxHeight": "240",
-    "minFrameRate":"5", "maxFrameRate": "20",
-   },
-   "optional": []
-  }
- }
-video3 = document.getElementById("vid3");
+var video1 = document.getElementById("vid1");
+var video2 = document.getElementById("vid2");
+var video3 = document.getElementById("vid3");
+var video4 = document.getElementById("vid4");
+var btn1 =  document.getElementById("btn1");
+var btn2 =  document.getElementById("btn2");
+var btn3 =  document.getElementById("btn3");
+var btn4 =  document.getElementById("btn4");
 
-video4= document.getElementById("vid4");
- var constraints4 ={
-  "audio": false, "video": { "mandatory": {
-    "minWidth": "1280", "maxWidth": "1280", "minHeight": "720", "maxHeight": "720",
-   },
-   "optional": []
+var constraints320x240 = {
+  "audio": false,
+  "video": {
+    "mandatory": {
+      "minWidth": "320",
+      "maxWidth": "320",
+      "minHeight": "240",
+      "maxHeight": "240",
+      "minFrameRate": "5",
+      "maxFrameRate": "20",
+    },
+    "optional": []
   }
- }
-
-videoZ= document.getElementById("vidZ");
- var constraintsZ ={
-  "audio": false, "video": { "mandatory": {
-    "minWidth": "960", "maxWidth": "960", "minHeight": "720", "maxHeight": "720"
-   },
-   "optional": []
+}
+var constraints1280x720 = {
+  "audio": false,
+  "video": {
+    "mandatory": {
+      "minWidth": "1280",
+      "maxWidth": "1280",
+      "minHeight": "720",
+      "maxHeight": "720",
+    },
+    "optional": []
   }
 }
 
+var constraints960x720 = {
+  "audio": false,
+  "video": {
+    "mandatory": {
+      "minWidth": "960",
+      "maxWidth": "960",
+      "minHeight": "720",
+      "maxHeight": "720"
+    },
+    "optional": []
+  }
+}
 
-function startZ() {
-  navigator.webkitGetUserMedia(constraintsZ, gotStreamZ,   getUserMediaError); 
-  btn.disabled = true;
+function start1() {
+  navigator.webkitGetUserMedia(constraints320x240, gotStream1, getUserMediaError);
+  btn1.disabled = true;
 }
-function gotStreamZ(stream) {
-  videoZ.src = webkitURL.createObjectURL(stream);
+
+function gotStream1(stream) {
+  video1.src = webkitURL.createObjectURL(stream);
 }
+
 function start2() {
-  navigator.webkitGetUserMedia(constraints2, gotStream2,  getUserMediaError); 
-  btn.disabled = true;
+  navigator.webkitGetUserMedia({ video: true }, gotStream2, getUserMediaError);
+  btn2.disabled = true;
 }
+
 function gotStream2(stream) {
   video2.src = webkitURL.createObjectURL(stream);
 }
+
 function start3() {
-  navigator.webkitGetUserMedia({video:true}, gotStream3,  getUserMediaError); 
-  btn.disabled = true;
+  navigator.webkitGetUserMedia(constraints1280x720, gotStream3, getUserMediaError);
+  btn3.disabled = true;
 }
+
 function gotStream3(stream) {
   video3.src = webkitURL.createObjectURL(stream);
 }
+
 function start4() {
-  navigator.webkitGetUserMedia(constraints4, gotStream4,  getUserMediaError); 
-  btn.disabled = true;
+  navigator.webkitGetUserMedia(constraints960x720, gotStream4, getUserMediaError);
+  btn4.disabled = true;
 }
+
 function gotStream4(stream) {
   video4.src = webkitURL.createObjectURL(stream);
 }
 
 function getUserMediaError(e) {
-  alert('Error during webkitGetUserMedia: '+e);
+  console.assert(false, 'Error during webkitGetUserMedia: '+e);
 }
 
 </script>
