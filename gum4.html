@@ -17,70 +17,28 @@ button {
 <body>
 <div> Open a camera in different resolutions and framerates, simultaneously and in different orders. 
 </div>
-<button id="btn1">320x240 @5-20fps</button>
+<button id="btn1">320x240</button>
 <button id="btn2">640x480</button>
 <button id="btn3">1280x720</button>
 <button id="btn4">960x720</button>
 <br/>
 
 <script>
-var constraints320x240 = {
-  "audio": false,
-  "video": {
-    "mandatory": {
-      "minWidth": "320",
-      "maxWidth": "320",
-      "minHeight": "240",
-      "maxHeight": "240",
-      "minFrameRate": "5",
-      "maxFrameRate": "20",
-    },
-    "optional": []
-  }
-};
-
-var constraints1280x720 = {
-  "audio": false,
-  "video": {
-    "mandatory": {
-      "minWidth": "1280",
-      "maxWidth": "1280",
-      "minHeight": "720",
-      "maxHeight": "720",
-    },
-    "optional": []
-  }
-};
-
-var constraints640x480 = {
-  "audio": false,
-  "video": {
-    "mandatory": {
-      "minWidth": "640",
-      "maxWidth": "640",
-      "minHeight": "480",
-      "maxHeight": "480",
-    },
-    "optional": []
-  }
-};
-
-var constraints960x720 = {
-  "audio": false,
-  "video": {
-    "mandatory": {
-      "minWidth": "960",
-      "maxWidth": "960",
-      "minHeight": "720",
-      "maxHeight": "720"
-    },
-    "optional": []
-  }
-};
-
-function makeGetStreamX(constraints, button) {
+function makeGetStreamX(width, height, button) {
   return function() {
-    navigator.webkitGetUserMedia(constraints, gotStream, getUserMediaError);
+    var constraintsWidthXHeight = {
+      "audio": false,
+      "video": {
+        "mandatory": {
+          "minWidth": width,
+          "maxWidth": width,
+          "minHeight": height,
+          "maxHeight": height
+        },
+        "optional": []
+      }
+    };
+    navigator.webkitGetUserMedia(constraintsWidthXHeight, gotStream, getUserMediaError);
     button.disabled = true;
   };
 };
@@ -102,10 +60,10 @@ var btn2 = document.getElementById("btn2");
 var btn3 = document.getElementById("btn3");
 var btn4 = document.getElementById("btn4");
 
-btn1.onclick = makeGetStreamX(constraints320x240, btn1);
-btn2.onclick = makeGetStreamX(constraints640x480, btn2);
-btn3.onclick = makeGetStreamX(constraints1280x720, btn3);
-btn4.onclick = makeGetStreamX(constraints960x720, btn4);
+btn1.onclick = makeGetStreamX(320, 240, btn1);
+btn2.onclick = makeGetStreamX(640, 480, btn2);
+btn3.onclick = makeGetStreamX(1280, 720, btn3);
+btn4.onclick = makeGetStreamX(960, 720, btn4);
 
 </script>
 </body></html>
