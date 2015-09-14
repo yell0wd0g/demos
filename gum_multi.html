@@ -45,7 +45,7 @@ function getUserMediaError(e) {
   console.assert(false, 'Error during webkitGetUserMedia: '+ e);
 }
 
-var button = document.createElement("btn");
+var button = document.createElement("input");
 button.onclick = capture;
 button.type = "button";
 document.body.appendChild(button);
