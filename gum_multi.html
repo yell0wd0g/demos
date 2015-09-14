@@ -47,6 +47,9 @@ function getUserMediaError(e) {
 
 var button = document.createElement("btn");
 button.onclick = capture;
+button.type = "button";
+document.body.appendChild(button);
+
 refreshSources();
 
 </script>
