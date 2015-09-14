@@ -31,7 +31,7 @@ function capture() {
     console.log("Requesting getUserMedia: " + JSON.stringify(constraints));
     navigator.webkitGetUserMedia(constraints, gotStream, getUserMediaError); 
   }
-  button.disabled = true;
+  document.getElementById("btn").disabled = true;
 }
 function gotStream(stream) {    
   console.log("Got video device");
@@ -45,11 +45,15 @@ function getUserMediaError(e) {
   console.assert(false, 'Error during webkitGetUserMedia: '+ e);
 }
 
-var button = document.createElement("input");
-button.onclick = capture;
-button.type = "button";
-document.body.appendChild(button);
-
+function createButton(id, text, onClick){
+  var button = document.createElement("input");
+  button.id = id;
+  button.type = "button";
+  button.value = text;
+  button.onclick = onClick;
+  document.body.appendChild(button);
+}
+createButton("btn", "Start all Video Capturer(s)", capture)
 refreshSources();
 
 </script>
@@ -58,8 +62,6 @@ refreshSources();
 <body>
   <div> This page lists all Video Capture devices and tries to open each of them in sequence. </div>
   <textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
-  <br/>  
-  <button id="btn">Start all Video Capturer(s)</button>
   <br/>
 </body>
 </html>
