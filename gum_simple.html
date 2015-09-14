@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html>
-<head>
+><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Simple Video camera getUserMedia() demo</title>
 <script type="text/javascript">
+/* global webkitURL */
+
 function requestVideo() {
-  navigator.webkitGetUserMedia({video: true,
-                                audio: false},
-    getUserMediaOkCallback,
-    getUserMediaFailedCallback);
+  navigator.webkitGetUserMedia({video: true, audio: false},
+                               getUserMediaOkCallback,
+                               getUserMediaFailedCallback);
 }
 
 function getUserMediaFailedCallback(error) {
@@ -14,10 +15,16 @@ function getUserMediaFailedCallback(error) {
 }
 
 function getUserMediaOkCallback(stream) {
-  document.getElementById("view1").src = webkitURL.createObjectURL(stream);
+  var video_tag = document.createElement('video');
+  video_tag.src = webkitURL.createObjectURL(stream);
+  document.body.appendChild(video_tag);
+  video_tag.play();  
 }
+
+requestVideo();
 </script> 
-</head> <body onload = "requestVideo();">
-<video width="320" height="240" id="view1" autoplay="autoplay"></video>
+</head> 
+<body>
+ <div> Automatically open the (first) system camera in its (native) 640x480 resolution.</div>
 </body>
 </html>
