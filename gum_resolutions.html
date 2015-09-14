@@ -2,27 +2,6 @@
 <!-- saved from url=(0070)http://webrtc.googlecode.com/svn/trunk/samples/js/demos/html/gum1.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Single camera getUserMedia() demo</title>
-<style>
-video {
-    border:5px solid black;
-    width:400px;
-    height:300px;
-}
-button {
-    font: 18px sans-serif;
-    padding: 8px;
-}
-</style>
-</head>
-<body>
-<div> Open the system camera in different resolutions. 
-</div>
-<button id="btn1">320x240</button>
-<button id="btn2">640x480</button>
-<button id="btn3">1280x720</button>
-<button id="btn4">960x720</button>
-<br/>
-
 <script>
 function makeGetStreamX(width, height, button) {
   return function() {
@@ -55,15 +34,24 @@ function getUserMediaError(e) {
   console.assert(false, 'Error during webkitGetUserMedia: '+e);
 }
 
-var btn1 = document.getElementById("btn1");
-var btn2 = document.getElementById("btn2");
-var btn3 = document.getElementById("btn3");
-var btn4 = document.getElementById("btn4");
+function createButton(id, text, onClick){
+    var button = document.createElement("input");
+    button,id = id;
+    button.type = "button";
+    button.value = text;
+    button.onclick = onClick;
+    document.body.appendChild(button);
+}
 
-btn1.onclick = makeGetStreamX(320, 240, btn1);
-btn2.onclick = makeGetStreamX(640, 480, btn2);
-btn3.onclick = makeGetStreamX(1280, 720, btn3);
-btn4.onclick = makeGetStreamX(960, 720, btn4);
+createButton("btn1", "320x240", makeGetStreamX(320, 240, document.getElementById("btn1")));
+createButton("btn2", "640x480", makeGetStreamX(640, 480, document.getElementById("btn2")));
+createButton("btn3", "960x720", makeGetStreamX(960, 720, document.getElementById("btn3")));
+createButton("btn4", "1280x720", makeGetStreamX(1280, 720, document.getElementById("btn4")));
 
 </script>
-</body></html>
+</head>
+
+<body>
+<div> Open the system camera in different resolutions. </div>
+</body>
+</html>

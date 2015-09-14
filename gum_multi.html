@@ -1,23 +1,9 @@
 <!DOCTYPE html>
 <!-- saved from url=(0070)http://webrtc.googlecode.com/svn/trunk/samples/js/demos/html/gum1.html -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Multiple cameras getUserMedia() demo</title>
-<style>
-video { border:5px solid black; width:400px; height:300px; }
-button { font: 18px sans-serif; padding: 8px; }
-</style>
-</head>
-<body>
-  <div>
-    <h1>Test opening all video capture devices</h1>
-    <p>
-    This page lists all Video Capture devices and tries to open each of them in sequence.
-    </p>
-  </div>
-<textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
-<br/>  
-<button id="btn" onclick="capture()">Start Video Capture(s)</button>
-<br/>
 <script>
 var cameraIds = new Array();
 function refreshSources() {
@@ -61,5 +47,18 @@ function getUserMediaError(e) {
 }
 
 </script>
+</head>
+
+<body>
+  <div>
+    <h1>Test opening all video capture devices</h1>
+    <p>
+    This page lists all Video Capture devices and tries to open each of them in sequence.
+    </p>
+  </div>
+  <textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
+  <br/>  
+  <button id="btn" onclick="capture()">Start Video Capture(s)</button>
+  <br/>
 </body>
 </html>
