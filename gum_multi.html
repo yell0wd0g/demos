@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0070)http://webrtc.googlecode.com/svn/trunk/samples/js/demos/html/gum1.html -->
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Multiple cameras getUserMedia() demo</title>
 <script>
+/* global webkitURL */
+/* global MediaStreamTrack */
+
 var cameraIds = new Array();
 function refreshSources() {
   MediaStreamTrack.getSources(function(sourceInfos) {
@@ -21,7 +21,6 @@ function refreshSources() {
     }
   });
 }
-refreshSources();
 
 function capture() {
   console.log("Requesting " + cameraIds.length + " video device(s)");
@@ -32,7 +31,7 @@ function capture() {
     console.log("Requesting getUserMedia: " + JSON.stringify(constraints));
     navigator.webkitGetUserMedia(constraints, gotStream, getUserMediaError); 
   }
-  btn.disabled = true;
+  button.disabled = true;
 }
 function gotStream(stream) {    
   console.log("Got video device");
@@ -46,6 +45,10 @@ function getUserMediaError(e) {
   console.assert(false, 'Error during webkitGetUserMedia: '+ e);
 }
 
+var button = document.createElement("btn");
+button.onclick = capture;
+refreshSources();
+
 </script>
 </head>
 
@@ -58,7 +61,7 @@ function getUserMediaError(e) {
   </div>
   <textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
   <br/>  
-  <button id="btn" onclick="capture()">Start Video Capture(s)</button>
+  <button id="btn">Start all Video Capturer(s)</button>
   <br/>
 </body>
 </html>

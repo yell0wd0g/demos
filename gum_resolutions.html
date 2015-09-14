@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0070)http://webrtc.googlecode.com/svn/trunk/samples/js/demos/html/gum1.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Single camera getUserMedia() demo</title>
 <script>
-function makeGetStreamX(width, height, button) {
+/* global webkitURL */
+
+function makeGetStreamX(width, height, buttonName) {
   return function() {
     var constraintsWidthXHeight = {
       "audio": false,
@@ -18,16 +19,18 @@ function makeGetStreamX(width, height, button) {
       }
     };
     navigator.webkitGetUserMedia(constraintsWidthXHeight, gotStream, getUserMediaError);
-    button.disabled = true;
+    document.getElementById(buttonName).disabled = true;
   };
-};
+}
 
 function gotStream(stream) {
   console.log("Got video device capturing");
-  var video_tag = document.createElement('video');
-  video_tag.src = webkitURL.createObjectURL(stream);
-  document.body.appendChild(video_tag);
-  video_tag.play();
+  var videoTag = document.createElement('video');
+  videoTag.src = webkitURL.createObjectURL(stream);
+  videoTag.height = 180;
+  videoTag.width = 240;
+  document.body.appendChild(videoTag);
+  videoTag.play();
 }
 
 function getUserMediaError(e) {
@@ -35,18 +38,18 @@ function getUserMediaError(e) {
 }
 
 function createButton(id, text, onClick){
-    var button = document.createElement("input");
-    button,id = id;
-    button.type = "button";
-    button.value = text;
-    button.onclick = onClick;
-    document.body.appendChild(button);
+  var button = document.createElement("input");
+  button,id = id;
+  button.type = "button";
+  button.value = text;
+  button.onclick = onClick;
+  document.body.appendChild(button);
 }
 
-createButton("btn1", "320x240", makeGetStreamX(320, 240, document.getElementById("btn1")));
-createButton("btn2", "640x480", makeGetStreamX(640, 480, document.getElementById("btn2")));
-createButton("btn3", "960x720", makeGetStreamX(960, 720, document.getElementById("btn3")));
-createButton("btn4", "1280x720", makeGetStreamX(1280, 720, document.getElementById("btn4")));
+createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1"));
+createButton("btn2", "640x480", makeGetStreamX(640, 480, "btn2"));
+createButton("btn3", "960x720", makeGetStreamX(960, 720, "btn3"));
+createButton("btn4", "1280x720", makeGetStreamX(1280, 720, "btn4"));
 
 </script>
 </head>
