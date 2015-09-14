@@ -8,10 +8,9 @@ Just some html+JS demos to be accessed publicly. Forto access, the easiest way i
 
 For instance:
 
-[htmlpreview.github.io/?https://github.com/Miguelao/demos/blob/master/2cameras.html]
-(htmlpreview.github.io/?https://github.com/Miguelao/demos/blob/master/2cameras.html)
+[htmlpreview.github.io/?https://github.com/Miguelao/demos/blob/master/gum_multi.html]
+(htmlpreview.github.io/?https://github.com/Miguelao/demos/blob/master/gum_multi.html)
 
-or http://goo.gl/qdwf6 :
-
-[htmlpreview.github.io/?https://github.com/Miguelao/demos/blob/master/gum4.html]
-([htmlpreview.github.io/?https://github.com/Miguelao/demos/blob/master/gum4.html)
+with some typical ones shortened :
+- [Single camera multiple resolutions](https://goo.gl/razUHd)
+- [Simultatenous opening of multiple cameras](https://goo.gl/yIa75b)
