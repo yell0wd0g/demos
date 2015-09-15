@@ -5,10 +5,11 @@
 /* global webkitURL */
 /* global MediaRecorder */
 
-var stream
-var recorder
-var receivedBytes = 0;
-  
+var recorder;
+var recordedBytes = [];
+var numRecordedBytes = 0;
+var maxRecordedBytes = 1000000;
+
 function requestVideo() {
     navigator.webkitGetUserMedia({video: true, audio: false},
                                  getUserMediaOkCallback,
@@ -23,11 +24,18 @@ function recorderOnDataAvailable(event) {
   console.assert(event.data.size > 0, 'Recorded data size should be > 0');
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
-  console.log("got " + receivedBytes + "B of data so far");
+  console.log("got " + recordedBytes + "B of data so far");
 
-  receivedBytes += event.data.size;
-  var video = document.getElementById("video");
-  video.src = window.URL.createObjectURL(event.data);
+  numRecordedBytes += event.data.size;
+  if (numRecordedBytes > maxRecordedBytes) {
+    var video = document.getElementById("video");
+    video.src = window.URL.createObjectURL(recordedBytes);
+    recorder.stop();
+  } else {
+    for (var i = 0; i < event.data.size; i++)
+      recordedBytes.push(event.data[i]);
+  }
+  
 }
 
 function recorderOnStop() {
