@@ -4,26 +4,19 @@
 <script type="text/javascript">
 /* global webkitURL */
 /* global MediaRecorder */
-/* global MediaSource */
+/* global Blob */
 
 var recorder;
 var numRecordedBytes = 0;
 
-console.assert(!!(window.MediaSource || window.WebKitMediaSource));
-var ms = new MediaSource();
-var sourceBuffer;
+// Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
+// data in |chunks|, then blobify it and plug the result in a <video> 
+var chunks = [];
 
 function startTheParty() {
-
-  var video = document.querySelector('video');
-  video.src = window.URL.createObjectURL(ms);
-
-  ms.addEventListener('sourceopen', function(e) {
-    sourceBuffer = ms.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
-    navigator.webkitGetUserMedia({video: true, audio: false},
-                                 getUserMediaOkCallback,
-                                 getUserMediaFailedCallback);
-  }, false);  
+  navigator.webkitGetUserMedia({video: true, audio: false},
+                               getUserMediaOkCallback,
+                               getUserMediaFailedCallback);
 }
   
 function getUserMediaFailedCallback(error) {
@@ -36,11 +29,13 @@ function recorderOnDataAvailable(event) {
 
   numRecordedBytes += event.data.size;
   console.log("got " + numRecordedBytes + "B of data so far");
-  sourceBuffer.append(new Uint8Array(event.data));
+  chunks.push(event.data);
 }
 
 function recorderOnStop() {
-  console.error('Recording stopped.');
+  console.log('onstop fired');
+  var blob = new Blob(chunks, { 'type' : 'video/ogv; codecs=opus' });
+   document.getElementById("video").src = window.URL.createObjectURL(blob);
 }
 
 function getUserMediaOkCallback(stream) {
@@ -59,6 +54,16 @@ function getUserMediaOkCallback(stream) {
   console.log("Recorder is started");
   console.assert(recorder.state == "recording");
 }
+
+function createButton(id, text, onClick) {
+  var button = document.createElement("input");
+  button.id = id;
+  button.type = "button";
+  button.value = text;
+  button.onclick = onClick;
+  document.body.appendChild(button);
+}
+createButton("btn", "Stop recording and play back", function() {recorder.stop(); })
 
 startTheParty();
 
