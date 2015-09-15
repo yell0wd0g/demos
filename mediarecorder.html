@@ -12,6 +12,10 @@ var numRecordedBytes = 0;
 // Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
 // data in |chunks|, then blobify it and plug the result in a <video> 
 var chunks = [];
+// The alternative is, e.g. [1], using MediaSource where we basically pass 
+// recorded chunks one by one into a MediaSource associated to a <video>, but 
+// this seems not to be BlobEvent friendly, and instead needs Uint8Arrays.
+// [1] http://html5-demos.appspot.com/static/media-source.html
 
 function startTheParty() {
   navigator.webkitGetUserMedia({video: true, audio: false},
