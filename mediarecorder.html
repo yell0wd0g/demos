@@ -41,6 +41,7 @@ function getUserMediaOkCallback(stream) {
   console.assert(recorder.state == "inactive");
   recorder.ondataavailable = recorderOnDataAvailable;
   recorder.onstop = recorderOnStop;
+  profile("MediaRecorder");
   recorder.start(); 
   console.log("Recorder is started");
   console.assert(recorder.state == "recording");
@@ -57,6 +58,7 @@ function recorderOnDataAvailable(event) {
 
 function recorderOnStop() {
   console.log('recorderOnStop fired');
+  profileEnd("MediaRecorder");
   var blob = new Blob(chunks, { 'type' : 'video/ogv; codecs=opus' });
   document.getElementById("video").src = URL.createObjectURL(blob);
 }
