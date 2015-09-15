@@ -2,7 +2,7 @@
 <html>
 <head>
 <script type="text/javascript">
-/* global webkitURL */
+/* global URL */
 /* global MediaRecorder */
 /* global Blob */
 
@@ -28,6 +28,24 @@ function getUserMediaFailedCallback(error) {
   console.error('User media request denied with error code ' + error.code);
 }
 
+function getUserMediaOkCallback(stream) {
+  console.log("getUserMedia succeeded");
+  document.getElementById("localview").src = URL.createObjectURL(stream);
+
+  try {
+    recorder = new MediaRecorder(stream, "video/vp8");
+  } catch (e) {
+    console.assert(false, 'Exception while creating MediaRecorder: ' + e);
+    return;
+  }
+  console.assert(recorder.state == "inactive");
+  recorder.ondataavailable = recorderOnDataAvailable;
+  recorder.onstop = recorderOnStop;
+  recorder.start(); 
+  console.log("Recorder is started");
+  console.assert(recorder.state == "recording");
+}
+
 function recorderOnDataAvailable(event) {
   console.assert(event.data.size > 0, 'Recorded data size should be > 0');
   console.assert(recorder.state == "recording", "State should be 'recording'");
@@ -38,26 +56,15 @@ function recorderOnDataAvailable(event) {
 }
 
 function recorderOnStop() {
-  console.log('onstop fired');
+  console.log('recorderOnStop fired');
   var blob = new Blob(chunks, { 'type' : 'video/ogv; codecs=opus' });
-   document.getElementById("video").src = window.URL.createObjectURL(blob);
+  document.getElementById("video").src = window.URL.createObjectURL(blob);
 }
 
-function getUserMediaOkCallback(stream) {
-  console.log("getUserMedia succeeded");
-  document.getElementById("localview").src = webkitURL.createObjectURL(stream);
-
-  try {
-    recorder = new MediaRecorder(stream, "video/vp8");
-  } catch (e) {
-    console.assert(false, 'Exception while creating MediaRecorder: ' + e);
-  }
-  console.assert(recorder.state == "inactive");
-  recorder.ondataavailable = recorderOnDataAvailable;
-  recorder.onstop = recorderOnStop;
-  recorder.start(); 
-  console.log("Recorder is started");
-  console.assert(recorder.state == "recording");
+function stopStreamsAndPlaybackData() {
+  console.log('Stopping record and starting playback');
+  recorder.stop();
+  document.getElementById("btn").disabled = true;
 }
 
 function createButton(id, text, onClick) {
@@ -68,14 +75,15 @@ function createButton(id, text, onClick) {
   button.onclick = onClick;
   document.body.appendChild(button);
 }
-createButton("btn", "Stop recording and play back", function() {recorder.stop(); })
+createButton("btn", "Stop recording and play back", stopStreamsAndPlaybackData);
 
 startTheParty();
 
 </script>
 </head>
 <body>
-  <video width="320" height="240" id="video" autoplay="autoplay"></video>
+  <video width="320" height="240" id="video" autoplay="autoplay" controls="true"></video>
   <video width="80" height="60" id="localview" autoplay="autoplay"></video>
+  </br>
 </body>
 </html>
