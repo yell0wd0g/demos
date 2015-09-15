@@ -36,7 +36,7 @@ function recorderOnStop() {
 
 function getUserMediaOkCallback(stream) {
   console.log("getUserMedia succeeded");
-  document.getElementById("view1").src = webkitURL.createObjectURL(stream);
+  document.getElementById("localview").src = webkitURL.createObjectURL(stream);
 
   try {
     recorder = new MediaRecorder(stream, "video/vp8");
@@ -55,5 +55,6 @@ function getUserMediaOkCallback(stream) {
 </head>
 <body onload="requestVideo();">
   <video width="320" height="240" id="video" autoplay="autoplay"></video>
+  <video width="80" height="60" id="localview" autoplay="autoplay"></video>
 </body>
 </html>
