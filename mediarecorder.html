@@ -13,11 +13,18 @@ console.assert(!!(window.MediaSource || window.WebKitMediaSource));
 var ms = new MediaSource();
 var sourceBuffer;
 
-function requestVideo() {
+function startTheParty() {
+
+  var video = document.querySelector('video');
+  video.src = window.URL.createObjectURL(ms);
+
+  ms.addEventListener('sourceopen', function(e) {
+    sourceBuffer = ms.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
     navigator.webkitGetUserMedia({video: true, audio: false},
                                  getUserMediaOkCallback,
                                  getUserMediaFailedCallback);
-  }
+  }, false);  
+}
   
 function getUserMediaFailedCallback(error) {
   console.error('User media request denied with error code ' + error.code);
@@ -36,11 +43,6 @@ function recorderOnStop() {
   console.error('Recording stopped.');
 }
 
-function onSourceOpen(e) {
-  // this.readyState === 'open'. Add source buffer that expects webm chunks.
-  sourceBuffer = ms.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
-}
-
 function getUserMediaOkCallback(stream) {
   console.log("getUserMedia succeeded");
   document.getElementById("localview").src = webkitURL.createObjectURL(stream);
@@ -53,23 +55,16 @@ function getUserMediaOkCallback(stream) {
   console.assert(recorder.state == "inactive");
   recorder.ondataavailable = recorderOnDataAvailable;
   recorder.onstop = recorderOnStop;
-  
-  
-  window.MediaSource = window.MediaSource || window.WebKitMediaSource;
-  ms.addEventListener('webkitsourceopen', onSourceOpen.bind(ms), false);
-  // Use MediaSource to supply video data.
-  var video = document.querySelector('video');
-  video.src = window.URL.createObjectURL(ms); // blob URL pointing to the MediaSource.
-
-
   recorder.start(); 
   console.log("Recorder is started");
   console.assert(recorder.state == "recording");
 }
 
+startTheParty();
+
 </script>
 </head>
-<body onload="requestVideo();">
+<body>
   <video width="320" height="240" id="video" autoplay="autoplay"></video>
   <video width="80" height="60" id="localview" autoplay="autoplay"></video>
 </body>
