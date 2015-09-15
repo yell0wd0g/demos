@@ -4,11 +4,14 @@
 <script type="text/javascript">
 /* global webkitURL */
 /* global MediaRecorder */
+/* global MediaSource */
 
 var recorder;
-var recordedBytes = [];
 var numRecordedBytes = 0;
-var maxRecordedBytes = 1000000;
+
+console.assert(!!(window.MediaSource || window.WebKitMediaSource));
+var ms = new MediaSource();
+var sourceBuffer;
 
 function requestVideo() {
     navigator.webkitGetUserMedia({video: true, audio: false},
@@ -25,21 +28,16 @@ function recorderOnDataAvailable(event) {
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
   console.log("got " + numRecordedBytes + "B of data so far");
-
-  numRecordedBytes += event.data.size;
-  if (numRecordedBytes > maxRecordedBytes) {
-    var video = document.getElementById("video");
-    video.src = window.URL.createObjectURL(recordedBytes);
-    recorder.stop();
-  } else {
-    for (var i = 0; i < event.data.size; i++)
-      recordedBytes.push(event.data[i]);
-  }
-  
+  sourceBuffer.append(event.data);
 }
 
 function recorderOnStop() {
   console.error('Recording stopped.');
+}
+
+function onSourceOpen(e) {
+  // this.readyState === 'open'. Add source buffer that expects webm chunks.
+  sourceBuffer = ms.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
 }
 
 function getUserMediaOkCallback(stream) {
@@ -54,6 +52,15 @@ function getUserMediaOkCallback(stream) {
   console.assert(recorder.state == "inactive");
   recorder.ondataavailable = recorderOnDataAvailable;
   recorder.onstop = recorderOnStop;
+  
+  
+  window.MediaSource = window.MediaSource || window.WebKitMediaSource;
+  ms.addEventListener('webkitsourceopen', onSourceOpen.bind(ms), false);
+  // Use MediaSource to supply video data.
+  var video = document.querySelector('video');
+  video.src = window.URL.createObjectURL(ms); // blob URL pointing to the MediaSource.
+
+
   recorder.start(); 
   console.log("Recorder is started");
   console.assert(recorder.state == "recording");
