@@ -59,7 +59,7 @@ function getUserMediaFailedCallback(error) {
 
 function getUserMediaOkCallback(stream) {
   console.log("getUserMedia succeeded");
-  document.getElementById("localview").src = URL.createObjectURL(stream);
+  document.body.getElementById("localview").src = URL.createObjectURL(stream);
   createButton("btn", "Stop recording and play back", stopStreamsAndPlaybackData);
 
   try {
@@ -94,11 +94,11 @@ function recorderOnStop() {
 }
 
 function stopStreamsAndPlaybackData() {
-  document.getElementById("btn").disabled = true;
+  document.body.getElementById("btn").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
   mediaSource.endOfStream()
-  document.getElementById("localview").muted = true;
+  document.body.getElementById("localview").muted = true;
 }
 
 function startTheParty() {
