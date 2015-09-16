@@ -25,7 +25,6 @@ function mediaSourceOpened(e) {
   sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
 };
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
-mediaSource.addEventListener('webkitsourceopen', mediaSourceOpened, false);
 
 function createButton(id, text, onClick) {
   const button = document.createElement("input");
