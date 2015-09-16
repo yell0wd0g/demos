@@ -52,7 +52,11 @@ function recorderOnDataAvailable(event) {
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
   numRecordedBytes += event.data.size;
-  chunks.push(event.data);
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    chunks.push(reader.result);
+  }; 
+  reader.readAsArrayBuffer(event.data);
 }
 
 function recorderOnStop() {
@@ -65,10 +69,11 @@ function stopStreamsAndPlaybackData() {
   document.getElementById("btn").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
+  document.getElementById("localview").muted = true;
 }
 
 function createButton(id, text, onClick) {
-  var button = document.createElement("input");
+  const button = document.createElement("input");
   button.id = id;
   button.type = "button";
   button.value = text;
