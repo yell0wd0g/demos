@@ -10,22 +10,13 @@ var recorder;
 var numRecordedBytes = 0;
 
 // Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
-// data in |chunks|, then blobify it and plug the result in a <video> .
-// This does not seem to work.
-//
+// data in |chunks|, then blobify it and plug the result in a <video> 
+var chunks = [];
 // The alternative is, e.g. [1, 2], using MediaSource where we basically pass 
 // recorded chunks one by one into a MediaSource associated to a <video>, but 
 // this seems not to be BlobEvent friendly, and instead needs Uint8Arrays.
 // [1] http://html5-demos.appspot.com/static/media-source.html
 // [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
-var ms = new MediaSource();
-var sourceBuffer;
-ms.addEventListener('sourceopen', 
-                    function(e) {
-                      sourceBuffer = ms.addSourceBuffer('video/webm; codecs="vp8"');
-                    }, false);
-var video = document.querySelector('video');
-video.src = window.URL.createObjectURL(ms);
 
 function startTheParty() {
   navigator.webkitGetUserMedia({video: true, audio: false},
@@ -64,13 +55,15 @@ function recorderOnDataAvailable(event) {
   numRecordedBytes += event.data.size;
   var reader = new FileReader();
   reader.onload = function(e) {
-    sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
+    chunks.push(reader.result);
   }; 
   reader.readAsArrayBuffer(event.data);
 }
 
 function recorderOnStop() {
   console.log('recorderOnStop fired');
+  var blob = new Blob(chunks, { 'type' : 'video/ogv; codecs=opus' });
+  document.getElementById("video").src = URL.createObjectURL(blob);
 }
 
 function stopStreamsAndPlaybackData() {
