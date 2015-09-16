@@ -27,6 +27,8 @@ function mediaSourceOpened(e) {
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
 
 function createButton(id, text, onClick) {
+  if(document.body == null)
+    return;
   const button = document.createElement("input");
   button.id = id;
   button.type = "button";
@@ -37,7 +39,8 @@ function createButton(id, text, onClick) {
 }
 
 function createVideoTag(id, width, height, video_source) {
-  const videoTag = document.createElement('video');
+  if(document.body == null)
+    return;  const videoTag = document.createElement('video');
   //videoTag.src = window.URL.createObjectURL(video_source);
   if (video_source)
     videoTag.src = URL.createObjectURL(video_source);
