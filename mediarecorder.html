@@ -61,7 +61,7 @@ function getUserMediaFailedCallback(error) {
 }
 
 function getUserMediaOkCallback(stream) {
-  console.log("getUserMedia succeeded");
+  console.log("getUserMedia succeeded :)");
   document.body.getElementById("localview").src = URL.createObjectURL(stream);
   createButton("btn", "Stop recording and play back", stopStreamsAndPlaybackData);
 
