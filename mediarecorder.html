@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+</head>
+<body>
 <script type="text/javascript">
 /* global MediaRecorder */
 /* global MediaSource */
@@ -36,7 +38,6 @@ function createButton(id, text, onClick) {
   document.body.appendChild(button);
   console.log("Button " + id + " created");
 }
-createButton("btn", "Stop recording and play back", stopStreamsAndPlaybackData);
 
 function createVideoTag(id, width, height, video_source) {
   const videoTag = document.createElement('video');
@@ -50,7 +51,9 @@ function createVideoTag(id, width, height, video_source) {
   console.log("VideoTag " + id + " created");
 }
 createVideoTag('video', 320, 240, mediaSource);
+document.body.appendChild(document.createElement("br"));
 createVideoTag('localview', 80, 60, '');
+document.body.appendChild(document.createElement("br"));
 
 ////////////////////////////////////////////////////////////////////////////////
 function getUserMediaFailedCallback(error) {
@@ -60,6 +63,7 @@ function getUserMediaFailedCallback(error) {
 function getUserMediaOkCallback(stream) {
   console.log("getUserMedia succeeded");
   document.getElementById("localview").src = URL.createObjectURL(stream);
+  createButton("btn", "Stop recording and play back", stopStreamsAndPlaybackData);
 
   try {
     recorder = new MediaRecorder(stream, "video/vp8");
@@ -106,9 +110,6 @@ function startTheParty() {
                                getUserMediaFailedCallback);
 }
 createButton("btn", "Start recording", startTheParty);
-
 </script>
-</head>
-<body>
 </body>
 </html>
