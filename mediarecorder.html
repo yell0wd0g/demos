@@ -93,6 +93,7 @@ function recorderOnDataAvailable(event) {
   numRecordedBytes += event.data.size;
   var reader = new FileReader();
   reader.onload = function(e) {
+    console.log('Stuffing some data');
     sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
   }; 
   reader.readAsArrayBuffer(event.data);
