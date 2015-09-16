@@ -2,9 +2,9 @@
 <html>
 <head>
 <script type="text/javascript">
-/* global URL */
 /* global MediaRecorder */
-/* global Blob */
+/* global MediaSource */
+/* global URL */
 
 var recorder;
 var numRecordedBytes = 0;
@@ -18,21 +18,41 @@ var numRecordedBytes = 0;
 // this seems not to be BlobEvent friendly, and instead needs Uint8Arrays.
 // [1] http://html5-demos.appspot.com/static/media-source.html
 // [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
-var ms = new MediaSource();
+var mediaSource = new MediaSource();
 var sourceBuffer;
-ms.addEventListener('sourceopen', 
-                    function(e) {
-                      sourceBuffer = ms.addSourceBuffer('video/webm; codecs="vp8"');
-                    }, false);
-var video = document.querySelector('video');
-video.src = window.URL.createObjectURL(ms);
+function mediaSourceOpened(e) {
+  console.log('MediaSource opened correctly');
+  sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
+};
+mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
+mediaSource.addEventListener('webkitsourceopen', mediaSourceOpened, false);
 
-function startTheParty() {
-  navigator.webkitGetUserMedia({video: true, audio: false},
-                               getUserMediaOkCallback,
-                               getUserMediaFailedCallback);
+function createButton(id, text, onClick) {
+  const button = document.createElement("input");
+  button.id = id;
+  button.type = "button";
+  button.value = text;
+  button.onclick = onClick;
+  document.body.appendChild(button);
+  console.log("Button " + id + " created");
 }
-  
+createButton("btn", "Stop recording and play back", stopStreamsAndPlaybackData);
+
+function createVideoTag(id, width, height, video_source) {
+  const videoTag = document.createElement('video');
+  //videoTag.src = window.URL.createObjectURL(video_source);
+  if (video_source)
+    videoTag.src = URL.createObjectURL(video_source);
+  videoTag.height = 180;
+  videoTag.width = 240;
+  document.body.appendChild(videoTag);
+  videoTag.play();
+  console.log("VideoTag " + id + " created");
+}
+createVideoTag('video', 320, 240, mediaStream);
+createVideoTag('localview', 80, 60, '');
+
+////////////////////////////////////////////////////////////////////////////////
 function getUserMediaFailedCallback(error) {
   console.error('User media request denied with error code ' + error.code);
 }
@@ -60,7 +80,6 @@ function recorderOnDataAvailable(event) {
     console.assert(event.data.size > 0, 'Recorded data size should be > 0');
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
-  console.log(event.type);
   numRecordedBytes += event.data.size;
   var reader = new FileReader();
   reader.onload = function(e) {
@@ -77,26 +96,19 @@ function stopStreamsAndPlaybackData() {
   document.getElementById("btn").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
+  mediaSource.endOfStream()
   document.getElementById("localview").muted = true;
 }
 
-function createButton(id, text, onClick) {
-  const button = document.createElement("input");
-  button.id = id;
-  button.type = "button";
-  button.value = text;
-  button.onclick = onClick;
-  document.body.appendChild(button);
+function startTheParty() {
+  navigator.webkitGetUserMedia({video: true, audio: false},
+                               getUserMediaOkCallback,
+                               getUserMediaFailedCallback);
 }
-createButton("btn", "Stop recording and play back", stopStreamsAndPlaybackData);
-
-startTheParty();
+createButton("btn", "Start recording", startTheParty);
 
 </script>
 </head>
 <body>
-  <video width="320" height="240" id="video" autoplay="autoplay" controls="true"></video>
-  <video width="80" height="60" id="localview" autoplay="autoplay"></video>
-  </br>
 </body>
 </html>
