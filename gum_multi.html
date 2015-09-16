@@ -1,6 +1,15 @@
 <!DOCTYPE html>
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Multiple cameras getUserMedia() demo</title>
+</head>
+
+<body>
+  <div> This page lists all Video Capture devices and tries to open each of them in sequence. </div>
+  <textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
+  <br/>
+</body>
 <script>
 /* global webkitURL */
 /* global MediaStreamTrack */
@@ -57,11 +66,4 @@ createButton("btn", "Start all Video Capturer(s)", capture)
 refreshSources();
 
 </script>
-</head>
-
-<body>
-  <div> This page lists all Video Capture devices and tries to open each of them in sequence. </div>
-  <textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
-  <br/>
-</body>
 </html>
