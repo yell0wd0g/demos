@@ -8,11 +8,13 @@
 </body>
 
 <script>
+/* global Blob */
 /* global MediaRecorder */
 /* global MediaSource */
 /* global URL */
 
 var recorder;
+var theStream;
 
 // Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
 // data in |chunks|, then blobify it and plug the result in a <video> .
@@ -69,6 +71,7 @@ function getUserMediaFailedCallback(error) {
 
 function getUserMediaOkCallback(stream) {
   console.log("getUserMedia succeeded :)");
+  theStream = stream;
   document.getElementById("localview").src = URL.createObjectURL(stream);
   createButton("btn2", "Stop recording and play back", stopStreamsAndPlaybackData);
 
@@ -105,8 +108,8 @@ function stopStreamsAndPlaybackData() {
   document.getElementById("btn2").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
-  document.getElementById("localview").muted = true;
 
+  theStream.getVideoTracks()[0].stop();
   
   // sourceBuffer.appendBuffer(recordedBytes);
   // Or...
