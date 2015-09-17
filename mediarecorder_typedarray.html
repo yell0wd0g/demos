@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>MediaStream Recoder demo (w/ MediaSource and UInt8Array)</title>
+</head>
+<body>
+</body>
+
+<script>
+/* global MediaRecorder */
+/* global MediaSource */
+/* global URL */
+
+var recorder;
+var numRecordedBytes = 0;
+
+// Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
+// data in |chunks|, then blobify it and plug the result in a <video> .
+// This does not seem to work.
+//
+// The alternative is, e.g. [1, 2], using MediaSource where we basically pass 
+// recorded chunks one by one into a MediaSource associated to a <video>.
+// MediaRecorder supposedly produces BlobEvents and Blobs are not friendly to 
+// MediaSource-SourceBuffer, so there's an Experimental CL sending stuff as 
+// an Uint8ArrayEvent.
+//
+// [1] http://html5-demos.appspot.com/static/media-source.html
+// [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
+
+var mediaSource = new MediaSource();
+var sourceBuffer;
+function mediaSourceOpened(e) {
+  console.log('MediaSource opened correctly');
+  sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
+};
+mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
+
+function createButton(id, text, onClick) {
+  if(document.body == null)
+    return;
+  const button = document.createElement("input");
+  button.id = id;
+  button.type = "button";
+  button.value = text;
+  button.onclick = onClick;
+  document.body.appendChild(button);
+  console.log("Button " + id + " created");
+}
+
+function createVideoTag(id, width, height, video_source) {
+  if(document.body == null)
+    return;  const videoTag = document.createElement('video');
+  //videoTag.src = window.URL.createObjectURL(video_source);
+  if (video_source)
+    videoTag.src = URL.createObjectURL(video_source);
+  videoTag.id = id;
+  videoTag.height = 180;
+  videoTag.width = 240;
+  document.body.appendChild(videoTag);
+  videoTag.play();
+  console.log("VideoTag " + id + " created");
+}
+createVideoTag('localview', 80, 60, '');
+createVideoTag('video', 320, 240, mediaSource);
+document.body.appendChild(document.createElement("br"));
+
+////////////////////////////////////////////////////////////////////////////////
+function getUserMediaFailedCallback(error) {
+  console.error('User media request denied with error code ' + error.code);
+}
+
+function getUserMediaOkCallback(stream) {
+  console.log("getUserMedia succeeded :)");
+  document.getElementById("localview").src = URL.createObjectURL(stream);
+  createButton("btn2", "Stop recording and play back", stopStreamsAndPlaybackData);
+
+  try {
+    recorder = new MediaRecorder(stream, "video/vp8");
+  } catch (e) {
+    console.assert(false, 'Exception while creating MediaRecorder: ' + e);
+    return;
+  }
+  console.assert(recorder.state == "inactive");
+  recorder.ondataavailable = recorderOnDataAvailable;
+  recorder.onstop = recorderOnStop;
+  recorder.start(); 
+  console.log("Recorder is started");
+  console.assert(recorder.state == "recording");
+}
+
+function recorderOnDataAvailable(event) {
+  if (event)
+    console.assert(event.data.length > 0, 'Recorded data size should be > 0');
+  console.assert(recorder.state == "recording", "State should be 'recording'");
+
+  numRecordedBytes += event.data.size;
+  sourceBuffer.appendBuffer(event.data);
+}
+
+function recorderOnStop() {
+  console.log('recorderOnStop fired');
+}
+
+function stopStreamsAndPlaybackData() {
+  document.getElementById("btn").disabled = true;
+  document.getElementById("btn2").disabled = true;
+  console.log('Stopping record and starting playback');
+  recorder.stop();
+  mediaSource.endOfStream()
+  document.getElementById("localview").muted = true;
+}
+
+function startTheParty() {
+  navigator.webkitGetUserMedia({video: true, audio: false},
+                               getUserMediaOkCallback,
+                               getUserMediaFailedCallback);
+}
+createButton("btn", "Start recording", startTheParty);
+</script>
+</html>
