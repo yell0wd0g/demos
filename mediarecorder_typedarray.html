@@ -58,7 +58,7 @@ function createVideoTag(id, width, height, video_source) {
   videoTag.height = 180;
   videoTag.width = 240;
   document.body.appendChild(videoTag);
-  videoTag.play();
+  videoTag.autoplay = true;
   console.log("VideoTag " + id + " created");
 }
 createVideoTag('localview', 80, 60, '');
