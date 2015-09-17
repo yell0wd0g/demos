@@ -104,20 +104,42 @@ function recorderOnStop() {
 }
 
 
+var downloadFile = function() {
+  var bb = new Blob([typer.textContent], {type: "video/webm"});
 
-var saveByteArray = (function () {
+  var a = document.createElement('a');
+  a.download = container.querySelector('input[type="text"]').value;
+  a.href = window.URL.createObjectURL(bb);
+  a.textContent = 'Download ready';
+
+  a.dataset.downloadurl = [MIME_TYPE, a.download, a.href].join(':');
+  a.draggable = true; // Don't really need, but good practice.
+  a.classList.add('dragout');
+
+  output.appendChild(a);
+
+  a.onclick = function(e) {
+    if ('disabled' in this.dataset) {
+      return false;
+    }
+
+    cleanUp(this);
+  };
+};
+
+function saveByteArray(data, name) {
     var a = document.createElement("a");
     document.body.appendChild(a);
     a.style = "display: none";
     return function (data, name) {
-        var blob = new Blob(data, {type: "octet/stream"}),
-            url = window.URL.createObjectURL(blob);
+        var blob = new Blob(data, {type: "video/webm"}),
+        url = window.URL.createObjectURL(blob);
         a.href = url;
         a.download = name;
         a.click();
         window.URL.revokeObjectURL(url);
     };
-}());
+};
 
 
 
@@ -134,7 +156,7 @@ function stopStreamsAndPlaybackData() {
   // var superBuffer = new Blob(recordedBytes);
   // document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
   // Or ...
-  saveByteArray([recordedBytes], 'test.webm');
+  saveByteArray(recordedBytes, 'test.webm')();
 }
 
 function startTheParty() {
