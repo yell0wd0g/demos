@@ -93,6 +93,7 @@ function recorderOnDataAvailable(event) {
 
   recordedBytes.set(event.data, numRecordedBytes);
   numRecordedBytes += event.data.length;
+  console.log("current length is " + numRecordedBytes + " or " + recordedBytes.length);
 }
 
 function recorderOnStop() {
