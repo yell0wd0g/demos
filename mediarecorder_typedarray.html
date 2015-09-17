@@ -49,7 +49,7 @@ function createButton(id, text, onClick) {
 
 function createVideoTag(id, width, height, video_source) {
   const videoTag = document.createElement('video');
-  if (video_source)
+  if (video_source != '')
     videoTag.src = URL.createObjectURL(video_source);
   videoTag.id = id;
   videoTag.height = height;
