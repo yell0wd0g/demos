@@ -103,6 +103,24 @@ function recorderOnStop() {
   console.log('recorderOnStop fired');
 }
 
+
+
+var saveByteArray = (function () {
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    return function (data, name) {
+        var blob = new Blob(data, {type: "octet/stream"}),
+            url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = name;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+}());
+
+
+
 function stopStreamsAndPlaybackData() {
   document.getElementById("btn").disabled = true;
   document.getElementById("btn2").disabled = true;
@@ -113,8 +131,10 @@ function stopStreamsAndPlaybackData() {
   
   // sourceBuffer.appendBuffer(recordedBytes);
   // Or...
-  var superBuffer = new Blob(recordedBytes);
-  document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
+  // var superBuffer = new Blob(recordedBytes);
+  // document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
+  // Or ...
+  saveByteArray([recordedBytes], 'test.webm');
 }
 
 function startTheParty() {
