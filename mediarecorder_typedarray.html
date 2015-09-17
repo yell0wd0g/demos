@@ -91,7 +91,7 @@ function recorderOnDataAvailable(event) {
     console.assert(event.data.length > 0, 'Recorded data size should be > 0');
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
-  console.log("Recorded " + recordedBytes.length + "B @ position " + numRecordedBytes);
+  console.log("Recorded " + event.data.byteLength + "B @ position " + numRecordedBytes);
 
   recordedBytes.set(event.data, numRecordedBytes);
   numRecordedBytes += event.data.byteLength;
