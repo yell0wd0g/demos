@@ -91,8 +91,7 @@ function recorderOnDataAvailable(event) {
     console.assert(event.data.length > 0, 'Recorded data size should be > 0');
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
-  console.log("Recorded " + event.data.byteLength + "B @ position " + numRecordedBytes);
-
+  // Use |byteLength| instead of |length| for event.data;
   recordedBytes.set(event.data, numRecordedBytes);
   numRecordedBytes += event.data.byteLength;
 }
@@ -106,8 +105,13 @@ function stopStreamsAndPlaybackData() {
   document.getElementById("btn2").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
-  sourceBuffer.appendBuffer(recordedBytes);
   document.getElementById("localview").muted = true;
+
+  
+  // sourceBuffer.appendBuffer(recordedBytes);
+  // Or...
+  var superBuffer = new Blob(recordedBytes);
+  document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
 }
 
 function startTheParty() {
