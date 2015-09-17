@@ -13,7 +13,6 @@
 /* global URL */
 
 var recorder;
-var numRecordedBytes = 0;
 
 // Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
 // data in |chunks|, then blobify it and plug the result in a <video> .
@@ -27,18 +26,18 @@ var numRecordedBytes = 0;
 //
 // [1] http://html5-demos.appspot.com/static/media-source.html
 // [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
+var recordedBytes = new Uint8Array(1000000);
+var numRecordedBytes = 0;
 
 var mediaSource = new MediaSource();
 var sourceBuffer;
 function mediaSourceOpened(e) {
   console.log('MediaSource opened correctly');
   sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
-};
+}
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
 
 function createButton(id, text, onClick) {
-  if(document.body == null)
-    return;
   const button = document.createElement("input");
   button.id = id;
   button.type = "button";
@@ -49,9 +48,7 @@ function createButton(id, text, onClick) {
 }
 
 function createVideoTag(id, width, height, video_source) {
-  if(document.body == null)
-    return;  const videoTag = document.createElement('video');
-  //videoTag.src = window.URL.createObjectURL(video_source);
+  const videoTag = document.createElement('video');
   if (video_source)
     videoTag.src = URL.createObjectURL(video_source);
   videoTag.id = id;
@@ -94,8 +91,8 @@ function recorderOnDataAvailable(event) {
     console.assert(event.data.length > 0, 'Recorded data size should be > 0');
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
-  numRecordedBytes += event.data.size;
-  sourceBuffer.appendBuffer(event.data);
+  recordedBytes.set(event.data, numRecordedBytes);
+  numRecordedBytes += event.data.length;
 }
 
 function recorderOnStop() {
@@ -107,7 +104,7 @@ function stopStreamsAndPlaybackData() {
   document.getElementById("btn2").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
-  mediaSource.endOfStream()
+  sourceBuffer.appendBuffer(recordedBytes);
   document.getElementById("localview").muted = true;
 }
 
