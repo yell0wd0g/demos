@@ -94,7 +94,7 @@ function recorderOnDataAvailable(event) {
     console.assert(event.data.length > 0, 'Recorded data size should be > 0');
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
-  if (event.data.byteLength < 10)
+  if (event.data.byteLength < 100)
     console.log("data: " + event.data);
 
   // Use |byteLength| instead of |length| for event.data;
