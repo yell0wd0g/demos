@@ -51,8 +51,8 @@ function createVideoTag(id, width, height, video_source) {
   if (video_source)
     videoTag.src = URL.createObjectURL(video_source);
   videoTag.id = id;
-  videoTag.height = 180;
-  videoTag.width = 240;
+  videoTag.height = height;
+  videoTag.width = width;
   document.body.appendChild(videoTag);
   videoTag.play();
   console.log("VideoTag " + id + " created");
