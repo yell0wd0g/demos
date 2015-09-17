@@ -28,7 +28,7 @@ var theStream;
 //
 // [1] http://html5-demos.appspot.com/static/media-source.html
 // [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
-var recordedBytes = new Uint8Array(1000000);
+var recordedBytes = [];
 var numRecordedBytes = 0;
 
 var mediaSource = new MediaSource();
@@ -98,7 +98,7 @@ function recorderOnDataAvailable(event) {
     console.log("data: " + event.data);
 
   // Use |byteLength| instead of |length| for event.data;
-  recordedBytes.set(event.data, numRecordedBytes);
+  recordedBytes.push(event.data);
   numRecordedBytes += event.data.byteLength;
 }
 
