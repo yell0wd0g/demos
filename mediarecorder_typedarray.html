@@ -123,12 +123,12 @@ function stopStreamsAndPlaybackData() {
 
   theStream.getVideoTracks()[0].stop();
   
-  // sourceBuffer.appendBuffer(recordedBytes);
+  sourceBuffer.appendBuffer(recordedBytes);
   // Or...
   // var superBuffer = new Blob(recordedBytes);
   // document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
   // Or ...
-  saveByteArray(recordedBytes, 'test.webm')();
+  // saveByteArray(recordedBytes, 'test.webm')();
 }
 
 function startTheParty() {
