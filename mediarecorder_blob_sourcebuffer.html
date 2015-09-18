@@ -7,6 +7,7 @@
 <body>
 </body>
 
+<script type="text/javascript" src="mustard_dimsum.js"></script>
 <script>
 /* global Blob */
 /* global MediaRecorder */
@@ -29,37 +30,8 @@ var sourceBuffer;
 function mediaSourceOpened(e) {
   console.log('MediaSource opened correctly');
   sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
-};
+}
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
-
-function createButton(id, text, onClick) {
-  if(document.body == null)
-    return;
-  const button = document.createElement("input");
-  button.id = id;
-  button.type = "button";
-  button.value = text;
-  button.onclick = onClick;
-  document.body.appendChild(button);
-  console.log("Button " + id + " created");
-}
-
-function createVideoTag(id, width, height, video_source) {
-  if(document.body == null)
-    return;  const videoTag = document.createElement('video');
-  //videoTag.src = window.URL.createObjectURL(video_source);
-  if (video_source)
-    videoTag.src = URL.createObjectURL(video_source);
-  videoTag.id = id;
-  videoTag.height = height;
-  videoTag.width = width;
-  document.body.appendChild(videoTag);
-  videoTag.play();
-  console.log("VideoTag " + id + " created");
-}
-createVideoTag('localview', 80, 60, '');
-createVideoTag('video', 320, 240, mediaSource);
-document.body.appendChild(document.createElement("br"));
 
 ////////////////////////////////////////////////////////////////////////////////
 function getUserMediaFailedCallback(error) {
@@ -93,6 +65,7 @@ function recorderOnDataAvailable(event) {
   numRecordedBytes += event.data.size;
   var reader = new FileReader();
   reader.onload = function(e) {
+    console.log('Stuffing some data');
     sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
   }; 
   reader.readAsArrayBuffer(Blob(event.data));
@@ -107,7 +80,7 @@ function stopStreamsAndPlaybackData() {
   document.getElementById("btn2").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
-  mediaSource.endOfStream()
+  mediaSource.endOfStream();
   document.getElementById("localview").muted = true;
 }
 
@@ -116,6 +89,10 @@ function startTheParty() {
                                getUserMediaOkCallback,
                                getUserMediaFailedCallback);
 }
+createVideoTag('localview', 80, 60, '');
+createVideoTag('video', 320, 240, mediaSource);
+document.body.appendChild(document.createElement("br"));
+
 createButton("btn", "Start recording", startTheParty);
 </script>
 </html>
