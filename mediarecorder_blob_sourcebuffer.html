@@ -17,12 +17,9 @@
 var recorder;
 var numRecordedBytes = 0;
 
-// Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
-// data in |chunks|, then blobify it and plug the result in a <video> .
-//
-// The alternative is, e.g. [1, 2], using MediaSource where we basically pass 
-// recorded chunks one by one into a MediaSource associated to a <video>, but 
-// this seems not to be BlobEvent friendly, and instead needs Uint8Arrays.
+// This sub-demo uses MediaSource [1, 2], basically we accumulate recorded 
+// chunks one by one into a SourceBuffer. This SourceBuffer is associated to a
+// MediaSource that feeds a a <video> tag.
 // [1] http://html5-demos.appspot.com/static/media-source.html
 // [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
 var mediaSource = new MediaSource();
@@ -66,7 +63,7 @@ function recorderOnDataAvailable(event) {
   var reader = new FileReader();
   reader.onload = function(e) {
     console.log('Stuffing some data');
-    sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
+    sourceBuffer.appendBuffer(e.target.result);
   }; 
   reader.readAsArrayBuffer(Blob(event.data));
 }
