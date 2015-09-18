@@ -18,7 +18,6 @@ var numRecordedBytes = 0;
 
 // Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
 // data in |chunks|, then blobify it and plug the result in a <video> .
-// This does not seem to work.
 //
 // The alternative is, e.g. [1, 2], using MediaSource where we basically pass 
 // recorded chunks one by one into a MediaSource associated to a <video>, but 
@@ -94,7 +93,6 @@ function recorderOnDataAvailable(event) {
   numRecordedBytes += event.data.size;
   var reader = new FileReader();
   reader.onload = function(e) {
-    console.log('Stuffing some data');
     sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
   }; 
   reader.readAsArrayBuffer(Blob(event.data));

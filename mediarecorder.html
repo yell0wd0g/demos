@@ -18,7 +18,6 @@ var theStream;
 
 // Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
 // data in |chunks|, then blobify it and plug the result in a <video> .
-// This does not seem to work.
 //
 // The alternative is, e.g. [1, 2], using MediaSource where we basically pass 
 // recorded chunks one by one into a MediaSource associated to a <video>.
@@ -28,8 +27,8 @@ var theStream;
 //
 // [1] http://html5-demos.appspot.com/static/media-source.html
 // [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
-var recordedBytes = [];
-var numRecordedBytes = 0;
+var recordedChunks = [];
+var numrecordedChunks = 0;
 
 var mediaSource = new MediaSource();
 var sourceBuffer;
@@ -96,8 +95,8 @@ function recorderOnDataAvailable(event) {
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
   // Use |byteLength| instead of |length| for event.data;
-  recordedBytes.push(event.data);
-  numRecordedBytes += event.data.byteLength;
+  recordedChunks.push(event.data);
+  numrecordedChunks += event.data.byteLength;
 }
 
 function recorderOnStop() {
@@ -123,9 +122,9 @@ function stopStreamsAndPlaybackData() {
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
   
-  // sourceBuffer.appendBuffer(recordedBytes);
+  // sourceBuffer.appendBuffer(recordedChunks);
   // Or...
-  var superBuffer = new Blob(recordedBytes);
+  var superBuffer = new Blob(recordedChunks);
   document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
 }
 
@@ -137,7 +136,7 @@ function stopStreamsAndDownloadData() {
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
   
-  saveByteArray(recordedBytes, 'test.webm')();
+  saveByteArray(recordedChunks, 'test.webm')();
 }
 
 function startTheParty() {
