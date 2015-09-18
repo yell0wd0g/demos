@@ -13,7 +13,7 @@
 
 <script type="text/javascript" src="mustard_dimsum.js"></script>
 <script>
-/* global webkitURL */
+/* global URL */
 /* global MediaStreamTrack */
 
 var cameraIds = new Array();
@@ -46,14 +46,12 @@ function capture() {
 }
 function gotStream(stream) {    
   console.log("Got video device");
-  var video_tag = document.createElement('video');
-  video_tag.src = webkitURL.createObjectURL(stream);
   
-  document.body.appendChild(video_tag);
-  video_tag.play();
+  createVideoTag('', 320, 240, stream);
 }
 
 createButton("btn", "Start all Video Capturer(s)", capture)
+document.body.appendChild(document.createElement("br"));
 refreshSources();
 
 </script>
