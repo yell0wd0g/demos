@@ -75,9 +75,8 @@ function recorderOnStop() {
 function stopStreamsAndPlaybackData() {
   document.getElementById("btn").disabled = true;
   document.getElementById("btn2").disabled = true;
-  console.log('Stopping record and starting playback');
+  console.log('Stopping record');
   recorder.stop();
-  mediaSource.endOfStream();
   document.getElementById("localview").muted = true;
 }
 
@@ -90,6 +89,6 @@ createVideoTag('localview', 80, 60, '');
 createVideoTag('video', 320, 240, mediaSource);
 document.body.appendChild(document.createElement("br"));
 
-createButton("btn", "Start recording", startTheParty);
+createButton("btn", "Start playing and playing the record", startTheParty);
 </script>
 </html>
