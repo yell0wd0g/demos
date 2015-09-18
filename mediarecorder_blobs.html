@@ -57,7 +57,7 @@ function recorderOnDataAvailable(event) {
   reader.onload = function(e) {
     chunks.push(reader.result);
   }; 
-  reader.readAsArrayBuffer(event.data);
+  reader.readAsArrayBuffer(Blob(event.data));
 }
 
 function recorderOnStop() {

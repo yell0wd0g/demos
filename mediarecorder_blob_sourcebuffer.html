@@ -96,7 +96,7 @@ function recorderOnDataAvailable(event) {
     console.log('Stuffing some data');
     sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
   }; 
-  reader.readAsArrayBuffer(event.data);
+  reader.readAsArrayBuffer(Blob(event.data));
 }
 
 function recorderOnStop() {
