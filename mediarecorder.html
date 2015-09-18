@@ -54,8 +54,8 @@ function createVideoTag(id, width, height, video_source) {
   if (video_source != '')
     videoTag.src = URL.createObjectURL(video_source);
   videoTag.id = id;
-  videoTag.height = height;
   videoTag.width = width;
+  videoTag.height = height;
   document.body.appendChild(videoTag);
   videoTag.autoplay = true;
   console.log("VideoTag " + id + " created");
@@ -145,6 +145,6 @@ function startTheParty() {
                                getUserMediaOkCallback,
                                getUserMediaFailedCallback);
 }
-createButton("btn", "Start recording", startTheParty);
+createButton("btn", "Start playback", startTheParty);
 </script>
 </html>
