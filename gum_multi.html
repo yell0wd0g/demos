@@ -10,6 +10,8 @@
   <textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
   <br/>
 </body>
+
+<script type="text/javascript" src="mustard_dimsum.js"></script>
 <script>
 /* global webkitURL */
 /* global MediaStreamTrack */
@@ -38,7 +40,7 @@ function capture() {
     constraints.video = { optional : [{ sourceId: cameraIds[index].id }] };
 
     console.log("Requesting getUserMedia: " + JSON.stringify(constraints));
-    navigator.webkitGetUserMedia(constraints, gotStream, getUserMediaError); 
+    navigator.webkitGetUserMedia(constraints, gotStream, getUserMediaFailedCallback); 
   }
   document.getElementById("btn").disabled = true;
 }
@@ -50,18 +52,7 @@ function gotStream(stream) {
   document.body.appendChild(video_tag);
   video_tag.play();
 }
-function getUserMediaError(e) {
-  console.assert(false, 'Error during webkitGetUserMedia: '+ e);
-}
 
-function createButton(id, text, onClick){
-  var button = document.createElement("input");
-  button.id = id;
-  button.type = "button";
-  button.value = text;
-  button.onclick = onClick;
-  document.body.appendChild(button);
-}
 createButton("btn", "Start all Video Capturer(s)", capture)
 refreshSources();
 
