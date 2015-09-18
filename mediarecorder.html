@@ -44,10 +44,6 @@ createVideoTag('video', 320, 240, mediaSource);
 document.body.appendChild(document.createElement("br"));
 
 ////////////////////////////////////////////////////////////////////////////////
-function getUserMediaFailedCallback(error) {
-  console.error('User media request denied with error code ' + error.code);
-}
-
 function getUserMediaOkCallback(stream) {
   console.log("getUserMedia succeeded :)");
   theStream = stream;
@@ -77,10 +73,6 @@ function recorderOnDataAvailable(event) {
   // Use |byteLength| instead of |length| for event.data;
   recordedChunks.push(event.data);
   numrecordedChunks += event.data.byteLength;
-}
-
-function recorderOnStop() {
-  console.log('recorderOnStop fired');
 }
 
 function saveByteArray(data, name) {

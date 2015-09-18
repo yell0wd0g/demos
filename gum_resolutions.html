@@ -9,6 +9,7 @@
 <div> Open the system camera in different resolutions. </div>
 </body>
 
+<script type="text/javascript" src="mustard_dimsum.js"></script>
 <script>
 /* global webkitURL */
 
@@ -26,7 +27,7 @@ function makeGetStreamX(width, height, buttonName) {
         "optional": []
       }
     };
-    navigator.webkitGetUserMedia(constraintsWidthXHeight, gotStream, getUserMediaError);
+    navigator.webkitGetUserMedia(constraintsWidthXHeight, gotStream, getUserMediaFailedCallback);
     document.getElementById(buttonName).disabled = true;
   };
 }
@@ -39,19 +40,6 @@ function gotStream(stream) {
   videoTag.width = 240;
   document.body.appendChild(videoTag);
   videoTag.play();
-}
-
-function getUserMediaError(e) {
-  console.assert(false, 'Error during webkitGetUserMedia: '+e);
-}
-
-function createButton(id, text, onClick){
-  var button = document.createElement("input");
-  button.id = id;
-  button.type = "button";
-  button.value = text;
-  button.onclick = onClick;
-  document.body.appendChild(button);
 }
 
 createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1"));

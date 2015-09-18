@@ -21,3 +21,11 @@ function createVideoTag(id, width, height, video_source) {
   videoTag.autoplay = true;
   console.log("VideoTag " + id + " created");
 }
+
+function getUserMediaFailedCallback(error) {
+  console.error('User media request denied with error code ' + error.code);
+}
+
+function recorderOnStop() {
+  console.log('recorderOnStop fired');
+}

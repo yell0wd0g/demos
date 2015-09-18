@@ -31,10 +31,6 @@ function mediaSourceOpened(e) {
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
 
 ////////////////////////////////////////////////////////////////////////////////
-function getUserMediaFailedCallback(error) {
-  console.error('User media request denied with error code ' + error.code);
-}
-
 function getUserMediaOkCallback(stream) {
   console.log("getUserMedia succeeded :)");
   document.getElementById("localview").src = URL.createObjectURL(stream);
@@ -66,10 +62,6 @@ function recorderOnDataAvailable(event) {
     sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
   }; 
   reader.readAsArrayBuffer(event.data);
-}
-
-function recorderOnStop() {
-  console.log('recorderOnStop fired');
 }
 
 function stopStreamsAndPlaybackData() {
