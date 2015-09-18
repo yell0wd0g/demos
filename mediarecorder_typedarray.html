@@ -74,6 +74,7 @@ function getUserMediaOkCallback(stream) {
   theStream = stream;
   document.getElementById("localview").src = URL.createObjectURL(stream);
   createButton("btn2", "Stop recording and play back", stopStreamsAndPlaybackData);
+  createButton("btn3", "Stop recording and download data", stopStreamsAndDownloadData);
 
   try {
     recorder = new MediaRecorder(stream, "video/vp8");
@@ -120,15 +121,23 @@ function stopStreamsAndPlaybackData() {
   document.getElementById("btn2").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
-
   theStream.getVideoTracks()[0].stop();
   
   // sourceBuffer.appendBuffer(recordedBytes);
   // Or...
   var superBuffer = new Blob(recordedBytes);
   document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
-  // Or ...
-  // saveByteArray(recordedBytes, 'test.webm')();
+}
+
+
+function stopStreamsAndDownloadData() {
+  document.getElementById("btn").disabled = true;
+  document.getElementById("btn2").disabled = true;
+  console.log('Stopping record and starting playback');
+  recorder.stop();
+  theStream.getVideoTracks()[0].stop();
+  
+  saveByteArray(recordedBytes, 'test.webm')();
 }
 
 function startTheParty() {
