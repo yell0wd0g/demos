@@ -19,7 +19,7 @@ var numRecordedBytes = 0;
 
 // This sub-demo uses MediaSource [1, 2], basically we accumulate recorded 
 // chunks one by one into a SourceBuffer. This SourceBuffer is associated to a
-// MediaSource that feeds a a <video> tag.
+// MediaSource that feeds a a <video> tag..
 // [1] http://html5-demos.appspot.com/static/media-source.html
 // [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
 var mediaSource = new MediaSource();
@@ -63,9 +63,9 @@ function recorderOnDataAvailable(event) {
   var reader = new FileReader();
   reader.onload = function(e) {
     console.log('Stuffing some data');
-    sourceBuffer.appendBuffer(e.target.result);
+    sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
   }; 
-  reader.readAsArrayBuffer(Blob(event.data));
+  reader.readAsArrayBuffer(new Blob(event.data));
 }
 
 function recorderOnStop() {
