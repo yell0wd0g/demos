@@ -17,7 +17,9 @@ var videoTagIndex = 0;
 
 function gotStream(stream) {
   theStream = stream;
-  createVideoTag('videotag' + videoTagIndex++, 240, 180, stream);
+  const videoTagId = 'videotag' + videoTagIndex;
+  createVideoTag(videoTagId, 240, 180, stream);
+  videoTagIndex++;
 }
 
 createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
@@ -29,7 +31,12 @@ createButton("btn5", "1920x1080", makeGetStreamX(1920, 1080, "btn5", gotStream))
 createButton("btn6", "3840x2160", makeGetStreamX(3840, 2160, "btn6", gotStream));
 document.body.appendChild(document.createElement("br"));
 
-createButton("btn-resize", "Resize to stream size", resizeMe);
+function resizeMe() {
+  document.getElementById("videoTag0").width = document.getElementById("videoTag0").videoWidth;
+  document.getElementById("videoTag0").height = document.getElementById("videoTag0").videoHeight;
+}
+
+createButton("btn-resize", "Resize first <video> to its stream size", resizeMe);
 document.body.appendChild(document.createElement("br"));
 
 </script>
