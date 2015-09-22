@@ -1,5 +1,26 @@
 /* global URL */
 
+function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
+  return function() {
+    var constraintsWidthXHeight = {
+      "audio": false,
+      "video": {
+        "mandatory": {
+          "minWidth": width,
+          "maxWidth": width,
+          "minHeight": height,
+          "maxHeight": height
+        },
+        "optional": []
+      }
+    };
+    navigator.webkitGetUserMedia(constraintsWidthXHeight, 
+                                 gotStreamFunction, 
+                                 getUserMediaFailedCallback);
+    document.getElementById(buttonName).disabled = true;
+  };
+}
+
 function createButton(id, text, onClick) {
   const button = document.createElement("input");
   button.id = id;

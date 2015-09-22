@@ -7,7 +7,7 @@
 <body>
 </body>
 
-<script type="text/javascript" src="mustard_dimsum.js"></script>
+<script type="text/javascript" src="dimsum.js"></script>
 <script>
 /* global Blob */
 /* global MediaRecorder */
@@ -18,7 +18,7 @@ var recorder;
 var theStream;
 
 // Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
-// data in |chunks|, then blobify it and plug the result in a <video> .
+// data in |chunks|, then blobify it and plug the result in a <video>.
 //
 // The alternative is, e.g. [1, 2], using MediaSource where we basically pass 
 // recorded chunks one by one into a MediaSource associated to a <video>.

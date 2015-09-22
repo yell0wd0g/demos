@@ -6,46 +6,20 @@
 </head>
 
 <body>
-<div> Open the system camera in different resolutions. </div>
+<div> Open the system camera  in different resolutions simultaneously.</div>
 </body>
 
-<script type="text/javascript" src="mustard_dimsum.js"></script>
+<script type="text/javascript" src="dimsum.js"></script>
 <script>
-/* global webkitURL */
-
-function makeGetStreamX(width, height, buttonName) {
-  return function() {
-    var constraintsWidthXHeight = {
-      "audio": false,
-      "video": {
-        "mandatory": {
-          "minWidth": width,
-          "maxWidth": width,
-          "minHeight": height,
-          "maxHeight": height
-        },
-        "optional": []
-      }
-    };
-    navigator.webkitGetUserMedia(constraintsWidthXHeight, gotStream, getUserMediaFailedCallback);
-    document.getElementById(buttonName).disabled = true;
-  };
-}
 
 function gotStream(stream) {
-  console.log("Got video device capturing");
-  var videoTag = document.createElement('video');
-  videoTag.src = webkitURL.createObjectURL(stream);
-  videoTag.height = 180;
-  videoTag.width = 240;
-  document.body.appendChild(videoTag);
-  videoTag.play();
+  createVideoTag('videotag', 240, 180, stream);
 }
 
-createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1"));
-createButton("btn2", "640x480", makeGetStreamX(640, 480, "btn2"));
-createButton("btn3", "960x720", makeGetStreamX(960, 720, "btn3"));
-createButton("btn4", "1280x720", makeGetStreamX(1280, 720, "btn4"));
+createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
+createButton("btn2", "640x480", makeGetStreamX(640, 480, "btn2", gotStream));
+createButton("btn3", "960x720", makeGetStreamX(960, 720, "btn3", gotStream));
+createButton("btn4", "1280x720", makeGetStreamX(1280, 720, "btn4", gotStream));
 document.body.appendChild(document.createElement("br"));
 
 </script>
