@@ -6,13 +6,16 @@
 </head>
 
 <body>
-<div> Open the system camera  in different resolutions simultaneously.</div>
+<div> Open the system camera in different resolutions simultaneously.</div>
 </body>
 
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
 
+var theStream;
+
 function gotStream(stream) {
+  theStream = stream;
   createVideoTag('videotag', 240, 180, stream);
 }
 
@@ -20,6 +23,12 @@ createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
 createButton("btn2", "640x480", makeGetStreamX(640, 480, "btn2", gotStream));
 createButton("btn3", "960x720", makeGetStreamX(960, 720, "btn3", gotStream));
 createButton("btn4", "1280x720", makeGetStreamX(1280, 720, "btn4", gotStream));
+document.body.appendChild(document.createElement("br"));
+createButton("btn5", "1920x1080", makeGetStreamX(1920, 1080, "btn5", gotStream));
+createButton("btn6", "3840x2160", makeGetStreamX(3840, 2160, "btn6", gotStream));
+document.body.appendChild(document.createElement("br"));
+
+createButton("btn-resize", "Resize to stream size", resizeMe);
 document.body.appendChild(document.createElement("br"));
 
 </script>
