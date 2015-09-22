@@ -13,10 +13,11 @@
 <script>
 
 var theStream;
+var videoTagIndex = 0;
 
 function gotStream(stream) {
   theStream = stream;
-  createVideoTag('videotag', 240, 180, stream);
+  createVideoTag('videotag' + videoTagIndex++, 240, 180, stream);
 }
 
 createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
