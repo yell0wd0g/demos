@@ -32,8 +32,9 @@ createButton("btn6", "3840x2160", makeGetStreamX(3840, 2160, "btn6", gotStream))
 document.body.appendChild(document.createElement("br"));
 
 function resizeMe() {
-  document.getElementById("videotag0").width = document.getElementById("videoTag0").videoWidth;
-  document.getElementById("videotag0").height = document.getElementById("videoTag0").videoHeight;
+  const leTag = document.getElementById("videotag0");
+  leTag.width = leTag.videoWidth;
+  leTag.height = leTag.videoHeight;
 }
 
 createButton("btn-resize", "Resize first <video> to its stream size", resizeMe);
