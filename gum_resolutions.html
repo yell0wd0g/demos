@@ -35,6 +35,7 @@ function resizeMe() {
   const leTag = document.getElementById("videotag0");
   leTag.width = leTag.videoWidth;
   leTag.height = leTag.videoHeight;
+  document.getElementById("btn-resize").disabled = true;
 }
 
 createButton("btn-resize", "Resize first <video> to its stream size", resizeMe);
