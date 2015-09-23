@@ -20,6 +20,7 @@ function gotStream(stream) {
   const videoTagId = 'videotag' + videoTagIndex;
   createVideoTag(videoTagId, 240, 180, stream);
   videoTagIndex++;
+  document.getElementById("btn-resize").disabled = false;
 }
 
 createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
@@ -39,6 +40,7 @@ function resizeMe() {
 }
 
 createButton("btn-resize", "Resize first <video> to its stream size", resizeMe);
+document.getElementById("btn-resize").disabled = true;
 document.body.appendChild(document.createElement("br"));
 
 </script>

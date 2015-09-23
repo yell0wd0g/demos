@@ -1,3 +1,6 @@
+// This file is just a bunch of methods I use extensively.  I called it dimsum 
+// because is like a said tasty bun, full of nice and tasty stuff inside :)
+
 /* global URL */
 
 function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
