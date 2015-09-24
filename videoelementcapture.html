@@ -17,6 +17,7 @@
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
 var theStream;
+var thePlayback;
 
 ////////////////////////////////////////////////////////////////////////////////
 function startStreaming() {
@@ -26,7 +27,8 @@ function startStreaming() {
   theStream = document.getElementById("videotag").captureStream();
 
   // And plug the created MediaStream into another <video> tag.  
-  createVideoTag("playbackTqg", 320, 240, theStream);
+  createVideoTag("playbackTag", 320, 240, theStream);
+  thePlayback = document.getElementById("playbackTag");
 }
 
 </script>
