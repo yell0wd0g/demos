@@ -8,6 +8,8 @@
 <div> Record Real-Time video and play it back or download as file.</div>
 </body>
 
+<button id="btn" onclick="startStreaming()">Capture from \<video\></button>
+</br>
 <video id="videotag" width="320" height="240" controls autoplay>
 	<source src="http://video.webmfiles.org/elephants-dream.webm" type="video/webm"  />
 </video>
@@ -27,6 +29,5 @@ function startStreaming() {
   createVideoTag("playbackTqg", 320, 240, theStream);
 }
 
-createButton("btn", "Capture from <video>", startStreaming);
 </script>
 </html>
