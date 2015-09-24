@@ -21,7 +21,7 @@ function startStreaming() {
   document.getElementById("btn").disabled = true;
 
   // Create a MediaStream out of the <video> tag.
-  theStream = document.getElementById("videotag").createStream();
+  theStream = document.getElementById("videotag").captureStream();
 
   // And plug the created MediaStream into another <video> tag.  
   createVideoTag("playbackTqg", 320, 240, theStream);
