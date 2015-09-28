@@ -8,11 +8,11 @@
 <div> Record Real-Time video and play it back or download as file.</div>
 </body>
 
-<button id="btn1" onclick="startStreaming()">Create Stream from < video ></button>
-</br>
-<video id="videotag" width="320" height="240" controls autoplay>
+<video id="videotag" width="320" height="240" muted="true" controls autoplay>
 	<source src="http://video.webmfiles.org/big-buck-bunny_trailer.webm" type="video/webm"  />
 </video>
+</br>
+<button id="btn1" onclick="startStreaming()">Create Stream from < video ></button>
 
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
@@ -38,11 +38,11 @@ function startPlayback() {
   thePlayback = document.getElementById("playbackTag");
   document.body.appendChild(document.createElement("br"));
 
-  createButton("btn2", "Stop theStream captured from <video>", stopStreaming);
+  createButton("btn3", "Stop theStream captured from <video>", stopStreaming);
 }
 
 function stopStreaming() {
-  document.getElementById("btn2").disabled = true;
+  document.getElementById("btn3").disabled = true;
   theStream.getVideoTracks()[0].stop();
 }
 
