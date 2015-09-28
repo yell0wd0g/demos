@@ -8,7 +8,7 @@
 <div> Record Real-Time video and play it back or download as file.</div>
 </body>
 
-<button id="btn" onclick="startStreaming()">Capture from < video ></button>
+<button id="btn1" onclick="startStreaming()">Create Stream from < video ></button>
 </br>
 <video id="videotag" width="320" height="240" controls autoplay>
 	<source src="http://video.webmfiles.org/elephants-dream.webm" type="video/webm"  />
@@ -21,10 +21,17 @@ var thePlayback;
 
 ////////////////////////////////////////////////////////////////////////////////
 function startStreaming() {
-  document.getElementById("btn").disabled = true;
+  document.getElementById("btn1").disabled = true;
 
   // Create a MediaStream out of the <video> tag.
   theStream = document.getElementById("videotag").captureStream();
+  document.body.appendChild(document.createElement("br"));
+  createButton("btn2", "Play back captured Stream to a <video>", startPlayback);
+  document.body.appendChild(document.createElement("br"));
+}
+
+function startPlayback() {
+  document.getElementById("btn2").disabled = true;
 
   // And plug the created MediaStream into another <video> tag.  
   createVideoTag("playbackTag", 320, 240, theStream);
