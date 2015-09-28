@@ -29,6 +29,14 @@ function startStreaming() {
   // And plug the created MediaStream into another <video> tag.  
   createVideoTag("playbackTag", 320, 240, theStream);
   thePlayback = document.getElementById("playbackTag");
+  document.body.appendChild(document.createElement("br"));
+
+  createButton("btn2", "Stop theStream captured from <video>", stopStreaming);
+}
+
+function stopStreaming() {
+  document.getElementById("btn2").disabled = true;
+  theStream.getVideoTracks()[0].stop();
 }
 
 </script>
