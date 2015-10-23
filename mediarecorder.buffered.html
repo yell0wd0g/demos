@@ -68,7 +68,7 @@ function getUserMediaOkCallback(stream) {
 }
 
 function recorderOnDataAvailable(event) {
-  console.log("recorderOnDataAvailable " + event.data.byteLength + "B")
+  console.log("recorderOnDataAvailable " + event.data.size + "B")
   console.assert(recorder.state == "recording", "State should be 'recording'");
 
   // Use |byteLength| instead of |length| for event.data;
