@@ -53,7 +53,7 @@ function getUserMediaOkCallback(stream) {
   createButton("btn3", "Stop recording and download data", stopStreamsAndDownloadData);
 
   try {
-    recorder = new MediaRecorder(stream, "video/vp8");
+    recorder = new MediaRecorder(stream);
   } catch (e) {
     console.assert(false, 'Exception while creating MediaRecorder: ' + e);
     return;
