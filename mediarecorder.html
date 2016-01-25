@@ -37,13 +37,14 @@ var theStream;
 // [1] http://html5-demos.appspot.com/static/media-source.html
 // [2] https://github.com/html5rocks/www.html5rocks.com/blob/master/content/tutorials/streaming/multimedia/en/index.md
 var recordedChunks = [];
+var theMimeType;
 
 var mediaSource = new MediaSource();
 var sourceBuffer;
 function mediaSourceOpened(e) {
   console.log('MediaSource opened correctly');
   var codec = document.getElementById("encoder");
-  sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="' + encoder.options[encoder.selectedIndex].value +'"');
+  sourceBuffer = mediaSource.addSourceBuffer(theMimeType);
 }
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
 
@@ -59,8 +60,10 @@ function getUserMediaOkCallback(stream) {
   createButton("btn2", "Stop recording and play back", stopStreamsAndPlaybackData);
   createButton("btn3", "Stop recording and download data", stopStreamsAndDownloadData);
 
+  theMimeType ='video/webm; codecs="' + encoder.options[encoder.selectedIndex].value + '"';
+  
   try {
-    recorder = new MediaRecorder(stream);
+    recorder = new MediaRecorder(stream, {mimeType : theMimeType});
   } catch (e) {
     console.assert(false, 'Exception while creating MediaRecorder: ' + e);
     return;
@@ -69,7 +72,7 @@ function getUserMediaOkCallback(stream) {
   recorder.ondataavailable = recorderOnDataAvailable;
   recorder.onstop = recorderOnStop;
   recorder.start(); 
-  console.log("Recorder is started");
+  console.log("Recorder is started, mimeType: " + theMimeType);
   console.assert(recorder.state == "recording");
 }
 
