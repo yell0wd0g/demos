@@ -5,8 +5,14 @@
 <title>MediaStream Recoder demo (w/ MediaSource)</title>
 </head>
 <body>
-<div> Record Real-Time video and play it back or download as file.</div>
+<div> Record Real-Time video (no audio) and play it back or download as file.</div>
+<div>(Note: play back does not work in Android)</div>
 </body>
+
+Encoding to use : <select id="encoder">
+  <option value="vp8">VP8</option>
+  <option value="vp9">VP9</option>
+</select>
 
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
@@ -36,7 +42,8 @@ var mediaSource = new MediaSource();
 var sourceBuffer;
 function mediaSourceOpened(e) {
   console.log('MediaSource opened correctly');
-  sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
+  var codec = document.getElementById("encoder");
+  sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="' + encoder.options[encoder.selectedIndex].value +'"');
 }
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
 
