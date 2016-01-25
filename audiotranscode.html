@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>Transcode audio</title>
+</head>
+<body>
+	<p>Drag and drop a file in to transcode...</p>
+	
+<script>
+"use strict";
+
+var audioContext = null;
+
+function OnFileDropped(e)
+{
+	e.preventDefault();
+	
+	var files = e.dataTransfer.files;
+	
+	if (files.length)
+		Transcode(files[0]);
+};
+
+function OnDragOver(e)
+{
+	e.preventDefault();
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+	window.ondrop = OnFileDropped;
+	window.ondragover = OnDragOver;
+	audioContext = new AudioContext();
+});
+
+function Transcode(file)
+{
+	Decode(file).then(Encode).then(function (blob)
+	{
+		var url = URL.createObjectURL(blob);
+		InvokeDownload(url, "transcoded.ogg");
+	});
+};
+
+function Decode(file)
+{
+	console.log("Starting decode of file: ", file);
+	
+	return ConvertFileToArrayBuffer(file).then(function (arraybuffer)
+	{
+		return new Promise(function (resolve, reject)
+		{
+			audioContext.decodeAudioData(arraybuffer, resolve, reject);
+		});
+	});
+};
+
+function Encode(buffer)
+{
+	return new Promise(function (resolve, reject)
+	{
+		console.log("Starting encode of buffer: ", buffer);
+		
+		var bufferSource = audioContext.createBufferSource();
+		bufferSource.buffer = buffer;
+		var streamDest = audioContext.createMediaStreamDestination();
+		bufferSource.connect(streamDest);
+		
+		var mimeType = "audio/webm";
+		var mediaRecorder;
+		
+		// Try to handle both kinds of constructor used in recent spec versions.
+		try {
+			mediaRecorder = new MediaRecorder(streamDest.stream, { "mimeType": mimeType });
+		}
+		catch (e)
+		{
+			mediaRecorder = null;
+		}
+		
+		if (!mediaRecorder)
+		{
+			mediaRecorder = new MediaRecorder(streamDest.stream, mimeType);
+		}
+		
+		var chunks = [];
+		
+		mediaRecorder.ondataavailable = function (e)
+		{
+			chunks.push(e.data);
+		};
+		mediaRecorder.onstop = function (e)
+		{
+			var blob = new Blob(chunks, { "type": mimeType });
+			console.log("Encode finished, " + chunks.length + " chunks, " + blob.size + " bytes");
+			resolve(blob);
+		};
+		mediaRecorder.onerror = reject;
+		
+		bufferSource.onended = function () {
+			mediaRecorder.stop();
+		};
+		
+		mediaRecorder.start();
+		bufferSource.start();
+	});
+};
+
+function ConvertFileToArrayBuffer(file)
+{
+	return new Promise(function (resolve, reject)
+	{
+		var reader = new FileReader();
+		reader.onload = function ()
+		{
+			resolve(reader.result);
+		};
+		reader.onerror = reject;
+		reader.readAsArrayBuffer(file);
+	});
+};
+
+function InvokeDownload(url, filename)
+{
+	var a = document.createElement("a");
+	var body = document.getElementsByTagName("body")[0];
+	a.textContent = filename;
+	a.href = url;
+	a["download"] = filename;
+	body.appendChild(a);
+	var clickEvent = new MouseEvent("click");
+	a.dispatchEvent(clickEvent);
+	body.removeChild(a);
+};
+
+</script>
+</body>
+</html>
