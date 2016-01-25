@@ -44,7 +44,7 @@ var sourceBuffer;
 function mediaSourceOpened(e) {
   console.log('MediaSource opened correctly');
   var codec = document.getElementById("encoder");
-  sourceBuffer = mediaSource.addSourceBuffer(theMimeType);
+  sourceBuffer = mediaSource.addSourceBuffer("video/webm");
 }
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
 
