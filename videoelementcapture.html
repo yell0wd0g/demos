@@ -35,6 +35,8 @@ function startPlayback() {
 
   // And plug the created MediaStream into another <video> tag.  
   createVideoTag("playbackTag", 320, 240, theStream);
+  document.getElementById("playbackTag").controls = true;
+
   thePlayback = document.getElementById("playbackTag");
   document.body.appendChild(document.createElement("br"));
 
@@ -44,6 +46,7 @@ function startPlayback() {
 function stopStreaming() {
   document.getElementById("btn3").disabled = true;
   theStream.getVideoTracks()[0].stop();
+  theStream.getAudioTracks()[0].stop();
 }
 
 </script>
