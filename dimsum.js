@@ -6,7 +6,7 @@
 function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
   return function() {
     var constraintsWidthXHeight = {
-      "audio": false,
+      "audio": true,
       "video": {
         "mandatory": {
           "minWidth": width,
@@ -14,7 +14,7 @@ function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
           "minHeight": height,
           "maxHeight": height
         },
-        "optional": []
+        "optional": [{ echoCancellation : false}]
       }
     };
     navigator.webkitGetUserMedia(constraintsWidthXHeight, 
