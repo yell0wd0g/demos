@@ -6,7 +6,7 @@
 function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
   return function() {
     var constraintsWidthXHeight = {
-      "audio": true,
+      "audio": false,
       "video": {
         "mandatory": {
           "minWidth": width,

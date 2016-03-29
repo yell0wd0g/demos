@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>getUserMedia() -> ImageCapture demo</title>
+</head>
+
+<body>
+<div> Open the system camera in different resolutions and take a picture.</div>
+</body>
+
+<script type="text/javascript" src="dimsum.js"></script>
+<script>
+
+var theStream;
+var theImageCapturer;
+
+function gotStream(stream) {
+  theStream = stream;
+  const videoTagId = 'videotag';
+  createVideoTag(videoTagId, 240, 180, stream);
+  document.getElementById("btn1").disabled = true;
+document.getElementById("btn-capture").disabled = false;
+}
+createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
+document.body.appendChild(document.createElement("br"));
+
+
+function createImageCapturerAndTakePhoto() {
+  theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
+  document.getElementById("btn-capture").disabled = true;
+  
+  theImageCapturer.takePhoto().then(function(a) { console.log(" photo taken");});
+}
+
+createButton("btn-capture", 
+             "Create ImageCapturer", 
+             createImageCapturerAndTakePhoto);
+document.getElementById("btn-capture").disabled = true;
+document.body.appendChild(document.createElement("br"));
+
+</script>
+</html>
