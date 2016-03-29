@@ -26,18 +26,23 @@ createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
 document.body.appendChild(document.createElement("br"));
 
 
-function createImageCapturerAndTakePhoto() {
+function createImageCapturer() {
   theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
   document.getElementById("btn-capture").disabled = true;
-  
+  document.getElementById("btn-photo").disabled = false;
+}
+
+function takePhoto() {
   theImageCapturer.takePhoto().then(function(a) { console.log(" photo taken");});
 }
 
-createButton("btn-capture", 
-             "Create ImageCapturer", 
-             createImageCapturerAndTakePhoto);
+createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
 document.getElementById("btn-capture").disabled = true;
+createButton("btn-photo", "Take Photo", takePhoto);
+document.getElementById("btn-photo").disabled = true;
+
 document.body.appendChild(document.createElement("br"));
+
 
 </script>
 </html>
