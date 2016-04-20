@@ -15,15 +15,16 @@
 var theStream;
 var theImageCapturer;
 
-function gotStream(stream) {
-  theStream = stream;
-  const videoTagId = 'videotag';
-  createVideoTag(videoTagId, 240, 180, stream);
-  document.getElementById("btn-capture").disabled = false;
-}
-createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
+createButton("btn1", "Open camera @ 320x240", makeGetStreamX(320, 240, "btn1", gotStream));
 document.body.appendChild(document.createElement("br"));
 
+createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
+document.getElementById("btn-capture").disabled = true;
+createButton("btn-frame", "grabFrame()", grabFrame);
+document.getElementById("btn-frame").disabled = true;
+createButton("btn-photo", "takePhoto", takePhoto);
+document.getElementById("btn-photo").disabled = true;
+document.body.appendChild(document.createElement("br"));
 
 function createImageCapturer() {
   theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
@@ -38,16 +39,12 @@ function takePhoto() {
 function grabFrame() {
   theImageCapturer.grabFrame().then(function(a) { console.log(" frame grabbed" + a);});
 }
-
-createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
-document.getElementById("btn-capture").disabled = true;
-createButton("btn-frame", "grabFrame()", grabFrame);
-document.getElementById("btn-frame").disabled = true;
-createButton("btn-photo", "takePhoto", takePhoto);
-document.getElementById("btn-photo").disabled = true;
-
-document.body.appendChild(document.createElement("br"));
-
+function gotStream(stream) {
+  theStream = stream;
+  const videoTagId = 'videotag';
+  createVideoTag(videoTagId, 240, 180, stream);
+  document.getElementById("btn-capture").disabled = false;
+}
 
 </script>
 </html>
