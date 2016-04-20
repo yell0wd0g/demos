@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<div> Open the system camera in different resolutions and take a picture.</div>
+<div> Open the system camera and grab frame(s) or take (a) picture(s).</div>
 </body>
 
 <script type="text/javascript" src="dimsum.js"></script>
@@ -19,8 +19,7 @@ function gotStream(stream) {
   theStream = stream;
   const videoTagId = 'videotag';
   createVideoTag(videoTagId, 240, 180, stream);
-  document.getElementById("btn1").disabled = true;
-document.getElementById("btn-capture").disabled = false;
+  document.getElementById("btn-capture").disabled = false;
 }
 createButton("btn1", "320x240", makeGetStreamX(320, 240, "btn1", gotStream));
 document.body.appendChild(document.createElement("br"));
@@ -29,16 +28,22 @@ document.body.appendChild(document.createElement("br"));
 function createImageCapturer() {
   theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
   document.getElementById("btn-capture").disabled = true;
-  document.getElementById("btn-photo").disabled = false;
+  document.getElementById("btn-frame").disabled = false;
 }
 
 function takePhoto() {
-  theImageCapturer.takePhoto().then(function(a) { console.log(" photo taken");});
+  theImageCapturer.takePhoto().then(function(a) { console.log(" photo taken" + a);});
+}
+
+function grabFrame() {
+  theImageCapturer.grabFrame().then(function(a) { console.log(" frame grabbed" + a);});
 }
 
 createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
 document.getElementById("btn-capture").disabled = true;
-createButton("btn-photo", "Take Photo", takePhoto);
+createButton("btn-photo", "grabFrame()", takePhoto);
+document.getElementById("btn-frame").disabled = true;
+createButton("btn-photo", "takePhoto", takePhoto);
 document.getElementById("btn-photo").disabled = true;
 
 document.body.appendChild(document.createElement("br"));
