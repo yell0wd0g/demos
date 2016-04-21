@@ -34,11 +34,11 @@ function createImageCapturer() {
 }
 
 function takePhoto() {
-  theImageCapturer.takePhoto().then(function(a) { console.log(" photo taken" + a);});
+  theImageCapturer.takePhoto().then(function(a) { console.log(" photo taken " + a);});
 }
 
 function grabFrame() {
-  theImageCapturer.grabFrame().then(function(a) { console.log(" frame grabbed" + a); theGrabbedFrame = a;});
+  theImageCapturer.grabFrame().then(function(a) { console.log(" frame grabbed " + a); theGrabbedFrame = a;});
 }
 
 function gotStream(stream) {
