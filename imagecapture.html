@@ -14,6 +14,7 @@
 
 var theStream;
 var theImageCapturer;
+var theGrabbedFrame;
 
 createButton("btn1", "Open camera @ 320x240", makeGetStreamX(320, 240, "btn1", gotStream));
 document.body.appendChild(document.createElement("br"));
@@ -37,8 +38,9 @@ function takePhoto() {
 }
 
 function grabFrame() {
-  theImageCapturer.grabFrame().then(function(a) { console.log(" frame grabbed" + a);});
+  theImageCapturer.grabFrame().then(function(a) { console.log(" frame grabbed" + a); theGrabbedFrame = a;});
 }
+
 function gotStream(stream) {
   theStream = stream;
   const videoTagId = 'videotag';
