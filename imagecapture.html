@@ -38,7 +38,20 @@ function takePhoto() {
 }
 
 function grabFrame() {
-  theImageCapturer.grabFrame().then(function(a) { console.log(" frame grabbed " + a); theGrabbedFrame = a;});
+  theImageCapturer.grabFrame()
+  .then(function(a) { 
+    console.log(" frame grabbed " + a); 
+    theGrabbedFrame = a;
+  });
+
+  var canvas = document.createElement("canvas");
+  document.body.appendChild(canvas);
+ 
+  canvas.width  = theGrabbedFrame.width;
+  canvas.height = theGrabbedFrame.height;
+  var context = canvas.getContext("2d");
+  context.drawImage(theGrabbedFrame, 0, 0);
+  console.log(" theGrabbedFrame has been painted (maybe)");
 }
 
 function gotStream(stream) {
