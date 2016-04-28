@@ -11,6 +11,7 @@
   Encoding to use : <select id="encoder">
     <option value="vp8">VP8</option>
     <option value="vp9">VP9</option>
+    <option value="h264">H264 (new!)</option>
   </select>
 </div>
 </body>
@@ -122,7 +123,10 @@ function stopStreamsAndDownloadData() {
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
   
-  saveByteArray(recordedChunks, 'test.webm')();
+  if (encoder.options[encoder.selectedIndex].value == "h264")
+    saveByteArray(recordedChunks, 'test.mkv')();
+  else
+    saveByteArray(recordedChunks, 'test.webm')();
 }
 
 createButton("btn", "Start playback", makeGetStreamX(320, 240, "btn", getUserMediaOkCallback));
