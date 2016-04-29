@@ -15,7 +15,7 @@
 var theStream;
 var theImageCapturer;
 var theGrabbedFrame;
-var thePhotoTaken;
+var theTakenPhoto;
 
 createButton("btn1", "Open camera @ 320x240", makeGetStreamX(320, 240, "btn1", gotStream));
 document.body.appendChild(document.createElement("br"));
@@ -39,7 +39,11 @@ function takePhoto() {
   theImageCapturer.takePhoto()
   .then(function(a) { 
      console.log(" photo taken " + a);
-     thePhotoTaken = a;  
+     theTakenPhoto = a;  
+
+     var img = document.createElement( "img" );
+     img.src = urlCreator.createObjectURL( blob );
+     console.log(" theTakenPhoto has been painted (maybe)");
   });
 }
 
@@ -57,7 +61,6 @@ function grabFrame() {
     var context = canvas.getContext("2d");
     context.drawImage(theGrabbedFrame, 0, 0);
     console.log(" theGrabbedFrame has been painted (maybe)");
-
   });
 }
 
