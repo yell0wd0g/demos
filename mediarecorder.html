@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3.css">
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>MediaStream Recoder demo (w/ MediaSource)</title>
 </head>
 <body>
 <div class="w3-container w3-orange"> Record Real-Time video (no audio) and play it back or download as file.</div>
-<div>(Note: play back does not work in Android)</div>
-<div class="w3-row-padding">
-<div class="w3-container">
-  Encoding to use : <select id="encoder">
+<div class="w3-row">
+ <div class="w3-teal w3-container w3-quarter">Video Encoder</div>
+ <div class="w3-container">
+  <select id="encoder" class="w3-select w3-threequarter w3-pale-green ">
     <option value="vp8">VP8</option>
     <option value="vp9">VP9</option>
     <option value="h264">H264 (new!)</option>
   </select>
+ </div>
 </div>
 </body>
 
@@ -53,17 +53,25 @@ function mediaSourceOpened(e) {
 }
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
 
-createVideoTag('localview', 80, 60, '');
+createButton("btn", "Start playback", makeGetStreamX(320, 240, "btn", getUserMediaOkCallback));
+document.body.appendChild(document.createElement("br"));
+createVideoTag('localview', 320, 240, '');
 createVideoTag('video', 320, 240, mediaSource);
 document.body.appendChild(document.createElement("br"));
+
+createButton("btn2", "Stop recording and play back", stopStreamsAndPlaybackData);
+document.getElementById("btn2").disabled = true;
+createButton("btn3", "Stop recording and download data", stopStreamsAndDownloadData);
+document.getElementById("btn3").disabled = true;
 
 ////////////////////////////////////////////////////////////////////////////////
 function getUserMediaOkCallback(stream) {
   console.log("getUserMedia succeeded :)");
   theStream = stream;
   document.getElementById("localview").src = URL.createObjectURL(stream);
-  createButton("btn2", "Stop recording and play back", stopStreamsAndPlaybackData);
-  createButton("btn3", "Stop recording and download data", stopStreamsAndDownloadData);
+  document.getElementById("btn").disabled = true;
+  document.getElementById("btn2").disabled = false;
+  document.getElementById("btn3").disabled = false;
 
   theMimeType ='video/webm; codecs="' + encoder.options[encoder.selectedIndex].value + '"';
   
@@ -106,8 +114,8 @@ function saveByteArray(data, name) {
 }
 
 function stopStreamsAndPlaybackData() {
-  document.getElementById("btn").disabled = true;
   document.getElementById("btn2").disabled = true;
+  document.getElementById("btn3").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
@@ -120,8 +128,8 @@ function stopStreamsAndPlaybackData() {
 
 
 function stopStreamsAndDownloadData() {
-  document.getElementById("btn").disabled = true;
   document.getElementById("btn2").disabled = true;
+  document.getElementById("btn3").disabled = true;
   console.log('Stopping record and starting playback');
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
@@ -132,6 +140,7 @@ function stopStreamsAndDownloadData() {
     saveByteArray(recordedChunks, 'test.webm')();
 }
 
-createButton("btn", "Start playback", makeGetStreamX(320, 240, "btn", getUserMediaOkCallback));
 </script>
+
+<div class="w3-container w3-sand">(Note: check <a href="https://crbug.com/253465">crbug.com/253465</a> if on Android)</div>
 </html>

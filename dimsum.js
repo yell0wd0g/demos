@@ -30,6 +30,7 @@ function createButton(id, text, onClick) {
   button.type = "button";
   button.value = text;
   button.onclick = onClick;
+  button.className = "w3-btn w3-teal w3-round-large";
   document.body.appendChild(button);
   console.log("Button " + id + " created");
 }
@@ -41,7 +42,7 @@ function createVideoTag(id, width, height, video_source) {
   videoTag.id = id;
   videoTag.width = width;
   videoTag.height = height;
-  videoTag.className = "w3-card-12";
+  videoTag.className = "w3-round w3-border w3-card-4";
   document.body.appendChild(videoTag);
   videoTag.autoplay = true;
   console.log("VideoTag " + id + " created");

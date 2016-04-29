@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>getUserMedia() -> ImageCapture demo</title>
 </head>
 
 <body>
-<div> Open the system camera and grab frame(s) or take (a) picture(s).</div>
+<div class="w3-container w3-orange"> Open the system camera and grab frame(s) or take (a) picture(s).</div>
 </body>
 
 <script type="text/javascript" src="dimsum.js"></script>
@@ -58,6 +59,7 @@ function grabFrame() {
  
     canvas.width  = theGrabbedFrame.width;
     canvas.height = theGrabbedFrame.height;
+    canvas.className = "w3-round w3-border w3-card-16";
     var context = canvas.getContext("2d");
     context.drawImage(theGrabbedFrame, 0, 0);
     console.log(" theGrabbedFrame has been painted (maybe)");

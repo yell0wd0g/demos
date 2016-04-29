@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html>
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>HTMLVideoElement capture into MediaStream demo</title>
 </head>
 <body>
-<div> Capture Real-Time video into a MediaStream.</div>
+<div class="w3-container w3-orange">Capture Real-Time video into a MediaStream.</div>
 </body>
 
-<video id="videotag" width="320" height="240" muted="true" controls autoplay>
-	<source src="http://video.webmfiles.org/big-buck-bunny_trailer.webm" type="video/webm"  />
+<video id="videotag" width="320" height="240" muted="true" controls autoplay class="w3-round w3-border w3-card-4">
+<source src="http://video.webmfiles.org/big-buck-bunny_trailer.webm" type="video/webm"  />
 </video>
 </br>
-<button id="btn1" onclick="startStreaming()">Create Stream from < video ></button>
+
+<button id="btn1" onclick="startStreaming()" class="w3-btn w3-teal w3-round-large">
+Create Stream from < video >
+</button>
 
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
