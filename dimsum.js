@@ -41,6 +41,7 @@ function createVideoTag(id, width, height, video_source) {
   videoTag.id = id;
   videoTag.width = width;
   videoTag.height = height;
+  videoTag.className = "w3-card-12";
   document.body.appendChild(videoTag);
   videoTag.autoplay = true;
   console.log("VideoTag " + id + " created");
