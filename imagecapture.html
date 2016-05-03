@@ -42,8 +42,9 @@ function takePhoto() {
      console.log(" photo taken " + a);
      theTakenPhoto = a;  
 
-     var img = document.createElement( "img" );
-     img.src = URL.createObjectURL( blob );
+     var img = document.createElement("img");
+     document.body.appendChild(img);
+     img.src = URL.createObjectURL(theTakenPhoto);
      console.log(" theTakenPhoto has been painted (maybe)");
   });
 }
