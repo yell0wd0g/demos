@@ -43,7 +43,7 @@ function takePhoto() {
      theTakenPhoto = a;  
 
      var img = document.createElement( "img" );
-     img.src = urlCreator.createObjectURL( blob );
+     img.src = webkitURL.createObjectURL( blob );
      console.log(" theTakenPhoto has been painted (maybe)");
   });
 }
