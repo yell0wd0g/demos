@@ -30,7 +30,7 @@ function createButton(id, text, onClick) {
   button.type = "button";
   button.value = text;
   button.onclick = onClick;
-  button.className = "w3-btn-primary w3-teal w3-xlarge w3-round-large";
+  button.className = "w3-btn-primary w3-teal w3-round-large";
   document.body.appendChild(button);
   console.log("Button " + id + " created");
 }
