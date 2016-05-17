@@ -18,18 +18,21 @@
 
 var cameraIds = new Array();
 function refreshSources() {
-  MediaStreamTrack.getSources(function(sourceInfos) {
+  navigator.mediaDevices.enumerateDevices()
+  .then(function(devices) {
     var count = 0;
     document.getElementById('textarea').value = "";
-    for (var index in sourceInfos) {
-      var sourceInfo = sourceInfos[index];
-      if (sourceInfo.kind != 'video') 
-        continue;
-      cameraIds[count++] = sourceInfo;
-      var message = "Video capture dev # "+ count + " : " + sourceInfo.label;
+    devices.forEach(function(device) {
+      if (device.kind != 'videoinput') 
+        return;
+      cameraIds[count++] = device;
+      var message = "Video capture dev # "+ count + " : " + device.label + ", id: " + device.deviceId ;
       console.log(message);
       document.getElementById('textarea').value += message + "\n";
-    }
+    });
+  })
+  .catch(function(err) {
+    console.log(err.name + ": " + err.message);
   });
 }
 
