@@ -1,5 +1,5 @@
 // This file is just a bunch of methods I use extensively.  I called it dimsum 
-// because is like a said tasty bun, full of nice and tasty stuff inside :)
+// because is like a said tasty brunch, full of nice and tasty stuff :)
 
 /* global URL */
 
