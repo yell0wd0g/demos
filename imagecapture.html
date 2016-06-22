@@ -35,17 +35,18 @@ document.getElementById("btn-caps").disabled = true;
 
 document.body.appendChild(document.createElement("br"));
 
-var theZoomSlider = document.createElement("w3-input");
+var theZoomSlider = document.createElement("input");
 document.body.appendChild(theZoomSlider);
 theZoomSlider.id = "theZoomSlider";
 theZoomSlider.setAttribute("type", "range");
 theZoomSlider.name = "zoom";
 theZoomSlider.style.visibility = "hidden";
-var theZoomSliderValue = document.createElement("w3-output");
+var theZoomSliderValue = document.createElement("output");
 document.body.appendChild(theZoomSliderValue);
 theZoomSliderValue.id = "theZoomSliderValue";
-theZoomSlider.onchange = function() {
+theZoomSlider.oninput = function() {
   theZoomSliderValue.value = theZoomSlider.value;
+  theImageCapturer.setOptions({ zoom : theZoomSlider.value });
 }
 document.body.appendChild(document.createElement("br"));
 
