@@ -83,7 +83,7 @@ function getCaps() {
    theZoomSliderValue.value = theZoomSlider.value;
 
    theZoomSlider.oninput = function() { 
-     theImageCapturer.setOptions({ zoom : this.value });
+     theImageCapturer.setOptions({ zoom : theZoomSliderValue.value });
    }
   });
 }
