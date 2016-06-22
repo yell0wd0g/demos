@@ -32,9 +32,9 @@ createButton("btn-photo", "takePhoto()", takePhoto);
 document.getElementById("btn-photo").disabled = true;
 createButton("btn-caps", "getPhotoCapabilities()", getCaps);
 document.getElementById("btn-caps").disabled = true;
-document.body.appendChild(document.createElement("br"));
 
 document.body.appendChild(document.createElement("br"));
+
 var theZoomSlider = document.createElement("w3-input");
 document.body.appendChild(theZoomSlider);
 theZoomSlider.id = "theZoomSlider";
@@ -46,9 +46,6 @@ document.body.appendChild(theZoomSliderValue);
 theZoomSliderValue.id = "theZoomSliderValue";
 theZoomSlider.onchange = function() {
   theZoomSliderValue.value = theZoomSlider.value;
-}
-theZoomSlider.oninput = function() { 
-  theImageCapturer.setOptions({ zoom : theZoomSliderValue.value });
 }
 document.body.appendChild(document.createElement("br"));
 
