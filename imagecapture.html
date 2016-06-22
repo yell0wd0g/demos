@@ -47,6 +47,9 @@ theZoomSliderValue.id = "theZoomSliderValue";
 theZoomSlider.onchange = function() {
   theZoomSliderValue.value = theZoomSlider.value;
 }
+theZoomSlider.oninput = function() { 
+  theImageCapturer.setOptions({ zoom : theZoomSliderValue.value });
+}
 document.body.appendChild(document.createElement("br"));
 
 function createImageCapturer() {
@@ -81,10 +84,6 @@ function getCaps() {
    theZoomSlider.max = theCapabilities.zoom.max;
    theZoomSlider.value = theCapabilities.zoom.current;
    theZoomSliderValue.value = theZoomSlider.value;
-
-   theZoomSlider.oninput = function() { 
-     theImageCapturer.setOptions({ zoom : theZoomSliderValue.value });
-   }
   });
 }
 
