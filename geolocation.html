@@ -8,9 +8,18 @@
 </head>
 
 <body>
-<div class="w3-container w3-orange"> Get geolocation and paint on a map. </div>
-<div class="w3-container w3-orange"> (Knock off of Mozilla's https://jsfiddle.net/4zpx2vks) </div>
+<div class="w3-container w3-orange"> 
+Get geolocation and paint on a map. 
+(Knock off of Mozilla's https://jsfiddle.net/4zpx2vks) 
+</div>
 </body>
+
+<script>
+var loc = window.location.href+'';
+if (loc.indexOf('http://')==0){
+    window.location.href = loc.replace('http://','https://');
+}
+</script>
 
 <script>
 function geoFindMe() {
@@ -25,7 +34,7 @@ function geoFindMe() {
     var latitude  = position.coords.latitude;
     var longitude = position.coords.longitude;
 
-    output.innerHTML = '<p>Latitude is ' + latitude + '° <br>Longitude is ' + longitude + '°</p>';
+    output.innerHTML = '<p>Latitude is ' + latitude + 'Â° <br>Longitude is ' + longitude + 'Â°</p>';
 
     var img = new Image();
     img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + latitude + "," + longitude + "&zoom=13&size=300x300&sensor=false";
@@ -37,13 +46,13 @@ function geoFindMe() {
     output.innerHTML = "Unable to retrieve your location";
   };
 
-  output.innerHTML = "<p>Locating…</p>";
+  output.innerHTML = "<p>Locatingâ¦</p>";
 
   navigator.geolocation.getCurrentPosition(success, error);
 }
 </script>
 
-<p><button onclick="geoFindMe()">Show my location</button></p>
+<p><button onclick="geoFindMe()" class="w3-btn-primary w3-teal w3-round">Show my location</button></p>
 <div id="out"></div>
 
 </html>
