@@ -3,7 +3,7 @@
 
 /* global URL */
 
-function makeGetStreamX(width, height, buttonName, gotStreamFunction, videoSource) {
+function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
   return function() {
     var constraintsWidthXHeight = {
       "audio": false,
@@ -13,7 +13,6 @@ function makeGetStreamX(width, height, buttonName, gotStreamFunction, videoSourc
           "maxWidth": width,
           "minHeight": height,
           "maxHeight": height,
-          "deviceId": videoSource ? {exact: videoSource} : undefined
         },
         "optional": [{ echoCancellation : false}]
       }

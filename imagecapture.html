@@ -29,8 +29,7 @@ var theGrabbedFrame;
 var theTakenPhoto;
 var theCapabilities;
 
-createButton("btn1", "Open camera @ 320x240",
-             makeGetStreamX(640, 480, "btn1", gotStream, videoSelect.value));
+createButton("btn1", "Open camera @ 320x240", getUserMedia)
 document.body.appendChild(document.createElement("br"));
 
 createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
@@ -142,6 +141,29 @@ function refreshSources() {
   });
 }
 refreshSources();
+
+function getUserMediaFailedCallback(error) {
+  console.error('User media request denied with error code ' + error.code);
+}
+function getUserMedia() {
+  var constraintsWidthXHeight = {
+    "audio": false,
+    "video": {
+      "mandatory": {
+        "minWidth": 640,
+        "maxWidth": 640,
+        "minHeight": 480,
+        "maxHeight": 480,
+        "deviceId": videoSource ? {exact: videoSource} : undefined
+      },
+      "optional": [{ echoCancellation : false}]
+    }
+  };
+  navigator.webkitGetUserMedia(constraintsWidthXHeight,
+                               gotStream,
+                               getUserMediaFailedCallback);
+  document.getElementById("btn1").disabled = true;
+};
 
 </script>
 </html>
