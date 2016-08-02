@@ -35,12 +35,13 @@ document.body.appendChild(document.createElement("br"));
 createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
 document.getElementById("btn-capture").disabled = true;
 document.body.appendChild(document.createElement("br"));
-createButton("btn-frame", "grabFrame()", grabFrame);
-document.getElementById("btn-frame").disabled = true;
-createButton("btn-photo", "takePhoto()", takePhoto);
-document.getElementById("btn-photo").disabled = true;
+
 createButton("btn-caps", "getPhotoCapabilities()", getCaps);
 document.getElementById("btn-caps").disabled = true;
+createButton("btn-photo", "takePhoto()", takePhoto);
+document.getElementById("btn-photo").disabled = true;
+createButton("btn-frame", "grabFrame()", grabFrame);
+document.getElementById("btn-frame").disabled = true;
 
 document.body.appendChild(document.createElement("br"));
 
@@ -58,6 +59,37 @@ theZoomSlider.oninput = function() {
   theZoomSliderValue.value = theZoomSlider.value;
   theImageCapturer.setOptions({ zoom : theZoomSlider.value });
 }
+
+var theWidthSlider = document.createElement("input");
+document.body.appendChild(theWidthSlider);
+theWidthSlider.id = "theWidthSlider";
+theWidthSlider.setAttribute("type", "range");
+theWidthSlider.name = "width (pixels)";
+theWidthSlider.step = 20;
+theWidthSlider.style.visibility = "hidden";
+var theWidthSliderValue = document.createElement("output");
+document.body.appendChild(theWidthSliderValue);
+theWidthSliderValue.id = "theWidthSliderValue";
+theWidthSlider.oninput = function() {
+  theWidthSliderValue.value = theWidthSlider.value;
+  theImageCapturer.setOptions({ imageWidth : theWidthSlider.value });
+}
+
+var theHeightSlider = document.createElement("input");
+document.body.appendChild(theHeightSlider);
+theHeightSlider.id = "theHeightSlider";
+theHeightSlider.setAttribute("type", "range");
+theHeightSlider.name = "height (pixels)";
+theHeightSlider.step = 20;
+theHeightSlider.style.visibility = "hidden";
+var theHeightSliderValue = document.createElement("output");
+document.body.appendChild(theHeightSliderValue);
+theHeightSliderValue.id = "theHeightSliderValue";
+theHeightSlider.oninput = function() {
+  theHeightSliderValue.value = theHeightSlider.value;
+  theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
+}
+
 document.body.appendChild(document.createElement("br"));
 
 function createImageCapturer() {
@@ -93,6 +125,18 @@ function getCaps() {
    theZoomSlider.max = theCapabilities.zoom.max;
    theZoomSlider.value = theCapabilities.zoom.current;
    theZoomSliderValue.value = theZoomSlider.value;
+
+   theWidthSlider.style.visibility = "visible";
+   theWidthSlider.min = theCapabilities.imageWidth.min;
+   theWidthSlider.max = theCapabilities.imageWidth.max;
+   theWidthSlider.value = theCapabilities.imageWidth.current;
+   theWidthSliderValue.value = theWidthSlider.value;
+
+   theHeightSlider.style.visibility = "visible";
+   theHeightSlider.min = theCapabilities.imageHeight.min;
+   theHeightSlider.max = theCapabilities.imageHeight.max;
+   theHeightSlider.value = theCapabilities.imageHeight.current;
+   theHeightSliderValue.value = theHeightSlider.value;
   });
 }
 
@@ -149,7 +193,7 @@ function getUserMediaFailedCallback(error) {
 function getUserMedia() {
   var videoSource = videoSelect.value;
   console.log("opening camera with id: " + videoSource);
-  var constraintsWidthXHeight = {
+  var constraints = {
     "audio": false,
     "video": {
       deviceId: videoSource ? {exact: videoSource} : undefined,
@@ -157,8 +201,8 @@ function getUserMedia() {
       height: { exact : 240 }
     }
   };
-  console.log(constraintsWidthXHeight);
-  navigator.webkitGetUserMedia(constraintsWidthXHeight,
+  console.log(constraints);
+  navigator.webkitGetUserMedia(constraints,
                                gotStream,
                                getUserMediaFailedCallback);
 };
