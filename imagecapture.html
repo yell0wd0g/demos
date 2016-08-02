@@ -146,17 +146,13 @@ function getUserMediaFailedCallback(error) {
   console.error('User media request denied with error code ' + error.code);
 }
 function getUserMedia() {
+  var videoSource = videoSelect.value;
   var constraintsWidthXHeight = {
     "audio": false,
     "video": {
-      "mandatory": {
-        "minWidth": 640,
-        "maxWidth": 640,
-        "minHeight": 480,
-        "maxHeight": 480,
-        deviceId: videoSource ? {exact: videoSource} : undefined
-      },
-      "optional": [{ echoCancellation : false}]
+      deviceId: videoSource ? {exact: videoSource} : undefined,
+      width: {exact: 640 },
+      height: {exact : 480 }
     }
   };
   navigator.webkitGetUserMedia(constraintsWidthXHeight,
