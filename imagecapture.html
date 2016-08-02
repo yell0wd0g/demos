@@ -115,6 +115,9 @@ function grabFrame() {
 }
 
 function gotStream(stream) {
+  if (theStream)
+    theStream.getTracks().forEach((track) => { track.stop(); });
+
   theStream = stream;
   const videoTagId = 'videotag';
   createVideoTag(videoTagId, 240, 180, stream);
@@ -122,7 +125,6 @@ function gotStream(stream) {
 }
 
 function refreshSources() {
-
   navigator.mediaDevices.enumerateDevices()
   .then((devices) => {
     devices.forEach((device) => {
@@ -130,9 +132,8 @@ function refreshSources() {
         var option = document.createElement('option');
         option.value = device.deviceId;
         option.text = device.label || 'Camera #' + (videoSelect.length + 1);
+        console.log("cam [" + option.text + "] with id: " + option.value);
         videoSelect.appendChild(option);
-
-        console.log("camera [" + option.text + "] has id: " + device.deviceId);
       }
     });
   })
@@ -160,7 +161,6 @@ function getUserMedia() {
   navigator.webkitGetUserMedia(constraintsWidthXHeight,
                                gotStream,
                                getUserMediaFailedCallback);
-  document.getElementById("btn1").disabled = true;
 };
 
 </script>
