@@ -147,6 +147,7 @@ function getUserMediaFailedCallback(error) {
 }
 function getUserMedia() {
   var videoSource = videoSelect.value;
+  console.log("opening camera with id: " + videoSource);
   var constraintsWidthXHeight = {
     "audio": false,
     "video": {
