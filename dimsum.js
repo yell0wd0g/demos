@@ -12,9 +12,9 @@ function makeGetStreamX(width, height, buttonName, gotStreamFunction, videoSourc
           "minWidth": width,
           "maxWidth": width,
           "minHeight": height,
-          "maxHeight": height
+          "maxHeight": height,
+          "deviceId": videoSource ? {exact: videoSource} : undefined
         },
-        { deviceId: videoSource ? {exact: videoSource} : undefined }
         "optional": [{ echoCancellation : false}]
       }
     };
