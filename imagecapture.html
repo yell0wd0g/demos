@@ -9,10 +9,19 @@
 
 <body>
 <div class="w3-container w3-orange"> Open the system camera and grab frame(s) or take (a) picture(s).</div>
+
+<div class="w3-row">
+ <div class="w3-teal w3-container w3-quarter">Video source: </div>
+ <div class="w3-container">
+  <select id="videoSource" class="w3-select w3-threequarter w3-pale-green ">
+  </select>
+ </div>
+</div>
 </body>
 
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
+var videoSelect = document.querySelector('select#videoSource');
 
 var theStream;
 var theImageCapturer;
@@ -20,7 +29,7 @@ var theGrabbedFrame;
 var theTakenPhoto;
 var theCapabilities;
 
-createButton("btn1", "Open camera @ 320x240", makeGetStreamX(320, 240, "btn1", gotStream));
+createButton("btn1", "Open camera @ 320x240", makeGetStreamX(640, 480, "btn1", gotStream));
 document.body.appendChild(document.createElement("br"));
 
 createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
@@ -61,20 +70,21 @@ function createImageCapturer() {
 
 function takePhoto() {
   theImageCapturer.takePhoto()
-  .then(function(a) { 
+  .then(function(a) {
    console.log(" photo taken " + a);
-   theTakenPhoto = a;  
+   theTakenPhoto = a;
 
    var img = document.createElement("img");
    document.body.appendChild(img);
    img.src = URL.createObjectURL(theTakenPhoto);
-   console.log(" theTakenPhoto has been painted (maybe)");
+   console.log("theTakenPhoto has been painted, (" +
+               img.width + "x" + img.height + ")");
   });
 }
 
 function getCaps() {
   theImageCapturer.getPhotoCapabilities()
-  .then(function(caps) { 
+  .then(function(caps) {
    console.log(" capabilities retrieved " + caps);
    theCapabilities = caps;
 
@@ -88,13 +98,13 @@ function getCaps() {
 
 function grabFrame() {
   theImageCapturer.grabFrame()
-  .then(function(a) { 
-    console.log(" frame grabbed " + a); 
+  .then(function(a) {
+    console.log(" frame grabbed " + a);
     theGrabbedFrame = a;
 
     var canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
- 
+
     canvas.width  = theGrabbedFrame.width;
     canvas.height = theGrabbedFrame.height;
     canvas.className = "w3-round w3-border w3-card-16";
@@ -110,6 +120,27 @@ function gotStream(stream) {
   createVideoTag(videoTagId, 240, 180, stream);
   document.getElementById("btn-capture").disabled = false;
 }
+
+function refreshSources() {
+
+  navigator.mediaDevices.enumerateDevices()
+  .then((devices) => {
+    devices.forEach((device) => {
+      if (device.kind == 'videoinput') {
+        var option = document.createElement('option');
+        option.value = device.deviceId;
+        option.text = device.label || 'Camera #' + (videoSelect.length + 1);
+        videoSelect.appendChild(option);
+
+        console.log("camera option: " + option.text);
+      }
+    });
+  })
+  .catch((err) => {
+    console.log(err.name + ": " + err.message);
+  });
+}
+refreshSources();
 
 </script>
 </html>
