@@ -1,9 +1,9 @@
-// This file is just a bunch of methods I use extensively.  I called it dimsum 
+// This file is just a bunch of methods I use extensively.  I called it dimsum
 // because is like a said tasty brunch, full of nice and tasty stuff :)
 
 /* global URL */
 
-function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
+function makeGetStreamX(width, height, buttonName, gotStreamFunction, videoSource) {
   return function() {
     var constraintsWidthXHeight = {
       "audio": false,
@@ -13,12 +13,13 @@ function makeGetStreamX(width, height, buttonName, gotStreamFunction) {
           "maxWidth": width,
           "minHeight": height,
           "maxHeight": height
+        { deviceId: videoSource ? {exact: videoSource} : undefined }
         },
         "optional": [{ echoCancellation : false}]
       }
     };
-    navigator.webkitGetUserMedia(constraintsWidthXHeight, 
-                                 gotStreamFunction, 
+    navigator.webkitGetUserMedia(constraintsWidthXHeight,
+                                 gotStreamFunction,
                                  getUserMediaFailedCallback);
     document.getElementById(buttonName).disabled = true;
   };
