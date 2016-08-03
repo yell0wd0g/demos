@@ -13,8 +13,8 @@
 <div class="w3-row">
  <div class="w3-light-green w3-container w3-quarter">Video source: </div>
  <select id="videoSource" class="w3-container w3-select w3-half w3-green "></select>
- <input type="button" id="btn1" class="w3-btn-primary w3-teal w3-round w3-container w3-rest"
-        onclick="getUserMedia()" value="Open camera">
+ <!--<input type="button" id="btn1" class="w3-btn-primary w3-teal w3-round w3-container w3-rest"
+        onclick="getUserMedia()" value="Open camera" style="display: none;">-->
 </div>
 
 <div class="w3-row">
@@ -38,6 +38,7 @@
 <script>
 var videoSelect = document.querySelector('select#videoSource');
 videoSelect.onchange = getUserMedia;
+videoSelect.onclick = getUserMedia;
 
 var theStream;
 var theImageCapturer;
@@ -46,7 +47,6 @@ var theTakenPhoto;
 var theCapabilities;
 
 document.body.appendChild(document.createElement("br"));
-
 var theZoomSlider = document.createElement("input");
 document.body.appendChild(theZoomSlider);
 theZoomSlider.id = "theZoomSlider";
@@ -62,6 +62,7 @@ theZoomSlider.oninput = function() {
   theImageCapturer.setOptions({ zoom : theZoomSlider.value });
 }
 
+document.body.appendChild(document.createElement("br"));
 var theWidthSlider = document.createElement("input");
 document.body.appendChild(theWidthSlider);
 theWidthSlider.id = "theWidthSlider";
@@ -106,6 +107,8 @@ function gotStream(stream) {
   document.getElementById("btn-frame").disabled = false;
   document.getElementById("btn-photo").disabled = false;
   document.getElementById("btn-caps").disabled = false;
+
+  document.getElementById("btn1").style = "display : visible";
 }
 
 function takePhoto() {
