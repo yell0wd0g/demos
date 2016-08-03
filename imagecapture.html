@@ -11,37 +11,39 @@
 <div class="w3-container w3-orange"> Open the system camera and grab frame(s) or take (a) picture(s).</div>
 
 <div class="w3-row">
- <div class="w3-teal w3-container w3-quarter">Video source: </div>
- <div class="w3-container">
-  <select id="videoSource" class="w3-select w3-threequarter w3-pale-green ">
-  </select>
- </div>
+ <div class="w3-light-green w3-container w3-quarter">Video source: </div>
+ <select id="videoSource" class="w3-container w3-select w3-half w3-green "></select>
+ <input type="button" id="btn1" class="w3-btn-primary w3-teal w3-round w3-container w3-rest"
+        onclick="getUserMedia()" value="Open camera">
 </div>
+
+<div class="w3-row">
+</div>
+
+<div class="w3-row">
+  <input type="button" id="btn-caps" class="w3-btn-primary w3-teal w3-round"
+         onclick="getCaps()" value="getPhotoCapabilities()">
+  <input type="button" id="btn-photo" class="w3-btn-primary w3-teal w3-round"
+         onclick="takePhoto()" value="takePhoto()">
+  <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
+         onclick="grabFrame()" value="grabFrame()">
+</div>
+<br>
+<video id="videotag" class="w3-round w3-border w3-card-4" width="240" height="180"
+       autoplay=true>
+
 </body>
 
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
 var videoSelect = document.querySelector('select#videoSource');
+videoSelect.onchange = getUserMedia;
 
 var theStream;
 var theImageCapturer;
 var theGrabbedFrame;
 var theTakenPhoto;
 var theCapabilities;
-
-createButton("btn1", "Open camera @ 320x240", getUserMedia)
-document.body.appendChild(document.createElement("br"));
-
-createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
-document.getElementById("btn-capture").disabled = true;
-document.body.appendChild(document.createElement("br"));
-
-createButton("btn-caps", "getPhotoCapabilities()", getCaps);
-document.getElementById("btn-caps").disabled = true;
-createButton("btn-photo", "takePhoto()", takePhoto);
-document.getElementById("btn-photo").disabled = true;
-createButton("btn-frame", "grabFrame()", grabFrame);
-document.getElementById("btn-frame").disabled = true;
 
 document.body.appendChild(document.createElement("br"));
 
@@ -92,9 +94,15 @@ theHeightSlider.oninput = function() {
 
 document.body.appendChild(document.createElement("br"));
 
-function createImageCapturer() {
+function gotStream(stream) {
+  if (theStream)
+    theStream.getTracks().forEach((track) => { track.stop(); });
+  theStream = stream;
+
+  var videoTag = document.getElementById("videotag");
+  videoTag.src = URL.createObjectURL(theStream);
+
   theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
-  document.getElementById("btn-capture").disabled = true;
   document.getElementById("btn-frame").disabled = false;
   document.getElementById("btn-photo").disabled = false;
   document.getElementById("btn-caps").disabled = false;
@@ -156,16 +164,6 @@ function grabFrame() {
     context.drawImage(theGrabbedFrame, 0, 0);
     console.log(" theGrabbedFrame has been painted (maybe)");
   });
-}
-
-function gotStream(stream) {
-  if (theStream)
-    theStream.getTracks().forEach((track) => { track.stop(); });
-
-  theStream = stream;
-  const videoTagId = 'videotag';
-  createVideoTag(videoTagId, 240, 180, stream);
-  document.getElementById("btn-capture").disabled = false;
 }
 
 function refreshSources() {
