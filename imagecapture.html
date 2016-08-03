@@ -18,9 +18,6 @@
 </div>
 
 <div class="w3-row">
-</div>
-
-<div class="w3-row">
   <input type="button" id="btn-caps" class="w3-btn-primary w3-teal w3-round"
          onclick="getCaps()" value="getPhotoCapabilities()">
   <input type="button" id="btn-photo" class="w3-btn-primary w3-teal w3-round"
@@ -28,9 +25,25 @@
   <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
          onclick="grabFrame()" value="grabFrame()">
 </div>
-<br>
+
+<div  id="zoom-area" class="w3-row" style="visibility : hidden">
+ <input type="range" id="zoom-slider" name="zoom"
+        class="w3-input w3-border w3-container w3-quarter">
+ <div class="w3-container w3-quarter">Zoom</div>
+</div>
+
+<div class="w3-row">
 <video id="videotag" class="w3-round w3-border w3-card-4" width="240" height="180"
        autoplay=true>
+</video>
+</div>
+
+<div id="height-area" class="w3-row" style="visibility : hidden">
+ <input type="range" id="height-slider" name="height"
+        class="w3-input w3-border w3-container w3-quarter">
+ <div class="w3-container w3-quarter">Height (pixels)</div>
+</div>
+<br>
 
 </body>
 
@@ -47,13 +60,9 @@ var theTakenPhoto;
 var theCapabilities;
 
 document.body.appendChild(document.createElement("br"));
-var theZoomSlider = document.createElement("input");
-document.body.appendChild(theZoomSlider);
-theZoomSlider.id = "theZoomSlider";
-theZoomSlider.setAttribute("type", "range");
+var theZoomSlider = document.getElementById("zoom-slider");
 theZoomSlider.name = "zoom";
 theZoomSlider.step = 20;
-theZoomSlider.style.visibility = "hidden";
 var theZoomSliderValue = document.createElement("output");
 document.body.appendChild(theZoomSliderValue);
 theZoomSliderValue.id = "theZoomSliderValue";
@@ -62,29 +71,9 @@ theZoomSlider.oninput = function() {
   theImageCapturer.setOptions({ zoom : theZoomSlider.value });
 }
 
-document.body.appendChild(document.createElement("br"));
-var theWidthSlider = document.createElement("input");
-document.body.appendChild(theWidthSlider);
-theWidthSlider.id = "theWidthSlider";
-theWidthSlider.setAttribute("type", "range");
-theWidthSlider.name = "width (pixels)";
-theWidthSlider.step = 20;
-theWidthSlider.style.visibility = "hidden";
-var theWidthSliderValue = document.createElement("output");
-document.body.appendChild(theWidthSliderValue);
-theWidthSliderValue.id = "theWidthSliderValue";
-theWidthSlider.oninput = function() {
-  theWidthSliderValue.value = theWidthSlider.value;
-  theImageCapturer.setOptions({ imageWidth : theWidthSlider.value });
-}
-
-var theHeightSlider = document.createElement("input");
-document.body.appendChild(theHeightSlider);
-theHeightSlider.id = "theHeightSlider";
-theHeightSlider.setAttribute("type", "range");
-theHeightSlider.name = "height (pixels)";
+var theHeightSlider = document.getElementById("height-slider");
+theHeightSlider.name = "height";
 theHeightSlider.step = 20;
-theHeightSlider.style.visibility = "hidden";
 var theHeightSliderValue = document.createElement("output");
 document.body.appendChild(theHeightSliderValue);
 theHeightSliderValue.id = "theHeightSliderValue";
@@ -108,7 +97,9 @@ function gotStream(stream) {
   document.getElementById("btn-photo").disabled = false;
   document.getElementById("btn-caps").disabled = false;
 
-  document.getElementById("btn1").style = "display : visible";
+  // document.getElementById("btn1").style = "display : visible";
+
+  getCaps();
 }
 
 function takePhoto() {
@@ -131,23 +122,19 @@ function getCaps() {
    console.log(" capabilities retrieved " + caps);
    theCapabilities = caps;
 
-   theZoomSlider.style.visibility = "visible";
    theZoomSlider.min = theCapabilities.zoom.min;
    theZoomSlider.max = theCapabilities.zoom.max;
    theZoomSlider.value = theCapabilities.zoom.current;
    theZoomSliderValue.value = theZoomSlider.value;
+   document.getElementById("zoom-area").style.visibility = "visible";
 
-   theWidthSlider.style.visibility = "visible";
-   theWidthSlider.min = theCapabilities.imageWidth.min;
-   theWidthSlider.max = theCapabilities.imageWidth.max;
-   theWidthSlider.value = theCapabilities.imageWidth.current;
-   theWidthSliderValue.value = theWidthSlider.value;
-
-   theHeightSlider.style.visibility = "visible";
    theHeightSlider.min = theCapabilities.imageHeight.min;
    theHeightSlider.max = theCapabilities.imageHeight.max;
    theHeightSlider.value = theCapabilities.imageHeight.current;
    theHeightSliderValue.value = theHeightSlider.value;
+   document.getElementById("height-area").style.visibility = "visible";
+
+   theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
   });
 }
 
@@ -203,8 +190,7 @@ function getUserMedia() {
     }
   };
   console.log(constraints);
-  navigator.webkitGetUserMedia(constraints,
-                               gotStream,
+  navigator.webkitGetUserMedia(constraints, gotStream,
                                getUserMediaFailedCallback);
 };
 
