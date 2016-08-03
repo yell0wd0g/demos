@@ -11,10 +11,8 @@
 <div class="w3-container w3-orange"> Open the system camera and grab frame(s) or take (a) picture(s).</div>
 
 <div class="w3-row">
- <div class="w3-light-green w3-container w3-quarter">Video source: </div>
- <select id="videoSource" class="w3-container w3-select w3-half w3-green "></select>
- <!--<input type="button" id="btn1" class="w3-btn-primary w3-teal w3-round w3-container w3-rest"
-        onclick="getUserMedia()" value="Open camera" style="display: none;">-->
+ <div class="w3-light-green w3-quarter">Video source: </div>
+ <select id="videoSource" class="w3-select w3-threequarter w3-green"></select>
 </div>
 
 <div class="w3-row">
@@ -26,26 +24,36 @@
          onclick="grabFrame()" value="grabFrame()">
 </div>
 
-<div  id="zoom-area" class="w3-row-padding" style="visibility : hidden">
- <output id="zoom-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
+<div id="zoom-area" class="w3-row-padding" style="visibility : hidden">
+ <div class="w3-container w3-quarter">Zoom</div>
  <input type="range" id="zoom-slider" name="zoom"
         class="w3-input w3-border w3-container w3-quarter">
- <div class="w3-container w3-quarter">Zoom</div>
+ <output id="zoom-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
 </div>
 
-<div class="w3-row">
-<video id="videotag" class="w3-round w3-border w3-card-4" width="240" height="180"
-       autoplay=true>
-</video>
+<div class="w3-row-padding w3-center">
+ <div class="w3-container w3-half">
+  <video id="videotag" class="w3-round w3-border w3-card-4"
+         width="240" height="180" autoplay=true>
+  </video>
+ </div>
+ <div class="w3-container w3-half">
+  <img id="imagetag" class="w3-round w3-border w3-card-4" width="240" height="180"
+       style="visibility : hidden">
+  </img>
+ </div>
+
 </div>
 
 <div id="height-area" class="w3-row" style="visibility : hidden">
- <output id="height-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
+ <div class="w3-container w3-quarter">Height (pixels)</div>
  <input type="range" id="height-slider" name="height"
         class="w3-input w3-border w3-container w3-quarter">
- <div class="w3-container w3-quarter">Height (pixels)</div>
+ <output id="height-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
 </div>
 <br>
+
+<footer class="w3-container w3-orange">Size matters?</footer>
 
 </body>
 
@@ -60,6 +68,7 @@ var theImageCapturer;
 var theGrabbedFrame;
 var theTakenPhoto;
 var theCapabilities;
+var theImageTag = document.getElementById("imagetag");
 
 document.body.appendChild(document.createElement("br"));
 var theZoomSlider = document.getElementById("zoom-slider");
@@ -106,15 +115,20 @@ function createImageCapturer() {
 
 function takePhoto() {
   theImageCapturer.takePhoto()
-  .then(function(a) {
-   console.log(" photo taken " + a);
-   theTakenPhoto = a;
+  .then((blob) => {
 
-   var img = document.createElement("img");
-   document.body.appendChild(img);
-   img.src = URL.createObjectURL(theTakenPhoto);
-   console.log("theTakenPhoto has been painted, (" +
-               img.width + "x" + img.height + ")");
+   document.getElementsByTagName('footer')[0].innerHTML =
+      "photo taken " + blob.type + " of size " + blob.size + "B - ";
+   theTakenPhoto = blob;
+
+   theImageTag.style.visibility = "visible";
+   theImageTag.src = URL.createObjectURL(theTakenPhoto);
+
+   theImageTag.onload = function() {
+     document.getElementsByTagName('footer')[0].innerHTML +=
+         "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight + ")";
+   };
+
   });
 }
 
