@@ -40,6 +40,7 @@
 </div>
 
 <div id="height-area" class="w3-row" style="visibility : hidden">
+ <output id="height-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
  <input type="range" id="height-slider" name="height"
         class="w3-input w3-border w3-container w3-quarter">
  <div class="w3-container w3-quarter">Height (pixels)</div>
@@ -72,10 +73,8 @@ theZoomSlider.oninput = function() {
 
 var theHeightSlider = document.getElementById("height-slider");
 theHeightSlider.name = "height";
-theHeightSlider.step = 20;
-var theHeightSliderValue = document.createElement("output");
-document.body.appendChild(theHeightSliderValue);
-theHeightSliderValue.id = "theHeightSliderValue";
+theHeightSlider.step = 0;
+var theHeightSliderValue = document.getElementById("height-slider-value");
 theHeightSlider.oninput = function() {
   theHeightSliderValue.value = theHeightSlider.value;
   theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
