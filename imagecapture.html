@@ -26,7 +26,8 @@
          onclick="grabFrame()" value="grabFrame()">
 </div>
 
-<div  id="zoom-area" class="w3-row" style="visibility : hidden">
+<div  id="zoom-area" class="w3-row-padding" style="visibility : hidden">
+ <output id="zoom-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
  <input type="range" id="zoom-slider" name="zoom"
         class="w3-input w3-border w3-container w3-quarter">
  <div class="w3-container w3-quarter">Zoom</div>
@@ -63,9 +64,7 @@ document.body.appendChild(document.createElement("br"));
 var theZoomSlider = document.getElementById("zoom-slider");
 theZoomSlider.name = "zoom";
 theZoomSlider.step = 20;
-var theZoomSliderValue = document.createElement("output");
-document.body.appendChild(theZoomSliderValue);
-theZoomSliderValue.id = "theZoomSliderValue";
+var theZoomSliderValue = document.getElementById("zoom-slider-value");
 theZoomSlider.oninput = function() {
   theZoomSliderValue.value = theZoomSlider.value;
   theImageCapturer.setOptions({ zoom : theZoomSlider.value });
@@ -103,7 +102,7 @@ function createImageCapturer() {
   document.getElementById("btn-caps").disabled = false;
 
   // TODO(mcasas): do this when https://crrev.com/2193213003/ lands
-  // getCaps();
+  setTimeout(getCaps, 100);
 }
 
 function takePhoto() {
