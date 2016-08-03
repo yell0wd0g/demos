@@ -92,12 +92,15 @@ function gotStream(stream) {
   var videoTag = document.getElementById("videotag");
   videoTag.src = URL.createObjectURL(theStream);
 
+  // TODO(mcasas): no timeout when https://crrev.com/2193213003/ lands
+  setTimeout(createImageCapturer, 100);
+}
+
+function createImageCapturer() {
   theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
   document.getElementById("btn-frame").disabled = false;
   document.getElementById("btn-photo").disabled = false;
   document.getElementById("btn-caps").disabled = false;
-
-  // document.getElementById("btn1").style = "display : visible";
 
   // TODO(mcasas): do this when https://crrev.com/2193213003/ lands
   // getCaps();
