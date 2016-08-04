@@ -11,74 +11,126 @@
 <div class="w3-container w3-orange"> Open the system camera and grab frame(s) or take (a) picture(s).</div>
 
 <div class="w3-row">
- <div class="w3-teal w3-container w3-quarter">Video source: </div>
- <div class="w3-container">
-  <select id="videoSource" class="w3-select w3-threequarter w3-pale-green ">
-  </select>
- </div>
+ <div class="w3-light-green w3-quarter">Video source: </div>
+
+ <!-- see the onfocus trick to get onchange events also when nothing changes-->
+ <select id="videoSource" class="w3-select w3-threequarter w3-green"
+         onfocus="this.selectedIndex = -1;"></select>
 </div>
+
+<div class="w3-row">
+  <input type="button" id="btn-caps" class="w3-btn-primary w3-teal w3-round"
+         onclick="getCaps()" value="getPhotoCapabilities()">
+  <input type="button" id="btn-photo" class="w3-btn-primary w3-teal w3-round"
+         onclick="takePhoto()" value="takePhoto()">
+  <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
+         onclick="grabFrame()" value="grabFrame()">
+</div>
+
+<div id="zoom-area" class="w3-row-padding" style="visibility : hidden">
+ <div class="w3-container w3-quarter">Zoom</div>
+ <input type="range" id="zoom-slider" name="zoom"
+        class="w3-input w3-border w3-container w3-quarter">
+ <output id="zoom-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
+</div>
+
+<div class="w3-row-padding w3-center">
+ <div class="w3-container w3-half">
+  <video id="videotag" class="w3-round w3-border w3-card-4"
+         width="240" height="180" autoplay=true>
+  </video>
+ </div>
+ <div class="w3-container w3-half">
+  <img id="imagetag" class="w3-round w3-border w3-card-4" width="240"
+       style="visibility : hidden">
+  </img>
+ </div>
+
+</div>
+
+<div id="height-area" class="w3-row" style="visibility : hidden">
+ <div class="w3-container w3-quarter">Height (pixels)</div>
+ <input type="range" id="height-slider" name="height"
+        class="w3-input w3-border w3-container w3-quarter">
+ <output id="height-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
+</div>
+<br>
+
+<footer class="w3-container w3-orange">Size matters?</footer>
+
 </body>
 
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
 var videoSelect = document.querySelector('select#videoSource');
+videoSelect.onchange = getUserMedia;
 
 var theStream;
 var theImageCapturer;
 var theGrabbedFrame;
 var theTakenPhoto;
 var theCapabilities;
-
-createButton("btn1", "Open camera @ 320x240", getUserMedia)
-document.body.appendChild(document.createElement("br"));
-
-createButton("btn-capture", "Create ImageCapturer", createImageCapturer);
-document.getElementById("btn-capture").disabled = true;
-document.body.appendChild(document.createElement("br"));
-createButton("btn-frame", "grabFrame()", grabFrame);
-document.getElementById("btn-frame").disabled = true;
-createButton("btn-photo", "takePhoto()", takePhoto);
-document.getElementById("btn-photo").disabled = true;
-createButton("btn-caps", "getPhotoCapabilities()", getCaps);
-document.getElementById("btn-caps").disabled = true;
+var theImageTag = document.getElementById("imagetag");
 
 document.body.appendChild(document.createElement("br"));
-
-var theZoomSlider = document.createElement("input");
-document.body.appendChild(theZoomSlider);
-theZoomSlider.id = "theZoomSlider";
-theZoomSlider.setAttribute("type", "range");
+var theZoomSlider = document.getElementById("zoom-slider");
 theZoomSlider.name = "zoom";
 theZoomSlider.step = 20;
-theZoomSlider.style.visibility = "hidden";
-var theZoomSliderValue = document.createElement("output");
-document.body.appendChild(theZoomSliderValue);
-theZoomSliderValue.id = "theZoomSliderValue";
+var theZoomSliderValue = document.getElementById("zoom-slider-value");
 theZoomSlider.oninput = function() {
   theZoomSliderValue.value = theZoomSlider.value;
   theImageCapturer.setOptions({ zoom : theZoomSlider.value });
 }
+
+var theHeightSlider = document.getElementById("height-slider");
+theHeightSlider.name = "height";
+theHeightSlider.step = 0;
+var theHeightSliderValue = document.getElementById("height-slider-value");
+theHeightSlider.oninput = function() {
+  theHeightSliderValue.value = theHeightSlider.value;
+  theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
+}
+
 document.body.appendChild(document.createElement("br"));
+
+function gotStream(stream) {
+  if (theStream)
+    theStream.getTracks().forEach((track) => { track.stop(); });
+  theStream = stream;
+
+  var videoTag = document.getElementById("videotag");
+  videoTag.src = URL.createObjectURL(theStream);
+
+  // TODO(mcasas): no timeout when https://crrev.com/2193213003/ lands
+  setTimeout(createImageCapturer, 100);
+}
 
 function createImageCapturer() {
   theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
-  document.getElementById("btn-capture").disabled = true;
   document.getElementById("btn-frame").disabled = false;
   document.getElementById("btn-photo").disabled = false;
   document.getElementById("btn-caps").disabled = false;
+
+  // TODO(mcasas): do this when https://crrev.com/2193213003/ lands
+  setTimeout(getCaps, 100);
 }
 
 function takePhoto() {
   theImageCapturer.takePhoto()
-  .then(function(a) {
-   console.log(" photo taken " + a);
-   theTakenPhoto = a;
+  .then((blob) => {
 
-   var img = document.createElement("img");
-   document.body.appendChild(img);
-   img.src = URL.createObjectURL(theTakenPhoto);
-   console.log("theTakenPhoto has been painted, (" +
-               img.width + "x" + img.height + ")");
+   document.getElementsByTagName('footer')[0].innerHTML =
+      "photo taken " + blob.type + " of size " + blob.size + "B - ";
+   theTakenPhoto = blob;
+
+   theImageTag.style.visibility = "visible";
+   theImageTag.src = URL.createObjectURL(theTakenPhoto);
+
+   theImageTag.onload = function() {
+     document.getElementsByTagName('footer')[0].innerHTML +=
+         "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight + ")";
+   };
+
   });
 }
 
@@ -88,11 +140,19 @@ function getCaps() {
    console.log(" capabilities retrieved " + caps);
    theCapabilities = caps;
 
-   theZoomSlider.style.visibility = "visible";
    theZoomSlider.min = theCapabilities.zoom.min;
    theZoomSlider.max = theCapabilities.zoom.max;
    theZoomSlider.value = theCapabilities.zoom.current;
    theZoomSliderValue.value = theZoomSlider.value;
+   document.getElementById("zoom-area").style.visibility = "visible";
+
+   theHeightSlider.min = theCapabilities.imageHeight.min;
+   theHeightSlider.max = theCapabilities.imageHeight.max;
+   theHeightSlider.value = theCapabilities.imageHeight.current;
+   theHeightSliderValue.value = theHeightSlider.value;
+   document.getElementById("height-area").style.visibility = "visible";
+
+   theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
   });
 }
 
@@ -114,15 +174,7 @@ function grabFrame() {
   });
 }
 
-function gotStream(stream) {
-  theStream = stream;
-  const videoTagId = 'videotag';
-  createVideoTag(videoTagId, 240, 180, stream);
-  document.getElementById("btn-capture").disabled = false;
-}
-
 function refreshSources() {
-
   navigator.mediaDevices.enumerateDevices()
   .then((devices) => {
     devices.forEach((device) => {
@@ -130,9 +182,8 @@ function refreshSources() {
         var option = document.createElement('option');
         option.value = device.deviceId;
         option.text = device.label || 'Camera #' + (videoSelect.length + 1);
+        console.log("cam [" + option.text + "] with id: " + option.value);
         videoSelect.appendChild(option);
-
-        console.log("camera option: " + option.text);
       }
     });
   })
@@ -148,18 +199,17 @@ function getUserMediaFailedCallback(error) {
 function getUserMedia() {
   var videoSource = videoSelect.value;
   console.log("opening camera with id: " + videoSource);
-  var constraintsWidthXHeight = {
+  var constraints = {
     "audio": false,
     "video": {
       deviceId: videoSource ? {exact: videoSource} : undefined,
-      width: {exact: 640 },
-      height: {exact : 480 }
+      width: { exact: 320 },
+      height: { exact : 240 }
     }
   };
-  navigator.webkitGetUserMedia(constraintsWidthXHeight,
-                               gotStream,
+  console.log(constraints);
+  navigator.webkitGetUserMedia(constraints, gotStream,
                                getUserMediaFailedCallback);
-  document.getElementById("btn1").disabled = true;
 };
 
 </script>
