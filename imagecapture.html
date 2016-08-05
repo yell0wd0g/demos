@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="w3.css">
+<link rel="stylesheet" href="range.css" media="screen" />
 <head>
 <meta name=viewport content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -27,6 +28,7 @@
          onclick="grabFrame()" value="grabFrame()">
 </div>
 
+<br>
 <div id="zoom-area" class="w3-row-padding" style="visibility : hidden">
  <div class="w3-container w3-quarter">Zoom</div>
  <input type="range" id="zoom-slider" name="zoom"
@@ -45,16 +47,15 @@
        style="visibility : hidden">
   </img>
  </div>
-
 </div>
 
+<br>
 <div id="height-area" class="w3-row" style="visibility : hidden">
  <div class="w3-container w3-quarter">Height (pixels)</div>
  <input type="range" id="height-slider" name="height"
         class="w3-input w3-border w3-container w3-quarter">
  <output id="height-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
 </div>
-<br>
 
 <footer class="w3-container w3-orange">Size matters?</footer>
 
@@ -119,40 +120,45 @@ function takePhoto() {
   theImageCapturer.takePhoto()
   .then((blob) => {
 
-   document.getElementsByTagName('footer')[0].innerHTML =
-      "photo taken " + blob.type + " of size " + blob.size + "B - ";
-   theTakenPhoto = blob;
+    document.getElementsByTagName('footer')[0].innerHTML =
+        "photo taken " + blob.type + " of size " + (blob.size/1024).toFixed(2)
+        + "KiB - ";
+    theTakenPhoto = blob;
 
-   theImageTag.style.visibility = "visible";
-   theImageTag.src = URL.createObjectURL(theTakenPhoto);
+    theImageTag.style.visibility = "visible";
+    theImageTag.src = URL.createObjectURL(theTakenPhoto);
 
-   theImageTag.onload = function() {
-     document.getElementsByTagName('footer')[0].innerHTML +=
-         "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight + ")";
-   };
-
+    theImageTag.onload = function() {
+      document.getElementsByTagName('footer')[0].innerHTML +=
+          "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight
+          + ")";
+    };
   });
 }
 
 function getCaps() {
   theImageCapturer.getPhotoCapabilities()
   .then(function(caps) {
-   console.log(" capabilities retrieved " + caps);
-   theCapabilities = caps;
+    console.log(" capabilities retrieved " + caps);
+    theCapabilities = caps;
 
-   theZoomSlider.min = theCapabilities.zoom.min;
-   theZoomSlider.max = theCapabilities.zoom.max;
-   theZoomSlider.value = theCapabilities.zoom.current;
-   theZoomSliderValue.value = theZoomSlider.value;
-   document.getElementById("zoom-area").style.visibility = "visible";
+    if (theCapabilities.zoom.min !== theCapabilities.zoom.max) {
+      theZoomSlider.min = theCapabilities.zoom.min;
+      theZoomSlider.max = theCapabilities.zoom.max;
+      theZoomSlider.value = theCapabilities.zoom.current;
+      theZoomSliderValue.value = theZoomSlider.value;
+      document.getElementById("zoom-area").style.visibility = "visible";
+    }
 
-   theHeightSlider.min = theCapabilities.imageHeight.min;
-   theHeightSlider.max = theCapabilities.imageHeight.max;
-   theHeightSlider.value = theCapabilities.imageHeight.current;
-   theHeightSliderValue.value = theHeightSlider.value;
-   document.getElementById("height-area").style.visibility = "visible";
+    if (theCapabilities.imageHeight.min !== theCapabilities.imageHeight.max) {
+      theHeightSlider.min = theCapabilities.imageHeight.min;
+      theHeightSlider.max = theCapabilities.imageHeight.max;
+      theHeightSlider.value = theCapabilities.imageHeight.current;
+      theHeightSliderValue.value = theHeightSlider.value;
+      document.getElementById("height-area").style.visibility = "visible";
 
-   theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
+      theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
+    }
   });
 }
 
