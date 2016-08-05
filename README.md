@@ -18,7 +18,7 @@ And only partially related:
 These previous demos are curt and not fancy: the idea is to experiment in a
 snippet-fashion with the APIs mentioned. _Much_ better demos are those in
 https://simple.info:
-- [] [Image Capture: simple.info/ic](https://simpl.info/imagecapture/)
-- [] [Media Recorder: simple.info/mr](http://simpl.info/mediarecorder/)
+- [x] [Image Capture: simple.info/ic](https://simpl.info/imagecapture/)
+- [x] [Media Recorder: simple.info/mr](http://simpl.info/mediarecorder/)
 
 - [x] [Media Capture using <input>](http://simpl.info/mediacapture/)
