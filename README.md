@@ -3,7 +3,7 @@ Demos! Demos!
 
 - [x] Image Capture: https://rawgit.com/Miguelao/demos/master/imagecapture.html
 - [x] Media Recorder: https://rawgit.com/Miguelao/demos/master/mediarecorder.html
-- [x] <video/audio>.captureStream(): https://rawgit.com/Miguelao/demos/master/videoelementcapture.html
+- [x] &lt;video/audio&gt;.captureStream(): https://rawgit.com/Miguelao/demos/master/videoelementcapture.html
 
 Some older&simpler ones:
 
