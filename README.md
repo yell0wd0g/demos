@@ -21,4 +21,4 @@ https://simple.info:
 - [x] [Image Capture: simple.info/ic](https://simpl.info/imagecapture/)
 - [x] [Media Recorder: simple.info/mr](http://simpl.info/mediarecorder/)
 
-- [x] [Media Capture using <input>](http://simpl.info/mediacapture/)
+- [x] [Media Capture using &lt;input&gt;](http://simpl.info/mediacapture/)
