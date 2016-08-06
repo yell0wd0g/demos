@@ -84,7 +84,7 @@ function recorderOnDataAvailable(event) {
 }
 
 function saveByteArray(data, name) {
-  var blob = new Blob(data, {type: "video/webm"});
+  var blob = new Blob(data, {type: "video/unknown"});
   var url = URL.createObjectURL(blob);
   var a = document.createElement("a");
   document.body.appendChild(a);
@@ -121,22 +121,23 @@ function stopStreamsAndDownloadData() {
 
 function ivfHeader() {
   // https://wiki.multimedia.cx/index.php?title=IVF
-  var header = new Uint8Array(32);
+  var header = new ArrayBuffer(32);
   // bytes 0-3    signature: 'DKIF'
-  header[0] = 'D';
-  header[1] = 'K';
-  header[2] = 'I';
-  header[3] = 'F';
+  var view = new Int8Array(header);
+  view[0] = "D".charCodeAt(0);
+  view[1] = "K".charCodeAt(0);
+  view[2] = "I".charCodeAt(0);
+  view[3] = "F".charCodeAt(0);
   // bytes 4-5    version (should be 0)
-  header[4] = 0;
-  header[5] = 0;
+  view[4] = 0;
+  view[5] = 0;
   // bytes 6-7    length of header in bytes
   new DataView(header, 6).setInt16(0, 32, true /* littleEndian */);
   // bytes 8-11   codec FourCC (e.g., 'VP80')
-  header[8] = 'V';
-  header[9] = 'P';
-  header[10] = '8';
-  header[11] = '0';
+  view[8]  = "V".charCodeAt(0);
+  view[9]  = "P".charCodeAt(0);
+  view[10] = "8".charCodeAt(0);
+  view[11] = "0".charCodeAt(0);
   // bytes 12-13  width in pixels
   new DataView(header, 12).setInt16(0, 320, true /* littleEndian */);
   // bytes 14-15  height in pixels
@@ -147,16 +148,18 @@ function ivfHeader() {
   new DataView(header, 16).setInt16(0, 30, true /* littleEndian */);
   new DataView(header, 20).setInt16(0, 1, true /* littleEndian */);
   // bytes 24-27  number of frames in file
-  new DataView(header, 24).setInt16(0, 0, true /* littleEndian */);
+  new DataView(header, 24).setInt16(0, 100, true /* littleEndian */);
   // bytes 28-31  unused
   new DataView(header, 28).setInt16(0, 0, true /* littleEndian */);
+
+  console.log(new Int8Array(header));
 
   return header;
 }
 
 function ivfFrameHeader(blob, index) {
   // https://wiki.multimedia.cx/index.php?title=IVF
-  var frame_header = new Uint8Array(12);
+  var frame_header = new ArrayBuffer(12);
   // bytes 0-3    size of frame in bytes (not including the 12-byte header)
   new DataView(frame_header).setInt16(0, blob.size, true /* littleEndian */);
   // bytes 4-11   64-bit presentation timestamp
