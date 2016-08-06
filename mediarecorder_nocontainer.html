@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="w3.css">
+<head>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>MediaStream Recoder demo (w/ MediaSource)</title>
+</head>
+<body>
+<div class="w3-container w3-orange"> Record Real-Time video (no audio) and play it back or download as file.</div>
+<div class="w3-row">
+ <div class="w3-teal w3-container w3-quarter">Video Encoder : VP8</div>
+</div>
+</body>
+
+<script type="text/javascript" src="dimsum.js"></script>
+<script>
+/* global Blob */
+/* global MediaRecorder */
+/* global MediaSource */
+/* global URL */
+
+var recorder;
+var theStream;
+
+var recordedChunks = [];
+var theMimeType;
+
+var first_frame_arrived = false;
+var frame_index = 0;
+
+var mediaSource = new MediaSource();
+var sourceBuffer;
+function mediaSourceOpened(e) {
+  console.log('MediaSource opened correctly');
+  var codec = document.getElementById("encoder");
+  sourceBuffer = mediaSource.addSourceBuffer("video/webm");
+}
+mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
+
+createButton("btn", "Start playback", makeGetStreamX(320, 240, "btn", getUserMediaOkCallback));
+document.body.appendChild(document.createElement("br"));
+createVideoTag('localview', 320, 240, '');
+createVideoTag('video', 320, 240, mediaSource);
+document.body.appendChild(document.createElement("br"));
+
+createButton("btn2", "Stop recording and play back", stopStreamsAndPlaybackData);
+document.getElementById("btn2").disabled = true;
+createButton("btn3", "Stop recording and download data", stopStreamsAndDownloadData);
+document.getElementById("btn3").disabled = true;
+
+////////////////////////////////////////////////////////////////////////////////
+function getUserMediaOkCallback(stream) {
+  console.log("getUserMedia succeeded :)");
+  theStream = stream;
+  document.getElementById("localview").src = URL.createObjectURL(stream);
+  document.getElementById("btn").disabled = true;
+  document.getElementById("btn2").disabled = false;
+  document.getElementById("btn3").disabled = false;
+
+  theMimeType ='video/vp8';
+
+  try {
+    recorder = new MediaRecorder(stream, {mimeType : theMimeType});
+  } catch (e) {
+    console.assert(false, 'Exception while creating MediaRecorder: ' + e);
+    return;
+  }
+  console.assert(recorder.state == "inactive");
+  recorder.ondataavailable = recorderOnDataAvailable;
+  recorder.onstop = recorderOnStop;
+  recorder.start();
+  console.log("Recorder is started, mimeType: " + theMimeType);
+  console.assert(recorder.state == "recording");
+}
+
+function recorderOnDataAvailable(event) {
+  if (!first_frame_arrived) {
+    recordedChunks.push(ivfHeader());
+    first_frame_arrived = true;
+  }
+  recordedChunks.push(ivfFrameHeader(event.data, frame_index++));
+  recordedChunks.push(event.data);
+}
+
+function saveByteArray(data, name) {
+  var blob = new Blob(data, {type: "video/webm"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  document.body.appendChild(a);
+  a.style = "display: none";
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function stopStreamsAndPlaybackData() {
+  document.getElementById("btn2").disabled = true;
+  document.getElementById("btn3").disabled = true;
+  console.log('Stopping record and starting playback');
+  recorder.stop();
+  theStream.getVideoTracks()[0].stop();
+
+  // sourceBuffer.appendBuffer(recordedChunks);
+  // Or...
+  var superBuffer = new Blob(recordedChunks);
+  document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
+}
+
+
+function stopStreamsAndDownloadData() {
+  document.getElementById("btn2").disabled = true;
+  document.getElementById("btn3").disabled = true;
+  console.log('Stopping record and starting playback');
+  recorder.stop();
+  theStream.getVideoTracks()[0].stop();
+
+  saveByteArray(recordedChunks, 'test.ivf')();
+}
+
+function ivfHeader() {
+  // https://wiki.multimedia.cx/index.php?title=IVF
+  var header = new Uint8Array(32);
+  // bytes 0-3    signature: 'DKIF'
+  header[0] = 'D';
+  header[1] = 'K';
+  header[2] = 'I';
+  header[3] = 'F';
+  // bytes 4-5    version (should be 0)
+  header[4] = 0;
+  header[5] = 0;
+  // bytes 6-7    length of header in bytes
+  new DataView(header, 6).setInt16(0, 32, true /* littleEndian */);
+  // bytes 8-11   codec FourCC (e.g., 'VP80')
+  header[8] = 'V';
+  header[9] = 'P';
+  header[10] = '8';
+  header[11] = '0';
+  // bytes 12-13  width in pixels
+  new DataView(header, 12).setInt16(0, 320, true /* littleEndian */);
+  // bytes 14-15  height in pixels
+  new DataView(header, 14).setInt16(0, 240, true /* littleEndian */);
+  // bytes 16-19  frame rate (a.k.a timescale denum)
+  // bytes 20-23  time scale (a.k.a timescale numerator)
+  // Both are used in conjunction to define the units of the timescale later on.
+  new DataView(header, 16).setInt16(0, 30, true /* littleEndian */);
+  new DataView(header, 20).setInt16(0, 1, true /* littleEndian */);
+  // bytes 24-27  number of frames in file
+  new DataView(header, 24).setInt16(0, 0, true /* littleEndian */);
+  // bytes 28-31  unused
+  new DataView(header, 28).setInt16(0, 0, true /* littleEndian */);
+
+  return header;
+}
+
+function ivfFrameHeader(blob, index) {
+  // https://wiki.multimedia.cx/index.php?title=IVF
+  var frame_header = new Uint8Array(12);
+  // bytes 0-3    size of frame in bytes (not including the 12-byte header)
+  new DataView(frame_header).setInt16(0, blob.size, true /* littleEndian */);
+  // bytes 4-11   64-bit presentation timestamp
+  new DataView(frame_header, 8).setInt16(0, index, true /* littleEndian */);
+  // bytes 12..   frame data
+  return frame_header;
+}
+
+</script>
+
+<div class="w3-container w3-sand">(Note: check <a href="https://crbug.com/253465">crbug.com/253465</a> if on Android)</div>
+</html>
