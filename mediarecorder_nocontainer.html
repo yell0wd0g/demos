@@ -23,11 +23,11 @@
 var recorder;
 var theStream;
 
-var recordedChunks = [];
+var chunks = [];
 var theMimeType;
 
-var first_frame_arrived = false;
 var frame_index = 0;
+
 
 var mediaSource = new MediaSource();
 var sourceBuffer;
@@ -74,17 +74,20 @@ function getUserMediaOkCallback(stream) {
   console.assert(recorder.state == "recording");
 }
 
+fileReader.onload  = function(progressEvent) {
+  var leArray  = new Uint8Array(this.result);
+
+}
+
 function recorderOnDataAvailable(event) {
-  if (!first_frame_arrived) {
-    recordedChunks.push(ivfHeader());
-    first_frame_arrived = true;
-  }
-  recordedChunks.push(ivfFrameHeader(event.data, frame_index++));
-  recordedChunks.push(event.data);
+  if (event.data.size == 0)
+    return;
+  chunks.push(ivfFrameHeader(event.data.size, frame_index++));
+  chunks.push(event.data);
 }
 
 function saveByteArray(data, name) {
-  var blob = new Blob(data, {type: "video/unknown"});
+  var blob = new Blob(data, {type: "application/octet-stream"});
   var url = URL.createObjectURL(blob);
   var a = document.createElement("a");
   document.body.appendChild(a);
@@ -102,9 +105,9 @@ function stopStreamsAndPlaybackData() {
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
 
-  // sourceBuffer.appendBuffer(recordedChunks);
+  // sourceBuffer.appendBuffer(chunks);
   // Or...
-  var superBuffer = new Blob(recordedChunks);
+  var superBuffer = new Blob(chunks);
   document.getElementById("video").src = window.URL.createObjectURL(superBuffer);
 }
 
@@ -116,10 +119,13 @@ function stopStreamsAndDownloadData() {
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
 
-  saveByteArray(recordedChunks, 'test.ivf')();
+  var finalData = [ivfHeader(frame_index)].concat(chunks);
+  console.log('Saving ' + frame_index + ' frames, ' + finalData.length +' chunks' );
+
+  saveByteArray(finalData, 'test.ivf');
 }
 
-function ivfHeader() {
+function ivfHeader(num_frames) {
   // https://wiki.multimedia.cx/index.php?title=IVF
   var header = new ArrayBuffer(32);
   // bytes 0-3    signature: 'DKIF'
@@ -145,25 +151,25 @@ function ivfHeader() {
   // bytes 16-19  frame rate (a.k.a timescale denum)
   // bytes 20-23  time scale (a.k.a timescale numerator)
   // Both are used in conjunction to define the units of the timescale later on.
-  new DataView(header, 16).setInt16(0, 30, true /* littleEndian */);
-  new DataView(header, 20).setInt16(0, 1, true /* littleEndian */);
+  new DataView(header, 16).setInt32(0, 30000, true /* littleEndian */);
+  new DataView(header, 20).setInt32(0, 1000, true /* littleEndian */);
   // bytes 24-27  number of frames in file
-  new DataView(header, 24).setInt16(0, 100, true /* littleEndian */);
+  new DataView(header, 24).setInt32(0, num_frames, true /* littleEndian */);
   // bytes 28-31  unused
-  new DataView(header, 28).setInt16(0, 0, true /* littleEndian */);
-
-  console.log(new Int8Array(header));
+  new DataView(header, 28).setInt32(0, 0, true /* littleEndian */);
 
   return header;
 }
 
-function ivfFrameHeader(blob, index) {
+function ivfFrameHeader(size, index) {
+  console.log(index + ' frame of size ' + size);
   // https://wiki.multimedia.cx/index.php?title=IVF
   var frame_header = new ArrayBuffer(12);
   // bytes 0-3    size of frame in bytes (not including the 12-byte header)
-  new DataView(frame_header).setInt16(0, blob.size, true /* littleEndian */);
+  new DataView(frame_header).setInt32(0, size, true /* littleEndian */);
   // bytes 4-11   64-bit presentation timestamp
-  new DataView(frame_header, 8).setInt16(0, index, true /* littleEndian */);
+  new DataView(frame_header, 4).setInt32(0, index, true /* littleEndian */);
+  new DataView(frame_header, 8).setInt32(0, 0, true /* littleEndian */);
   // bytes 12..   frame data
   return frame_header;
 }
