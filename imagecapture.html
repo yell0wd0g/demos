@@ -14,7 +14,7 @@
 <div class="w3-row">
  <div class="w3-light-green w3-quarter">Video source: </div>
 
- <!-- see the onfocus trick to get onchange events also when nothing changes-->
+ <!-- onfocus trick to get onchange events also when nothing changes-->
  <select id="videoSource" class="w3-select w3-threequarter w3-green"
          onfocus="this.selectedIndex = -1;"></select>
 </div>
@@ -26,8 +26,12 @@
          onclick="takePhoto()" value="takePhoto()">
   <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
          onclick="grabFrame()" value="grabFrame()">
-  <input type="button" id="btn-focus" class="w3-btn-primary w3-teal w3-round"
-         onclick="focusonce()" value="kick da focus">
+
+  <select id="focusMode" class=" w3-green w3-rest">
+    <option value="single-shot">single-shot</option>
+    <option value="continuous">continuous</option>
+    <option value="other">other</option>
+  </select>
 </div>
 
 <br>
@@ -60,7 +64,6 @@
 </div>
 
 <footer class="w3-container w3-light-green">Size matters?</footer>
-<footer class="w3-container w3-orange"></footer>
 
 </body>
 
@@ -68,6 +71,9 @@
 <script>
 var videoSelect = document.querySelector('select#videoSource');
 videoSelect.onchange = getUserMedia;
+var focusSelect = document.querySelector('select#focusMode');
+focusSelect.onchange = focusify;
+focusSelect.selectedIndex = -1;
 
 var theStream;
 var theImageCapturer;
@@ -163,8 +169,12 @@ function getCaps() {
       theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
     }
 
-    document.getElementsByTagName('footer')[1].innerHTML =
-        "focus mode [" + theCapabilities.focusMode + "]";
+    if (theCapabilities.focusMode == "single-shot")
+      focusSelect.selectedIndex = "0";
+    else if (theCapabilities.focusMode == "single-continuous")
+      focusSelect.selectedIndex = "1";
+    else
+      focusSelect.selectedIndex = "2";
 
   });
 }
@@ -187,8 +197,10 @@ function grabFrame() {
   });
 }
 
-function focusonce() {
-  theImageCapturer.setOptions({ focusMode : 'single-shot' });
+function focusify() {
+  theImageCapturer.setOptions({ focusMode :
+    focusSelect.options[focusSelect.selectedIndex].value });
+  getCaps();
 }
 
 function refreshSources() {
