@@ -26,12 +26,6 @@
          onclick="takePhoto()" value="takePhoto()">
   <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
          onclick="grabFrame()" value="grabFrame()">
-
-  <select id="focusMode" class=" w3-green w3-rest">
-    <option value="single-shot">single-shot</option>
-    <option value="continuous">continuous</option>
-    <option value="other">other</option>
-  </select>
 </div>
 
 <br>
@@ -64,6 +58,13 @@
 </div>
 
 <footer class="w3-container w3-light-green">Size matters?</footer>
+<div>
+  <label class="w3-validate" id="focusModeLabel">focus: unknown</label>
+  <input type="button" id="btn-single-shot" class="w3-btn-primary w3-teal w3-round"
+         onclick="setSingleShotFocus()" value="kick focus single-shot">
+  <input type="button" id="btn-continuous" class="w3-btn-primary w3-teal w3-round"
+         onclick="setContinuousFocus()" value="set continuous focus">
+</div>
 
 </body>
 
@@ -71,9 +72,7 @@
 <script>
 var videoSelect = document.querySelector('select#videoSource');
 videoSelect.onchange = getUserMedia;
-var focusSelect = document.querySelector('select#focusMode');
-focusSelect.onchange = focusify;
-focusSelect.selectedIndex = -1;
+var focusModeLabel = document.getElementById('focusModeLabel');
 
 var theStream;
 var theImageCapturer;
@@ -169,13 +168,7 @@ function getCaps() {
       theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
     }
 
-    if (theCapabilities.focusMode == "single-shot")
-      focusSelect.selectedIndex = "0";
-    else if (theCapabilities.focusMode == "continuous")
-      focusSelect.selectedIndex = "1";
-    else
-      focusSelect.selectedIndex = "2";
-
+    focusModeLabel.innerHTML = 'focus : ' + theCapabilities.focusMode;
   });
 }
 
@@ -197,9 +190,12 @@ function grabFrame() {
   });
 }
 
-function focusify() {
-  theImageCapturer.setOptions({ focusMode :
-    focusSelect.options[focusSelect.selectedIndex].value });
+function setSingleShotFocus() {
+  theImageCapturer.setOptions({ focusMode : "single-shot" });
+  getCaps();
+}
+function setContinuousFocus() {
+  theImageCapturer.setOptions({ focusMode : "continuous" });
   getCaps();
 }
 
