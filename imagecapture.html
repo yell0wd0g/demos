@@ -26,6 +26,8 @@
          onclick="takePhoto()" value="takePhoto()">
   <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
          onclick="grabFrame()" value="grabFrame()">
+  <input type="button" id="btn-focus" class="w3-btn-primary w3-teal w3-round"
+         onclick="focusonce()" value="kick da focus">
 </div>
 
 <br>
@@ -57,7 +59,8 @@
  <output id="height-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
 </div>
 
-<footer class="w3-container w3-orange">Size matters?</footer>
+<footer class="w3-container w3-light-green">Size matters?</footer>
+<footer class="w3-container w3-orange"></footer>
 
 </body>
 
@@ -159,6 +162,10 @@ function getCaps() {
 
       theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
     }
+
+    document.getElementsByTagName('footer')[1].innerHTML =
+        "focus mode [" + theCapabilities.focusMode + "]";
+
   });
 }
 
@@ -178,6 +185,10 @@ function grabFrame() {
     context.drawImage(theGrabbedFrame, 0, 0);
     console.log(" theGrabbedFrame has been painted (maybe)");
   });
+}
+
+function focusonce() {
+  theImageCapturer.setOptions({ focus : 'single-shot' });
 }
 
 function refreshSources() {
