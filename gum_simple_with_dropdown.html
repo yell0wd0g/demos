@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Simple Video camera getUserMedia() demo with dropdown</title>
+</head>
+<body>
+ <div> Automatically open the (first) system camera in a default resolution.</div>
+ <select>
+ 	<option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+ </select>
+ <video id="videotag" width="240" height="180" autoplay=true></video>
+</body>
+<script type="text/javascript">
+/* global webkitURL */
+
+function requestVideo() {
+  navigator.webkitGetUserMedia(
+      {video : true, audio : false},
+      (stream) => {
+          var videoTag = document.getElementById("videotag");
+          videoTag.src = URL.createObjectURL(stream);
+      },
+      (err) => { console.error(err); });
+}
+requestVideo();
+
+</script>
+</html>
