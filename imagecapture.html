@@ -109,6 +109,7 @@ function gotStream(stream) {
 
   var videoTag = document.getElementById("videotag");
   videoTag.src = URL.createObjectURL(theStream);
+  videoTag.addEventListener("mousedown", onMouseClick, false);
 
   // TODO(mcasas): no timeout when https://crrev.com/2193213003/ lands
   setTimeout(createImageCapturer, 100);
@@ -198,6 +199,19 @@ function setContinuousFocus() {
   theImageCapturer.setOptions({ focusMode : "continuous" });
   getCaps();
 }
+
+function onMouseClick(e) {
+  const rect = this.getBoundingClientRect();
+  // I'm uncertain if this would work as expected. Let's try it out.
+  const x_pos = e.clientX - rect.left;
+  const y_pos = e.clientY - rect.top;
+  console.log("mouse click @ " + x_pos + "," + y_pos );
+
+  //theImageCapturer.setOptions({ pointsOfInterest : [{ x : x_pos, y : y_pos}] });
+
+  e.preventDefault();
+}
+
 
 function refreshSources() {
   navigator.mediaDevices.enumerateDevices()

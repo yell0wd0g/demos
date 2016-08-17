@@ -30,14 +30,14 @@
 var recorder;
 var theStream;
 
-// 
-// Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received 
+//
+// Idea from: http://codepen.io/anon/pen/gpmPzm?editors=101, stuff received
 // data in |chunks|, then blobify it and plug the result in a <video>.
 //
-// The alternative is, e.g. [1, 2], using MediaSource where we basically pass 
+// The alternative is, e.g. [1, 2], using MediaSource where we basically pass
 // recorded chunks one by one into a MediaSource associated to a <video>.
-// MediaRecorder supposedly produces BlobEvents and Blobs are not friendly to 
-// MediaSource-SourceBuffer, so there's an Experimental CL sending stuff as 
+// MediaRecorder supposedly produces BlobEvents and Blobs are not friendly to
+// MediaSource-SourceBuffer, so there's an Experimental CL sending stuff as
 // an Uint8ArrayEvent.
 //
 // [1] http://html5-demos.appspot.com/static/media-source.html
@@ -54,7 +54,7 @@ function mediaSourceOpened(e) {
 }
 mediaSource.addEventListener('sourceopen', mediaSourceOpened, false);
 
-createButton("btn", "Start playback", makeGetStreamX(320, 240, "btn", getUserMediaOkCallback));
+createButton("btn", "Start playback", makeGetStreamX(640, 480, "btn", getUserMediaOkCallback));
 document.body.appendChild(document.createElement("br"));
 createVideoTag('localview', 320, 240, '');
 createVideoTag('video', 320, 240, mediaSource);
@@ -75,7 +75,7 @@ function getUserMediaOkCallback(stream) {
   document.getElementById("btn3").disabled = false;
 
   theMimeType ='video/webm; codecs="' + encoder.options[encoder.selectedIndex].value + '"';
-  
+
   try {
     recorder = new MediaRecorder(stream, {mimeType : theMimeType});
   } catch (e) {
@@ -85,7 +85,7 @@ function getUserMediaOkCallback(stream) {
   console.assert(recorder.state == "inactive");
   recorder.ondataavailable = recorderOnDataAvailable;
   recorder.onstop = recorderOnStop;
-  recorder.start(); 
+  recorder.start();
   console.log("Recorder is started, mimeType: " + theMimeType);
   console.assert(recorder.state == "recording");
 }
@@ -94,7 +94,7 @@ function recorderOnDataAvailable(event) {
   if (event) {
     if (event.data.size > 0)
       console.assert(recorder.state == "recording", "State should be 'recording'");
-    else 
+    else
       console.assert(recorder.state == "inactive", "State should be 'inactive'");
   }
 
@@ -120,7 +120,7 @@ function stopStreamsAndPlaybackData() {
   console.log('Stopping record and starting playback');
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
-  
+
   // sourceBuffer.appendBuffer(recordedChunks);
   // Or...
   var superBuffer = new Blob(recordedChunks);
@@ -134,7 +134,7 @@ function stopStreamsAndDownloadData() {
   console.log('Stopping record and starting playback');
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
-  
+
   if (encoder.options[encoder.selectedIndex].value == "h264")
     saveByteArray(recordedChunks, 'test.mkv')();
   else
