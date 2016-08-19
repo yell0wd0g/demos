@@ -201,13 +201,13 @@ function setContinuousFocus() {
 }
 
 function onMouseClick(e) {
+  var videoTag = document.getElementById("videotag");
   const rect = this.getBoundingClientRect();
-  // I'm uncertain if this would work as expected. Let's try it out.
-  const x_pos = e.clientX - rect.left;
-  const y_pos = e.clientY - rect.top;
+  const x_pos = (e.clientX - rect.left) / videoTag.offsetWidth;
+  const y_pos = (e.clientY - rect.top)  / videoTag.offsetHeight;
   console.log("mouse click @ " + x_pos + "," + y_pos );
 
-  //theImageCapturer.setOptions({ pointsOfInterest : [{ x : x_pos, y : y_pos}] });
+  theImageCapturer.setOptions({ pointsOfInterest : [{ x : x_pos, y : y_pos}] });
 
   e.preventDefault();
 }
