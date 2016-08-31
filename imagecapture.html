@@ -148,7 +148,7 @@ function takePhoto() {
 function getCaps() {
   theImageCapturer.getPhotoCapabilities()
   .then(function(caps) {
-    console.log(" capabilities retrieved " + caps);
+    console.log(" capabilities retrieved ", caps);
     theCapabilities = caps;
 
     if (theCapabilities.zoom.min !== theCapabilities.zoom.max) {
