@@ -1,0 +1,37 @@
+{
+  "name": "Image Capture API demo",
+  "icons": [
+    {
+      "src": "resources/ic_launcher-1x.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "density": 1.0
+    },
+    {
+      "src": "resources/ic_launcher-1-5x.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "density": 1.5
+    },
+    {
+      "src": "resources/ic_launcher-2x.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "density": 2.0
+    },
+    {
+      "src": "resources/ic_launcher-3x.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "density": 3.0
+    },
+    {
+      "src": "resources/ic_launcher-4x.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "density": 4.0
+    }
+  ],
+  "start_url": "imagecapture.html",
+  "display": "standalone",
+}
