@@ -12,9 +12,10 @@
  <div class="w3-teal w3-container w3-quarter">Video Encoder</div>
  <div class="w3-container">
   <select id="encoder" class="w3-select w3-threequarter w3-pale-green ">
-    <option value="vp8">VP8</option>
-    <option value="vp9">VP9</option>
-    <option value="h264">H264 (new!)</option>
+    <option value="video/webm;codecs=vp8">VP8</option>
+    <option value="video/webm;codecs=vp9">VP9</option>
+    <option value="video/x-matroska;codecs=h264">H264</option>
+    <option value="video/x-matroska;codecs=jpeg">MJPEG</option>
   </select>
  </div>
 </div>
@@ -74,7 +75,7 @@ function getUserMediaOkCallback(stream) {
   document.getElementById("btn2").disabled = false;
   document.getElementById("btn3").disabled = false;
 
-  theMimeType ='video/webm; codecs="' + encoder.options[encoder.selectedIndex].value + '"';
+  const theMimeType = encoder.options[encoder.selectedIndex].value;
 
   try {
     recorder = new MediaRecorder(stream, {mimeType : theMimeType});
@@ -135,10 +136,12 @@ function stopStreamsAndDownloadData() {
   recorder.stop();
   theStream.getVideoTracks()[0].stop();
 
-  if (encoder.options[encoder.selectedIndex].value == "h264")
-    saveByteArray(recordedChunks, 'test.mkv')();
-  else
+  if (encoder.options[encoder.selectedIndex].value == "video/x-matroska;codecs=h264" ||
+      encoder.options[encoder.selectedIndex].value == "video/x-matroska;codecs=jpeg") {
+    saveByteArray(recordedChunks, 'test.mkv');
+  } else {
     saveByteArray(recordedChunks, 'test.webm')();
+  }
 }
 
 </script>
