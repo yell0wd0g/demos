@@ -138,9 +138,9 @@ function stopStreamsAndDownloadData() {
 
   if (encoder.options[encoder.selectedIndex].value == "video/x-matroska;codecs=h264" ||
       encoder.options[encoder.selectedIndex].value == "video/x-matroska;codecs=jpeg") {
-    saveByteArray(recordedChunks, 'test.mkv');
+    setTimeout(() => {saveByteArray(recordedChunks, 'test.mkv');}, 100);
   } else {
-    saveByteArray(recordedChunks, 'test.webm')();
+    setTimeout(() => {saveByteArray(recordedChunks, 'test.webm');}, 100);
   }
 }
 

@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-><head>
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Simple Video camera getUserMedia() demo</title>
 <script type="text/javascript">
-/* global webkitURL */
+/* global URL */
 
 function requestVideo() {
-  navigator.webkitGetUserMedia({video: true, audio: false},
-                               getUserMediaOkCallback,
-                               getUserMediaFailedCallback);
+  navigator.mediaDevices.getUserMedia({video: true, audio: false},
+                                      getUserMediaOkCallback,
+                                      getUserMediaFailedCallback);
 }
 
 function getUserMediaFailedCallback(error) {
-  console.assert(false, 'User media request denied with error code ' + error.code);
+  console.error('User media request denied with error code ' + error.code);
 }
 
 function getUserMediaOkCallback(stream) {
   var video_tag = document.createElement('video');
-  video_tag.src = webkitURL.createObjectURL(stream);
+  video_tag.src = URL.createObjectURL(stream);
   document.body.appendChild(video_tag);
   video_tag.play();  
 }
