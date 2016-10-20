@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
+<link rel="stylesheet" href="w3.css">
 <head>
+<meta name=viewport content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Multiple cameras getUserMedia() demo</title>
 </head>
 
 <body>
-  <div> This page lists all Video Capture devices and tries to open each of them in sequence. </div>
-  <textarea id="textarea" name="textarea" rows="2" cols="80" style="border: none; resize: none"></textarea>
-  <br/>
+<div class="w3-container w3-orange"> This page lists all Video Capture devices and tries to open each of them in sequence. </div>
+<div id="textarea" class="w3-panel w3-pale-green w3-leftbar w3-border-green w3-card-8 w3-medium">
+</div>
+<br/>
 </body>
 
 <script type="text/javascript" src="dimsum.js"></script>
@@ -21,15 +24,16 @@ function refreshSources() {
   navigator.mediaDevices.enumerateDevices()
   .then(function(devices) {
     var count = 0;
-    document.getElementById('textarea').value = "";
+    document.getElementById('textarea').innerHTML = "<ul class=\"w3-ul\">";
     devices.forEach(function(device) {
       if (device.kind != 'videoinput') 
         return;
       cameraIds[count++] = device;
       var message = "Video capture dev # "+ count + " : " + device.label + ", id: " + device.deviceId ;
       console.log(message);
-      document.getElementById('textarea').value += message + "\n";
+      document.getElementById('textarea').innerHTML += "<li>" + message + "</li>\n";
     });
+    document.getElementById('textarea').innerHTML += "</ul>";
   })
   .catch(function(err) {
     console.log(err.name + ": " + err.message);
@@ -40,17 +44,14 @@ function capture() {
   console.log("Requesting " + cameraIds.length + " video device(s)");
   for (var index in cameraIds) {
     var constraints = { audio : false };
-    constraints.video = { optional : [{ sourceId: cameraIds[index].id }] };
+    constraints.video = { optional : [{ sourceId: cameraIds[index].deviceId }] };
 
     console.log("Requesting getUserMedia: " + JSON.stringify(constraints));
-    navigator.webkitGetUserMedia(constraints, gotStream, getUserMediaFailedCallback); 
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then((stream) => { createVideoTag('', 320, 240, stream); })
+        .catch((error) => { console.error(error); });
   }
   document.getElementById("btn").disabled = true;
-}
-function gotStream(stream) {    
-  console.log("Got video device");
-  
-  createVideoTag('', 320, 240, stream);
 }
 
 createButton("btn", "Start all Video Capturer(s)", capture)
