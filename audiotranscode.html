@@ -5,8 +5,8 @@
 </head>
 <body>
 	<p>Drag and drop a file in to transcode...</p>
-	<p>I take no credit or blame for this file or its functionality :) -- see <a href=http://crbug.com/569089>http://crbug.com/569089</a> for context.<p> 
-	
+	<p>I take no credit or blame for this file or its functionality :) -- see <a href=http://crbug.com/569089>http://crbug.com/569089</a> for context.<p>
+
 <script>
 "use strict";
 
@@ -15,9 +15,9 @@ var audioContext = null;
 function OnFileDropped(e)
 {
 	e.preventDefault();
-	
+
 	var files = e.dataTransfer.files;
-	
+
 	if (files.length)
 		Transcode(files[0]);
 };
@@ -45,7 +45,7 @@ function Transcode(file)
 function Decode(file)
 {
 	console.log("Starting decode of file: ", file);
-	
+
 	return ConvertFileToArrayBuffer(file).then(function (arraybuffer)
 	{
 		return new Promise(function (resolve, reject)
@@ -60,15 +60,15 @@ function Encode(buffer)
 	return new Promise(function (resolve, reject)
 	{
 		console.log("Starting encode of buffer: ", buffer);
-		
+
 		var bufferSource = audioContext.createBufferSource();
 		bufferSource.buffer = buffer;
 		var streamDest = audioContext.createMediaStreamDestination();
 		bufferSource.connect(streamDest);
-		
+
 		var mimeType = "audio/webm";
 		var mediaRecorder;
-		
+
 		// Try to handle both kinds of constructor used in recent spec versions.
 		try {
 			mediaRecorder = new MediaRecorder(streamDest.stream, { "mimeType": mimeType });
@@ -77,14 +77,14 @@ function Encode(buffer)
 		{
 			mediaRecorder = null;
 		}
-		
+
 		if (!mediaRecorder)
 		{
 			mediaRecorder = new MediaRecorder(streamDest.stream, mimeType);
 		}
-		
+
 		var chunks = [];
-		
+
 		mediaRecorder.ondataavailable = function (e)
 		{
 			chunks.push(e.data);
@@ -96,12 +96,12 @@ function Encode(buffer)
 			resolve(blob);
 		};
 		mediaRecorder.onerror = reject;
-		
+
 		bufferSource.onended = function () {
 			mediaRecorder.stop();
 		};
-		
-		mediaRecorder.start();
+
+		mediaRecorder.start(1);
 		bufferSource.start();
 	});
 };
