@@ -9,6 +9,7 @@
   </style>
 </head>
 <body>
+  <video autoplay style="height:180px; width: 240px;"></video>
 
   <script src="js/three.js"></script>
   <script>
@@ -110,6 +111,7 @@
       const halfHeight = height / 2;
       navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
+          document.querySelector('video').src = URL.createObjectURL(stream);
           theCapturer = new ImageCapture(stream.getVideoTracks()[0]);
 
           interval = setInterval(function() {
@@ -126,12 +128,9 @@
                   // Move |camera.position.{x,y}| inversely to the face {x,y}.
                   camera.position.x = (halfWidth - center.x);
                   camera.position.y = (halfHeight - center.y);
-                  //console.log("After (" + camera.position.x + ", " + camera.position.y + ")");
 
                   // Getting closer if the face bounding box grows. Typical size
-                  // of said box is ~= 90x90. The result is jittery, so we
-                  // round up/down.
-                  // faces[0].width = Math.round(faces[0].width / 10 ) * 10;
+                  // of said box is ~= 90x90. The result is jittery :'(
                   camera.position.z = cameraZ + (90 - faces[0].width ) * 10;
                 }
               })
