@@ -249,7 +249,7 @@ function getUserMedia() {
     }
   };
   console.log(constraints);
-  navigator.webkitGetUserMedia(constraints, gotStream,
+  navigator.getUserMedia(constraints, gotStream,
                                getUserMediaFailedCallback);
 };
 
