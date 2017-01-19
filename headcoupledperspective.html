@@ -132,6 +132,12 @@
                   // Getting closer if the face bounding box grows. Typical size
                   // of said box is ~= 90x90. The result is jittery :'(
                   camera.position.z = cameraZ + (90 - faces[0].width ) * 10;
+
+                  // Shifting camera.position according to face is not enough to
+                  // produce head coupled perspective,
+                  // https://dev.opera.com/articles/head-tracking-with-webrtc/
+                  camera.lookAt(
+                      new THREE.Vector3(-camera.position.x, -camera.position.y, 0));
                 }
               })
               .catch((e) => { console.error("Face Detection failed: " + e); });
