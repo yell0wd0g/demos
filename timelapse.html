@@ -25,13 +25,15 @@
   </video>
  </div>
  <div class="w3-container w3-half">
-  <img id="imagetag" class="w3-round w3-border w3-card-4" width="240"
+  <canvas id="canvas" class="w3-round w3-border w3-card-4" width="240"
        style="visibility : hidden">
   </img>
  </div>
 </div>
 
 <div class="w3-row">
+  <input type="button" id="startStreaming" class="w3-btn-primary w3-teal w3-round"
+         onclick="getUserMedia()" value="Start streaming">
   <input type="button" id="startRecording" class="w3-btn-primary w3-teal w3-round"
          onclick="startRecording()" value="Start Recording">
   <input type="button" id="stopRecording" class="w3-btn-primary w3-teal w3-round"
@@ -43,6 +45,7 @@
 <script>
 var theStream;
 var theImageCapturer;
+var theCanvasStream;
 var theRecorder;
 
 var videoSelect = document.querySelector('select#videoSource');
@@ -53,9 +56,14 @@ var recordedChunks = [];
 document.getElementById("stopRecording").disabled = true;
 
 ////////////////////////////////////////////////////////////////////////////////
+// This Section is all about recording.
 function startRecording() {
+
+  var canvas = document.getElementById("canvas");
+  theCanvasStream = canvas.captureStream();
+
   try {
-    theRecorder = new MediaRecorder(theStream, {forcedVideoFrameRate : 1.0});
+    theRecorder = new MediaRecorder(theCanvasStream, {forcedVideoFrameRate : 30.0});
   } catch (e) {
     console.assert(false, 'Exception while creating MediaRecorder: ' + e);
     return;
@@ -67,6 +75,8 @@ function startRecording() {
   theRecorder.onstop = stopRecording;
   theRecorder.start();
   console.log("Recorder started");
+
+  setTimeout(() => { grabFrame(); }, 1000);
 }
 
 function onDataAvailable(event) {
@@ -89,11 +99,33 @@ function stopRecording() {
   document.getElementById("startRecording").disabled = false;
   document.getElementById("stopRecording").disabled = true;
 
-  console.log('Stopping record and starting download');
+  console.log('Stopping recording and downloading');
   theRecorder.stop();
   //theStream.getVideoTracks()[0].stop();
 
   setTimeout(() => {saveByteArray(recordedChunks, 'test.webm');}, 100);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function grabFrame() {
+  theImageCapturer.grabFrame()
+  .then(function(a) {
+    console.log(" frame grabbed " + a.width + 'x' + a.height);
+    theGrabbedFrame = a;
+
+    var canvas = document.getElementById("canvas");
+    canvas.style.visibility = 'visible';
+
+    canvas.width  = theGrabbedFrame.width;
+    canvas.height = theGrabbedFrame.height;
+    canvas.className = "w3-round w3-border w3-card-16";
+    var context = canvas.getContext("2d");
+    context.drawImage(theGrabbedFrame, 0, 0);
+
+    if (theRecorder.state == 'recording')
+      setTimeout(() => { grabFrame(); }, 1000);
+
+  });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -130,6 +162,7 @@ function refreshSources() {
   navigator.mediaDevices.enumerateDevices()
   .then((devices) => {
     devices.forEach((device) => {
+      console.log( device.label + ' ' + device.kind);
       if (device.kind == 'videoinput') {
         var option = document.createElement('option');
         option.value = device.deviceId;
