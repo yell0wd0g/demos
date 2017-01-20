@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="w3.css">
+<link rel="stylesheet" href="range.css" media="screen" />
+<link rel="manifest" href="manifest.json">
+<head>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Time Lapse demo</title>
+</head>
+
+<body>
+<div class="w3-row">
+ <div class="w3-light-green w3-quarter">Video source: </div>
+ <!-- onfocus trick to get onchange events also when nothing changes-->
+ <select id="videoSource" class="w3-select w3-threequarter w3-green"
+         onfocus="this.selectedIndex = -1;"></select>
+</div>
+
+
+<div class="w3-row-padding w3-center">
+ <div class="w3-container w3-half">
+  <video id="videotag" class="w3-round w3-border w3-card-4"
+         width="240" height="180" autoplay=true>
+  </video>
+ </div>
+ <div class="w3-container w3-half">
+  <img id="imagetag" class="w3-round w3-border w3-card-4" width="240"
+       style="visibility : hidden">
+  </img>
+ </div>
+</div>
+
+<div class="w3-row">
+  <input type="button" id="startRecording" class="w3-btn-primary w3-teal w3-round"
+         onclick="startRecording()" value="Start Recording">
+  <input type="button" id="stopRecording" class="w3-btn-primary w3-teal w3-round"
+         onclick="stopRecording()" value="Stop Recording">
+</div>
+
+<script type="text/javascript" src="dimsum.js"></script>
+
+<script>
+var theStream;
+var theImageCapturer;
+var theRecorder;
+
+var videoSelect = document.querySelector('select#videoSource');
+videoSelect.onchange = getUserMedia;
+
+var recordedChunks = [];
+
+document.getElementById("stopRecording").disabled = true;
+
+////////////////////////////////////////////////////////////////////////////////
+function startRecording() {
+  try {
+    theRecorder = new MediaRecorder(theStream, {forcedVideoFrameRate : 1.0});
+  } catch (e) {
+    console.assert(false, 'Exception while creating MediaRecorder: ' + e);
+    return;
+  }
+  document.getElementById("startRecording").disabled = true;
+  document.getElementById("stopRecording").disabled = false;
+
+  theRecorder.ondataavailable = onDataAvailable;
+  theRecorder.onstop = stopRecording;
+  theRecorder.start();
+  console.log("Recorder started");
+}
+
+function onDataAvailable(event) {
+  recordedChunks.push(event.data);
+}
+
+function saveByteArray(data, name) {
+  var blob = new Blob(data, {type: "video/webm"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  document.body.appendChild(a);
+  a.style = "display: none";
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function stopRecording() {
+  document.getElementById("startRecording").disabled = false;
+  document.getElementById("stopRecording").disabled = true;
+
+  console.log('Stopping record and starting download');
+  theRecorder.stop();
+  //theStream.getVideoTracks()[0].stop();
+
+  setTimeout(() => {saveByteArray(recordedChunks, 'test.webm');}, 100);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Down below it's all the stuff to do with getUserMedia().
+function gotStream(stream) {
+  if (theStream)
+    theStream.getTracks().forEach((track) => { track.stop(); });
+  theStream = stream;
+
+  var videoTag = document.getElementById("videotag");
+  videoTag.src = URL.createObjectURL(theStream);
+
+  theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
+}
+
+function getUserMedia() {
+  var videoSource = videoSelect.value;
+  console.log("opening camera with id: " + videoSource);
+  var constraints = {
+    "audio": false,
+    "video": {
+      deviceId: videoSource ? {exact: videoSource} : undefined,
+      width: { exact: 320 },
+      height: { exact : 240 }
+    }
+  };
+  console.log(constraints);
+  navigator.getUserMedia(constraints, gotStream, (e) => {
+    console.error('User media request denied with error code ' + e);
+  });
+};
+
+function refreshSources() {
+  navigator.mediaDevices.enumerateDevices()
+  .then((devices) => {
+    devices.forEach((device) => {
+      if (device.kind == 'videoinput') {
+        var option = document.createElement('option');
+        option.value = device.deviceId;
+        option.text = device.label || 'Camera #' + (videoSelect.length + 1);
+        console.log("cam [" + option.text + "] with id: " + option.value);
+        videoSelect.appendChild(option);
+      }
+    });
+  })
+  .catch((err) => {
+    console.log(err.name + ": " + err.message);
+  });
+}
+refreshSources();
+
+</script>
+
+<div class="w3-container w3-sand">(Note: check <a href="https://crbug.com/253465">crbug.com/253465</a> if on Android)</div>
+</html>
