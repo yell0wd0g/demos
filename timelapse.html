@@ -10,34 +10,38 @@
 </head>
 
 <body>
+<div class="w3-container w3-orange">Time Lapse WebApp.</div>
+
 <div class="w3-row">
  <div class="w3-light-green w3-quarter">Video source: </div>
  <!-- onfocus trick to get onchange events also when nothing changes-->
- <select id="videoSource" class="w3-select w3-threequarter w3-green"
+ <select id="videoSource" class="w3-select w3-half w3-green"
          onfocus="this.selectedIndex = -1;"></select>
+  <input type="button" id="startStreaming" class="w3-btn-primary w3-rest w3-teal w3-round"
+         onclick="getUserMedia()" value="Start streaming">
 </div>
 
 
 <div class="w3-row-padding w3-center">
  <div class="w3-container w3-half">
-  <video id="videotag" class="w3-round w3-border w3-card-4"
-         width="240" height="180" autoplay=true>
-  </video>
- </div>
- <div class="w3-container w3-half">
-  <canvas id="canvas" class="w3-round w3-border w3-card-4" width="240"
-       style="visibility : hidden">
-  </img>
- </div>
-</div>
-
-<div class="w3-row">
-  <input type="button" id="startStreaming" class="w3-btn-primary w3-teal w3-round"
-         onclick="getUserMedia()" value="Start streaming">
-  <input type="button" id="startRecording" class="w3-btn-primary w3-teal w3-round"
+  <div class="w3-container w3-card-4">
+    <video id="videotag" class="w3-round w3-border"  width="240" height="180" autoplay=true> </video>
+    <div>
+      <input type="button" id="startRecording" class="w3-btn-primary w3-teal w3-round"
          onclick="startRecording()" value="Start Recording">
-  <input type="button" id="stopRecording" class="w3-btn-primary w3-teal w3-round"
+    </div>
+   </div>
+  </div>
+ <div class="w3-container w3-half">
+  <div class="w3-container w3-card-4">
+   <canvas id="canvas" class="w3-round w3-border w3-card-4" width="240"></canvas>
+   <div>
+    <input type="button" id="stopRecording" class="w3-btn-primary w3-teal w3-round"
          onclick="stopRecording()" value="Stop Recording">
+
+   </div>
+  </div>
+ </div>
 </div>
 
 <script type="text/javascript" src="dimsum.js"></script>
@@ -109,18 +113,16 @@ function stopRecording() {
 ////////////////////////////////////////////////////////////////////////////////
 function grabFrame() {
   theImageCapturer.grabFrame()
-  .then(function(a) {
-    console.log(" frame grabbed " + a.width + 'x' + a.height);
-    theGrabbedFrame = a;
+  .then(function(frame) {
 
     var canvas = document.getElementById("canvas");
-    canvas.style.visibility = 'visible';
+    //canvas.style.visibility = 'visible';
+    //canvas.style.width = '100%';
+    //canvas.style.height = '100%';
 
-    canvas.width  = theGrabbedFrame.width;
-    canvas.height = theGrabbedFrame.height;
-    canvas.className = "w3-round w3-border w3-card-16";
     var context = canvas.getContext("2d");
-    context.drawImage(theGrabbedFrame, 0, 0);
+    context.drawImage(frame, 0, 0, frame.width, frame.height, 0, 0, canvas.width, canvas.height);
+
 
     if (theRecorder.state == 'recording')
       setTimeout(() => { grabFrame(); }, 1000);
@@ -148,11 +150,10 @@ function getUserMedia() {
     "audio": false,
     "video": {
       deviceId: videoSource ? {exact: videoSource} : undefined,
-      width: { exact: 320 },
-      height: { exact : 240 }
+      width: { exact: 1280 },
+      height: { exact : 720 }
     }
   };
-  console.log(constraints);
   navigator.getUserMedia(constraints, gotStream, (e) => {
     console.error('User media request denied with error code ' + e);
   });
@@ -180,5 +181,5 @@ refreshSources();
 
 </script>
 
-<div class="w3-container w3-sand">(Note: check <a href="https://crbug.com/253465">crbug.com/253465</a> if on Android)</div>
+<div class="w3-container w3-sand">(Note: make sure to use https://)</div>
 </html>
