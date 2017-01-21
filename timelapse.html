@@ -13,12 +13,15 @@
 <div class="w3-container w3-orange">Time Lapse WebApp.</div>
 
 <div class="w3-row">
- <div class="w3-light-green w3-quarter">Video source: </div>
  <!-- onfocus trick to get onchange events also when nothing changes-->
  <select id="videoSource" class="w3-select w3-half w3-green"
-         onfocus="this.selectedIndex = -1;"></select>
-  <input type="button" id="startStreaming" class="w3-btn-primary w3-rest w3-teal w3-round"
-         onclick="getUserMedia()" value="Start streaming">
+         onfocus="this.selectedIndex = -1;">
+  <option value="" disabled selected hidden>Choose video source</option>
+ </select>
+ <!--
+ <input type="button" id="startStreaming" class="w3-btn-primary w3-rest w3-teal w3-round"
+        onclick="getUserMedia()" value="Start streaming">
+  -->
 </div>
 
 
@@ -38,9 +41,27 @@
    <div>
     <input type="button" id="stopRecording" class="w3-btn-primary w3-teal w3-round"
          onclick="stopRecording()" value="Stop Recording">
-
    </div>
   </div>
+ </div>
+</div>
+
+<div class="w3-container w3-row">
+ <div class="w3-quarter">
+  <select id="interval" class="w3-select">
+    <option value="1000" disabled selected hidden>Capture interval (ms)</option>
+    <option value="1000">1s</option>
+    <option value="2000">2s</option>
+    <option value="5000">5s</option>
+  </select>
+ </div>
+
+ <div class="w3-quarter">
+  <select id="duration" class="w3-select" placeholder="Miguelao">
+   <option value="Infinity" disabled selected hidden>Capture duration (s)</option>
+    <option value="Infinity">Infinity</option>
+    <option value="100">100s</option>
+  </select>
  </div>
 </div>
 
@@ -51,6 +72,9 @@ var theStream;
 var theImageCapturer;
 var theCanvasStream;
 var theRecorder;
+
+var exposureIntervalMs = 1000;
+var exposureDurationS = Infinity;
 
 var videoSelect = document.querySelector('select#videoSource');
 videoSelect.onchange = getUserMedia;
@@ -80,7 +104,16 @@ function startRecording() {
   theRecorder.start();
   console.log("Recorder started");
 
-  setTimeout(() => { grabFrame(); }, 1000);
+
+  var interval = document.getElementById("interval");
+  exposureIntervalMs = interval.value;
+  console.log('Exposure interval: ' + exposureIntervalMs + 'ms');
+
+  var duration = document.getElementById("duration");
+  exposureDurationS = duration.value;
+  console.log('Exposure duration: ' + exposureDurationS + ' seconds');
+
+  setTimeout(() => { grabFrame(); }, exposureIntervalMs);
 }
 
 function onDataAvailable(event) {
@@ -116,20 +149,15 @@ function grabFrame() {
   .then(function(frame) {
 
     var canvas = document.getElementById("canvas");
-    //canvas.style.visibility = 'visible';
-    //canvas.style.width = '100%';
-    //canvas.style.height = '100%';
 
     var context = canvas.getContext("2d");
-    context.drawImage(frame, 0, 0, frame.width, frame.height, 0, 0, canvas.width, canvas.height);
-
+    context.drawImage(frame, 0, 0, frame.width, frame.height,
+                             0, 0, canvas.width, canvas.height);
 
     if (theRecorder.state == 'recording')
-      setTimeout(() => { grabFrame(); }, 1000);
-
+      setTimeout(() => { grabFrame(); }, exposureIntervalMs);
   });
 }
-
 ////////////////////////////////////////////////////////////////////////////////
 //  Down below it's all the stuff to do with getUserMedia().
 function gotStream(stream) {
