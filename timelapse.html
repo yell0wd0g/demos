@@ -178,8 +178,8 @@ function getUserMedia() {
     "audio": false,
     "video": {
       deviceId: videoSource ? {exact: videoSource} : undefined,
-      width: { exact: 1280 },
-      height: { exact : 720 }
+      width: { exact: 640 },
+      height: { exact : 480 }
     }
   };
   navigator.getUserMedia(constraints, gotStream, (e) => {
