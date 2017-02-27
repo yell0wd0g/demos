@@ -92,13 +92,6 @@ function getUserMediaOkCallback(stream) {
 }
 
 function recorderOnDataAvailable(event) {
-  if (event) {
-    if (event.data.size > 0)
-      console.assert(recorder.state == "recording", "State should be 'recording'");
-    else
-      console.assert(recorder.state == "inactive", "State should be 'inactive'");
-  }
-
   // |event.data.size| can be printed out for debugging..
   recordedChunks.push(event.data);
 }
@@ -146,5 +139,4 @@ function stopStreamsAndDownloadData() {
 
 </script>
 
-<div class="w3-container w3-sand">(Note: check <a href="https://crbug.com/253465">crbug.com/253465</a> if on Android)</div>
 </html>
