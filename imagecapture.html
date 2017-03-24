@@ -21,8 +21,6 @@
 </div>
 
 <div class="w3-row">
-  <input type="button" id="btn-caps" class="w3-btn-primary w3-teal w3-round"
-         onclick="getCaps()" value="getPhotoCapabilities()">
   <input type="button" id="btn-photo" class="w3-btn-primary w3-teal w3-round"
          onclick="takePhoto()" value="takePhoto()">
   <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
@@ -76,6 +74,7 @@ videoSelect.onchange = getUserMedia;
 var focusModeLabel = document.getElementById('focusModeLabel');
 
 var theStream;
+var theTrack;
 var theImageCapturer;
 var theGrabbedFrame;
 var theTakenPhoto;
@@ -89,7 +88,11 @@ theZoomSlider.step = 20;
 var theZoomSliderValue = document.getElementById("zoom-slider-value");
 theZoomSlider.oninput = function() {
   theZoomSliderValue.value = theZoomSlider.value;
-  theImageCapturer.setOptions({ zoom : theZoomSlider.value });
+  const zoomConstraint = { zoom : theZoomSlider.value };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(zoomConstraint);
+  else
+    theTrack.applyConstraints({ advanced: [zoomConstraint]});
 }
 
 var theHeightSlider = document.getElementById("height-slider");
@@ -103,10 +106,16 @@ theHeightSlider.oninput = function() {
 
 document.body.appendChild(document.createElement("br"));
 
+// Chrome 57 and 58 hadn't implemented the "new" constraints API.
+const isChrome57or58 =
+    navigator.userAgent.match(/Chrome\/(57\.0\.[0-9]+)\./) != null ||
+    navigator.userAgent.match(/Chrome\/(58\.0\.[0-9]+)\./) != null;
+
 function gotStream(stream) {
   if (theStream)
     theStream.getTracks().forEach((track) => { track.stop(); });
   theStream = stream;
+  theTrack = stream.getVideoTracks()[0];
 
   var videoTag = document.getElementById("videotag");
   videoTag.src = URL.createObjectURL(theStream);
@@ -117,7 +126,7 @@ function gotStream(stream) {
 }
 
 function createImageCapturer() {
-  theImageCapturer = new ImageCapture(theStream.getVideoTracks()[0]);
+  theImageCapturer = new ImageCapture(theTrack);
   document.getElementById("btn-frame").disabled = false;
   document.getElementById("btn-photo").disabled = false;
   document.getElementById("btn-caps").disabled = false;
@@ -140,8 +149,8 @@ function takePhoto() {
 
     theImageTag.onload = function() {
       document.getElementsByTagName('footer')[0].innerHTML +=
-          "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight
-          + ")";
+          "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight +
+          ")";
     };
   });
 }
@@ -149,17 +158,8 @@ function takePhoto() {
 function getCaps() {
   theImageCapturer.getPhotoCapabilities()
   .then(function(caps) {
-    console.log(" capabilities retrieved ", caps);
+    console.log(" PhotoCapabilities retrieved ", caps);
     theCapabilities = caps;
-
-    if (theCapabilities.zoom.min !== theCapabilities.zoom.max) {
-      theZoomSlider.min = theCapabilities.zoom.min;
-      theZoomSlider.max = theCapabilities.zoom.max;
-      theZoomSlider.value = theCapabilities.zoom.current;
-      theZoomSlider.step = theCapabilities.zoom.step;
-      theZoomSliderValue.value = theZoomSlider.value;
-      document.getElementById("zoom-area").style.visibility = "visible";
-    }
 
     if (theCapabilities.imageHeight.min !== theCapabilities.imageHeight.max) {
       theHeightSlider.min = theCapabilities.imageHeight.min;
@@ -167,12 +167,33 @@ function getCaps() {
       theHeightSlider.value = theCapabilities.imageHeight.current;
       theHeightSliderValue.value = theHeightSlider.value;
       document.getElementById("height-area").style.visibility = "visible";
-
       theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
     }
 
-    focusModeLabel.innerHTML = 'focus : ' + theCapabilities.focusMode;
+    if (isChrome57or58) {
+      if (theCapabilities.zoom.min !== theCapabilities.zoom.max) {
+        theZoomSlider.min = theCapabilities.zoom.min;
+        theZoomSlider.max = theCapabilities.zoom.max;
+        theZoomSlider.value = theCapabilities.zoom.current;
+        theZoomSlider.step = theCapabilities.zoom.step;
+        theZoomSliderValue.value = theZoomSlider.value;
+        document.getElementById("zoom-area").style.visibility = "visible";
+      }
+      focusModeLabel.innerHTML = 'focus : ' + theCapabilities.focusMode;
+
+    } else {  /* ! isChrome57or58 */
+      var zoom = theTrack.getCapabilities().zoom;
+      if (zoom) {
+        theZoomSlider.min = zoom.min;
+        theZoomSlider.max = zoom.max;
+        theZoomSlider.step = zoom.step;
+        theZoomSlider.value = theTrack.getSettings().zoom;
+        theZoomSliderValue.value = theZoomSlider.value;
+        document.getElementById("zoom-area").style.visibility = "visible";
+      }
+    }
   });
+
 }
 
 function grabFrame() {
@@ -215,6 +236,10 @@ function onMouseClick(e) {
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  getUserMedia() related stuff here below: enumerate cameras, open one.
+////////////////////////////////////////////////////////////////////////////////
 function refreshSources() {
   navigator.mediaDevices.enumerateDevices()
   .then((devices) => {
@@ -248,9 +273,7 @@ function getUserMedia() {
       height: { exact : 240 }
     }
   };
-  console.log(constraints);
-  navigator.getUserMedia(constraints, gotStream,
-                               getUserMediaFailedCallback);
+  navigator.getUserMedia(constraints, gotStream, getUserMediaFailedCallback);
 };
 
 </script>
