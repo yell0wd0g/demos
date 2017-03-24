@@ -111,25 +111,10 @@ const isChrome57or58 =
     navigator.userAgent.match(/Chrome\/(57\.0\.[0-9]+)\./) != null ||
     navigator.userAgent.match(/Chrome\/(58\.0\.[0-9]+)\./) != null;
 
-function gotStream(stream) {
-  if (theStream)
-    theStream.getTracks().forEach((track) => { track.stop(); });
-  theStream = stream;
-  theTrack = stream.getVideoTracks()[0];
-
-  var videoTag = document.getElementById("videotag");
-  videoTag.src = URL.createObjectURL(theStream);
-  videoTag.addEventListener("mousedown", onMouseClick, false);
-
-  // TODO(mcasas): no timeout when https://crrev.com/2193213003/ lands
-  setTimeout(createImageCapturer, 100);
-}
-
 function createImageCapturer() {
   theImageCapturer = new ImageCapture(theTrack);
   document.getElementById("btn-frame").disabled = false;
   document.getElementById("btn-photo").disabled = false;
-  document.getElementById("btn-caps").disabled = false;
 
   // TODO(mcasas): do this when https://crrev.com/2193213003/ lands
   setTimeout(getCaps, 100);
@@ -191,6 +176,9 @@ function getCaps() {
         theZoomSliderValue.value = theZoomSlider.value;
         document.getElementById("zoom-area").style.visibility = "visible";
       }
+
+      focusModeLabel.innerHTML =
+          'focus : ' + theTrack.getCapabilities().focusMode;
     }
   });
 
@@ -215,11 +203,21 @@ function grabFrame() {
 }
 
 function setSingleShotFocus() {
-  theImageCapturer.setOptions({ focusMode : "single-shot" });
+  const focusConstraint = { focusMode : "single-shot" };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(focusConstraint);
+  else
+    theTrack.applyConstraints({advanced : [focusConstraint]});
+
   getCaps();
 }
 function setContinuousFocus() {
-  theImageCapturer.setOptions({ focusMode : "continuous" });
+  const focusConstraint = { focusMode : "continuous" };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(focusConstraint);
+  else
+    theTrack.applyConstraints({advanced : [focusConstraint]});
+
   getCaps();
 }
 
@@ -230,7 +228,13 @@ function onMouseClick(e) {
   const y_pos = (e.clientY - rect.top)  / videoTag.offsetHeight;
   console.log("mouse click @ " + x_pos + "," + y_pos );
 
-  theImageCapturer.setOptions({ pointsOfInterest : [{ x : x_pos, y : y_pos}] });
+  const pointsOfInterestConstraint = {
+    pointsOfInterest : [ {x : x_pos, y : y_pos} ]
+  };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(pointsOfInterestConstraint);
+  else
+    theTrack.applyConstraints({advanced : [pointsOfInterestConstraint]});
 
   e.preventDefault();
 }
@@ -259,6 +263,19 @@ function refreshSources() {
 }
 refreshSources();
 
+
+function gotStream(stream) {
+  if (theStream)
+    theStream.getTracks().forEach((track) => { track.stop(); });
+  theStream = stream;
+  theTrack = stream.getVideoTracks()[0];
+
+  var videoTag = document.getElementById("videotag");
+  videoTag.src = URL.createObjectURL(theStream);
+  videoTag.addEventListener("mousedown", onMouseClick, false);
+
+  createImageCapturer();
+}
 function getUserMediaFailedCallback(error) {
   console.error('User media request denied with error code ' + error.code);
 }
