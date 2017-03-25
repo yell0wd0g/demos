@@ -7,11 +7,13 @@
 <head>
 <meta name=viewport content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>getUserMedia() -> ImageCapture demo</title>
+<title>ImageCapture demo</title>
 </head>
 
 <body>
-<div class="w3-container w3-orange"> Open the system camera and grab frame(s) or take (a) picture(s).</div>
+<div class="w3-container w3-orange">
+  Open the system camera and grab frame(s) or take (a) picture(s).
+</div>
 
 <div class="w3-row">
  <div class="w3-light-green w3-quarter">Video source: </div>
@@ -21,8 +23,10 @@
          onfocus="this.selectedIndex = -1;"></select>
 </div>
 
+<!-- ----------------------------------------------------------------------- -->
 <div class="w3-row-padding w3-center">
-  <div class="video-container" onclick="onMouseClick(event)">
+  <div class="video-container" onclick="onMouseClick(event)"
+        ondblclick="(event) => { event.preventDefault(); }" >
    <div>
     <video id="videotag" class="w3-round w3-border w3-card-4" autoplay=true>
     </video>
@@ -33,8 +37,11 @@
    </div>
 
    <div class="overlay-bottom">
-    <img src="resources/zoom-out.png" onclick="zoomOut(event)">
-    <img src="resources/magnifying-glass-search-button.png" onclick="zoomIn(event)">
+    <img src="resources/magnifying-glass-search-button.png"
+         onclick="zoomIn(event)"
+         ondblclick="(event) => { event.preventDefault(); }">
+    <img src="resources/zoom-out.png" onclick="zoomOut(event)"
+         ondblclick="(event) => { event.preventDefault(); }">
    </div>
   </div>
 </div>
@@ -72,11 +79,15 @@ Icons from <a href="http://www.flaticon.com/packs/camera-icons">www.flaticon.com
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
 
+var loc = window.location.href+'';
+if (loc.indexOf('http://')==0){
+  window.location.href = loc.replace('http://','https://');
+}
+
 // Chrome 57 and 58 hadn't implemented the "new" constraints API.
 const isChrome57or58 =
     navigator.userAgent.match(/Chrome\/(57\.0\.[0-9]+)\./) != null ||
     navigator.userAgent.match(/Chrome\/(58\.0\.[0-9]+)\./) != null;
-
 
 var videoSelect = document.querySelector('select#videoSource');
 videoSelect.onchange = getUserMedia;
