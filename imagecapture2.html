@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="imagecapture2.css">
+<link rel="stylesheet" href="w3.css">
+<link rel="stylesheet" href="range.css" media="screen" />
+<link rel="manifest" href="manifest.json">
+<head>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>getUserMedia() -> ImageCapture demo</title>
+</head>
+
+<body>
+<div class="w3-container w3-orange"> Open the system camera and grab frame(s) or take (a) picture(s).</div>
+
+<div class="w3-row">
+ <div class="w3-light-green w3-quarter">Video source: </div>
+
+ <!-- onfocus trick to get onchange events also when nothing changes-->
+ <select id="videoSource" class="w3-select w3-threequarter w3-green"
+         onfocus="this.selectedIndex = -1;"></select>
+</div>
+
+<div class="w3-row-padding w3-center">
+  <div class="video-container" onclick="onMouseClick(event)">
+   <div>
+    <video id="videotag" class="w3-round w3-border w3-card-4" autoplay=true>
+    </video>
+   </div>
+
+   <div class="overlay-middle-right">
+    <img src="resources/camera-diaphragm.png" onclick="takePhoto(event)">
+   </div>
+
+   <div class="overlay-bottom">
+    <img src="resources/zoom-out.png" onclick="zoomOut(event)">
+    <img src="resources/magnifying-glass-search-button.png" onclick="zoomIn(event)">
+   </div>
+  </div>
+</div>
+
+
+<footer class="w3-container w3-light-green">Size matters?
+</footer>
+
+<div class="w3-row-padding w3-center">
+  <img id="imagetag"
+       class="w3-round w3-border w3-card-4"
+       width="240"
+       style="visibility : hidden">
+  </img>
+</div>
+
+<!--
+<div>
+  <label class="w3-validate" id="focusModeLabel">focus: unknown</label>
+  <input type="button" id="btn-single-shot" class="w3-btn-primary w3-teal w3-round"
+         onclick="setSingleShotFocus()" value="kick focus single-shot">
+  <input type="button" id="btn-continuous" class="w3-btn-primary w3-teal w3-round"
+         onclick="setContinuousFocus()" value="set continuous focus">
+</div>
+-->
+
+
+<footer>
+<small>
+Icons from <a href="http://www.flaticon.com/packs/camera-icons">www.flaticon.com</a>.
+</small>
+</footer>
+</body>
+
+<script type="text/javascript" src="dimsum.js"></script>
+<script>
+
+// Chrome 57 and 58 hadn't implemented the "new" constraints API.
+const isChrome57or58 =
+    navigator.userAgent.match(/Chrome\/(57\.0\.[0-9]+)\./) != null ||
+    navigator.userAgent.match(/Chrome\/(58\.0\.[0-9]+)\./) != null;
+
+
+var videoSelect = document.querySelector('select#videoSource');
+videoSelect.onchange = getUserMedia;
+var focusModeLabel = document.getElementById('focusModeLabel');
+
+var theStream;
+var theTrack;
+var theImageCapturer;
+var theGrabbedFrame;
+var theTakenPhoto;
+var theCapabilities;
+var theImageTag = document.getElementById("imagetag");
+
+function createImageCapturer() {
+  theImageCapturer = new ImageCapture(theTrack);
+
+  // getPhotoCapabilities() can be called instantly; but the synchronous
+  // theTrack.getCapabilities() is racy and running in parallel, wait a bit.
+  // setTimeout(getCaps, 100);
+  // In principle, we don't need it.
+}
+
+function takePhoto(e) {
+  e.stopPropagation();
+  if (!theImageCapturer) return;
+  console.log('takePhoto()');
+
+  theImageCapturer.takePhoto()
+  .then((blob) => {
+
+    document.getElementsByTagName('footer')[0].innerHTML =
+        "photo taken " + blob.type + " of size " + (blob.size/1024).toFixed(2)
+        + "KiB - ";
+    theTakenPhoto = blob;
+
+    theImageTag.style.visibility = "visible";
+    theImageTag.src = URL.createObjectURL(theTakenPhoto);
+
+    theImageTag.onload = function() {
+      document.getElementsByTagName('footer')[0].innerHTML +=
+          "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight +
+          ")";
+    };
+  });
+}
+
+function zoomIn(e) {
+  e.stopPropagation();
+  if (!theImageCapturer) return;
+  console.log('zoomIn()');
+
+  // We have to do different things for different APIs, M57,58 had the old ways.
+  if (isChrome57or58) {
+    theImageCapturer.getPhotoCapabilities()
+      .then(function(caps) {
+        if (caps.zoom.min !== caps.zoom.max)
+          return;  // zoom control is not supported.
+
+        var newZoom =
+            Math.min(caps.zoom.max,
+                     caps.zoom.current + (caps.zoom.max - caps.zoom.min) / 10);
+
+        const zoomConstraint = { zoom : newZoom };
+        theImageCapturer.setOptions(zoomConstraint);
+    });
+  } else {
+    var zoom = theTrack.getCapabilities().zoom;
+    if (!zoom)
+      return;  // zoom control is not supported.
+
+    var newZoom = Math.min(zoom.max, zoom.current + (zoom.max - zoom.min) / 10);
+    const zoomConstraint = { zoom : newZoom };
+    theTrack.applyConstraints({ advanced: [zoomConstraint]});
+  }
+}
+
+
+function zoomOut(e) {
+  e.stopPropagation();
+  if (!theImageCapturer) return;
+  console.log('zoomOut()');
+
+  // We have to do different things for different APIs, M57,58 had the old ways.
+  if (isChrome57or58) {
+    theImageCapturer.getPhotoCapabilities()
+      .then(function(caps) {
+        if (caps.zoom.min !== caps.zoom.max)
+          return;  // zoom control is not supported.
+
+        var newZoom =
+            Math.max(caps.zoom.min,
+                     caps.zoom.current - (caps.zoom.max - caps.zoom.min) / 10);
+
+        const zoomConstraint = { zoom : newZoom };
+        theImageCapturer.setOptions(zoomConstraint);
+    });
+  } else {
+    var zoom = theTrack.getCapabilities().zoom;
+    if (!zoom)
+      return;  // zoom control is not supported.
+
+    var newZoom = Math.max(zoom.min, zoom.current - (zoom.max - zoom.min) / 10);
+    const zoomConstraint = { zoom : newZoom };
+    theTrack.applyConstraints({ advanced: [zoomConstraint]});
+  }
+}
+
+// Set the points of interest on mouse click.
+function onMouseClick(e) {
+  if (!theImageCapturer) return;
+
+  var videoTag = document.getElementById("videotag");
+  const rect = videoTag.getBoundingClientRect();
+  const x_pos = (e.clientX - rect.left) / videoTag.offsetWidth;
+  const y_pos = (e.clientY - rect.top)  / videoTag.offsetHeight;
+  console.log("onMouseClick(): click @ " + x_pos + "," + y_pos );
+
+  const pointsOfInterestConstraint = {
+    pointsOfInterest : [ {x : x_pos, y : y_pos} ]
+  };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(pointsOfInterestConstraint);
+  else
+    theTrack.applyConstraints({advanced : [pointsOfInterestConstraint]});
+
+//  e.stopPropagation();
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  getUserMedia() related stuff here below: enumerate cameras, open one.
+////////////////////////////////////////////////////////////////////////////////
+function refreshSources() {
+  navigator.mediaDevices.enumerateDevices()
+  .then((devices) => {
+    devices.forEach((device) => {
+      if (device.kind == 'videoinput') {
+        var option = document.createElement('option');
+        option.value = device.deviceId;
+        option.text = device.label || 'Camera #' + (videoSelect.length + 1);
+        console.log("cam [" + option.text + "] with id: " + option.value);
+        videoSelect.appendChild(option);
+      }
+    });
+  })
+  .catch((err) => {
+    console.log(err.name + ": " + err.message);
+  });
+}
+refreshSources();
+
+
+function gotStream(stream) {
+  if (theStream)
+    theStream.getTracks().forEach((track) => { track.stop(); });
+  theStream = stream;
+  theTrack = stream.getVideoTracks()[0];
+
+  var videoTag = document.getElementById("videotag");
+  // This is the deprecated, obviously working fine, way. The not deprecated
+  // (videoTag.srcObject = theStream) doesn't work so well.
+  videoTag.src = URL.createObjectURL(theStream);
+  videoTag.addEventListener("mousedown", onMouseClick, false);
+
+  createImageCapturer();
+}
+function getUserMediaFailedCallback(error) {
+  console.error('User media request denied with error code ' + error.code);
+}
+function getUserMedia() {
+  var videoSource = videoSelect.value;
+  console.log("opening camera with id: " + videoSource);
+  var constraints = {
+    "audio": false,
+    "video": {
+      deviceId: videoSource ? {exact: videoSource} : undefined,
+      width: { exact: 320 },
+      height: { exact : 240 }
+    }
+  };
+  navigator.getUserMedia(constraints, gotStream, getUserMediaFailedCallback);
+};
+
+</script>
+</html>
