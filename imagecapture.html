@@ -69,6 +69,13 @@
 
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
+
+// Chrome 57 and 58 hadn't implemented the "new" constraints API.
+const isChrome57or58 =
+    navigator.userAgent.match(/Chrome\/(57\.0\.[0-9]+)\./) != null ||
+    navigator.userAgent.match(/Chrome\/(58\.0\.[0-9]+)\./) != null;
+
+
 var videoSelect = document.querySelector('select#videoSource');
 videoSelect.onchange = getUserMedia;
 var focusModeLabel = document.getElementById('focusModeLabel');
@@ -106,17 +113,13 @@ theHeightSlider.oninput = function() {
 
 document.body.appendChild(document.createElement("br"));
 
-// Chrome 57 and 58 hadn't implemented the "new" constraints API.
-const isChrome57or58 =
-    navigator.userAgent.match(/Chrome\/(57\.0\.[0-9]+)\./) != null ||
-    navigator.userAgent.match(/Chrome\/(58\.0\.[0-9]+)\./) != null;
-
 function createImageCapturer() {
   theImageCapturer = new ImageCapture(theTrack);
   document.getElementById("btn-frame").disabled = false;
   document.getElementById("btn-photo").disabled = false;
 
-  // TODO(mcasas): do this when https://crrev.com/2193213003/ lands
+  // getPhotoCapabilities() can be called instantly; the synchronous
+  // theTrack.getCapabilities() is racy and running in parallel, so wait.
   setTimeout(getCaps, 100);
 }
 
@@ -221,6 +224,7 @@ function setContinuousFocus() {
   getCaps();
 }
 
+// Set the points of interest on mouse click.
 function onMouseClick(e) {
   var videoTag = document.getElementById("videotag");
   const rect = this.getBoundingClientRect();
@@ -271,6 +275,8 @@ function gotStream(stream) {
   theTrack = stream.getVideoTracks()[0];
 
   var videoTag = document.getElementById("videotag");
+  // This is the deprecated, obviously working fine, way. The not deprecated
+  // (videoTag.srcObject = theStream) doesn't work so well.
   videoTag.src = URL.createObjectURL(theStream);
   videoTag.addEventListener("mousedown", onMouseClick, false);
 
