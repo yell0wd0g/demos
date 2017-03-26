@@ -32,22 +32,28 @@
     </video>
    </div>
 
-   <div class="overlay-middle-right">
-    <img src="resources/camera-diaphragm.png" onclick="takePhoto(event)">
+
+   <div class="overlay-timed-capture">
+    <img src="resources/camera-timer.png"
+         onclick="delayedTakePhoto(event)"
+         ondblclick="(event) => { event.preventDefault(); }">
    </div>
 
-   <div class="overlay-bottom">
+   <div class="overlay-zoom-controls">
     <img src="resources/magnifying-glass-search-button.png"
          onclick="zoomIn(event)"
          ondblclick="(event) => { event.preventDefault(); }">
     <img src="resources/zoom-out.png" onclick="zoomOut(event)"
          ondblclick="(event) => { event.preventDefault(); }">
    </div>
-<!--
-   <div class="overlay-top">
-    <img src="resources/camera-timer.png">
+
+   <div class="overlay-shutter">
+    <img src="resources/camera-diaphragm.png" onclick="takePhoto(event)">
    </div>
--->
+
+
+   <div id="snackbar"></div>
+
   </div>
 </div>
 
@@ -118,9 +124,9 @@ function createImageCapturer() {
 }
 
 function takePhoto(e) {
-  e.stopPropagation();
-  if (!theImageCapturer) return;
   console.log('takePhoto()');
+  //e.stopPropagation();
+  if (!theImageCapturer) return;
 
   theImageCapturer.takePhoto()
   .then((blob) => {
@@ -142,9 +148,9 @@ function takePhoto(e) {
 }
 
 function zoomIn(e) {
-  e.stopPropagation();
-  if (!theImageCapturer) return;
   console.log('zoomIn()');
+  //e.stopPropagation();
+  if (!theImageCapturer) return;
 
   // We have to do different things for different APIs, M57,58 had the old ways.
   if (isChrome57or58) {
@@ -173,9 +179,9 @@ function zoomIn(e) {
 
 
 function zoomOut(e) {
-  e.stopPropagation();
-  if (!theImageCapturer) return;
   console.log('zoomOut()');
+  //e.stopPropagation();
+  if (!theImageCapturer) return;
 
   // We have to do different things for different APIs, M57,58 had the old ways.
   if (isChrome57or58) {
@@ -219,10 +225,29 @@ function onMouseClick(e) {
     theImageCapturer.setOptions(pointsOfInterestConstraint);
   else
     theTrack.applyConstraints({advanced : [pointsOfInterestConstraint]});
-
-//  e.stopPropagation();
 }
 
+function delayedTakePhoto(e) {
+  console.log('delayedTakePhoto()');
+  if (!theImageCapturer) return;
+
+  var toast = document.getElementById("snackbar");
+  toast.innerHTML = "Taking picture in 5 seconds ...";
+  toast.className = "show";    // Add the "show" class to our <div>.
+
+  var countdown = 5;
+  // After some seconds, remove the show class from DIV
+  var interval = setInterval(() => {
+      countdown--;
+      toast.innerHTML = countdown;
+      if (countdown == 0) {
+        takePhoto(e);
+        clearInterval(interval);
+        toast.className = toast.className.replace("show", "");
+      }
+    },
+    1000);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

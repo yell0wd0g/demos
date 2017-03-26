@@ -7,17 +7,18 @@
   height: auto;
   vertical-align: middle;
   width: 100%;
+  z-index : 1;
 }
 
 /* Insert an .overlay-* in a .video-container: position:absolute is applied with
    respect to the last postion:relative element :-)
 */
-.overlay-middle-right {
+.overlay-shutter {
   position: absolute;
-  top: 0;
-  left: 0%;
-  width: 100%;
-  height: 100%;
+  top: 35%;
+  left: 75%;
+  width: 25%;
+  height: 25%;
 
   /* Flip horizontally to move the overlay-middle to the right */
   transform: scaleX(-1);
@@ -29,44 +30,74 @@
   align-items: center;
   justify-content: left;
 }
-.overlay-middle-right img {
-	width: 25%;
-	height: 25%;
+.overlay-shutter img {
+	width: 100%;
+	height: 100%;
 	object-fit: contain;
 }
 
-.overlay-bottom {
+.overlay-zoom-controls {
   position: absolute;
-  top: 80%;
-  left: 25%;
-  width: 100%;
-  height: 100%;
+  top: 70%;
+  left: 0%;
+  width: 15%;
+  height: 12%;
   /* background-color: rgba(0,0,0,0.5); /* Dim the background* for debug */
 
   z-index: 10;
 }
-.overlay-bottom img {
-	width: 15%;
-	height: 15%;
+.overlay-zoom-controls img {
+	width: 100%;
+	height: 100%;
 	object-fit: contain;
 }
 
 
-.overlay-top {
+.overlay-timed-capture {
   position: absolute;
-  top: 2%;
-  left: 0%;
-  width: 100%;
-  height: 100%;
-
-  transform: scaleX(-1);
-
-  display: flex;
+  top: 5%;
+  left: 85%;
+  width: 10%;
+  height: 10%;
 
   z-index: 10;
 }
-.overlay-top img {
-	width: 10%;
-	height: 10%;
+.overlay-timed-capture img {
+	width: 100%;
+	height: 100%;
 	object-fit: contain;
 }
+
+
+/* The snackbar - position it at the bottom and in the middle of the div
+   Adapted from https://www.w3schools.com/howto/howto_js_snackbar.asp.
+*/
+#snackbar {
+    visibility: hidden; /* Hidden by default. Visible on click */
+    min-width: 250px; /* Set a default minimum width */
+    margin-left: -125px; /* Divide value of min-width by 2 */
+    background-color: #0099ff;
+    color: #fff; /* White text color */
+    text-align: center; /* Centered text */
+    border-radius: 2px; /* Rounded borders */
+    padding: 16px; /* Padding */
+    position: absolute; /* Sit on top of the screen */
+    z-index: 1; /* Add a z-index if needed */
+    left: 50%; /* Center the snackbar */
+    bottom: 50%;
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible;
+
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar. */
+  animation: fadein 0.5s, fadeout 0.01s 4.99s;
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 50%; opacity: 1;}
+}
+
+@keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
