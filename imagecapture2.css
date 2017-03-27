@@ -75,7 +75,7 @@
 }
 
 .overlay-flipcam {
-	opacity: 0.5;
+	opacity: 1;
   position: absolute;
   top: 1%;
   left: -5%;
@@ -96,18 +96,18 @@
    Adapted from https://www.w3schools.com/howto/howto_js_snackbar.asp.
 */
 #snackbar {
-    visibility: hidden; /* Hidden by default. Visible on click */
-    min-width: 250px; /* Set a default minimum width */
-    margin-left: -125px; /* Divide value of min-width by 2 */
-    background-color: #0099ff;
-    color: #fff; /* White text color */
-    text-align: center; /* Centered text */
-    border-radius: 2px; /* Rounded borders */
-    padding: 16px; /* Padding */
-    position: absolute; /* Sit on top of the screen */
-    z-index: 1; /* Add a z-index if needed */
-    left: 50%; /* Center the snackbar */
-    bottom: 50%;
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #0099ff;
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: absolute; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+  left: 50%; /* Center the snackbar */
+  bottom: 50%;
 }
 
 /* Show the snackbar when clicking on a button (class added with JavaScript) */
@@ -115,12 +115,43 @@
   visibility: visible;
 
   /* Add animation: Take 0.5 seconds to fade in and out the snackbar. */
-  animation: fadein 0.5s, fadeout 0.01s 4.99s;
+  animation: fadein-snackbar 0.5s, fadeout 0.01s 4.99s;
 }
 
-@keyframes fadein {
+@keyframes fadein-snackbar {
     from {bottom: 0; opacity: 0;}
     to {bottom: 50%; opacity: 1;}
 }
 
 @keyframes fadeout { from { opacity: 1; } to { opacity: 0; } }
+
+
+
+
+
+#photo-taken {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  bottom: 0%;
+  left: 0%;
+  width: 100%;
+  height: 5%;
+  background-color: #ff8000;
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  vertical-align: center;
+  border-radius: 2px; /* Rounded borders */
+  position: absolute; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#photo-taken.show {
+  visibility: visible;
+  animation: fadein-photo-taken 1s, fadeout 0.5s 4.5s;
+}
+
+@keyframes fadein-photo-taken {
+    from {bottom: 100%; opacity: 0.25;}
+    to {bottom: 0%; opacity: 1;}
+}
+

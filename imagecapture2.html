@@ -33,6 +33,8 @@
     </video>
    </div>
 
+   <div id="photo-taken"></div>
+
 
    <div class="overlay-timed-capture">
     <img src="resources/camera-timer.png"
@@ -152,19 +154,22 @@ function takePhoto(e) {
   theImageCapturer.takePhoto()
   .then((blob) => {
 
-    document.getElementsByTagName('footer')[0].innerHTML =
-        "photo taken " + blob.type + " of size " + (blob.size/1024).toFixed(2)
-        + "KiB - ";
-    var theTakenPhoto = blob;
-
     var theImageTag = document.getElementById("imagetag");
     theImageTag.style.visibility = "visible";
-    theImageTag.src = URL.createObjectURL(theTakenPhoto);
+    theImageTag.src = URL.createObjectURL(blob);
 
     theImageTag.onload = function() {
-      document.getElementsByTagName('footer')[0].innerHTML +=
-          "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight +
-          ")";
+      var info = document.getElementById("photo-taken");
+      info.innerHTML = "Aw snap! " + blob.type + " shot " +
+                       theImageTag.naturalWidth + "x" +
+                       theImageTag.naturalHeight + " pixels, size " +
+                       (blob.size / 1024).toFixed(2) + "KiB";
+      info.className = "show";    // Add the "show" class to our <div>.
+
+      setTimeout(() => {
+        info.className = info.className.replace("show", "");
+      }, 5000);
+
     };
   });
 }
