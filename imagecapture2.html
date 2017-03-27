@@ -20,7 +20,8 @@
 
  <!-- onfocus trick to get onchange events also when nothing changes-->
  <select id="videoSource" class="w3-select w3-threequarter w3-green"
-         onfocus="this.selectedIndex = -1;"></select>
+         onfocus="this.selectedIndex = -1;"
+         onchange="getUserMedia()"></select>
 </div>
 
 <!-- ----------------------------------------------------------------------- -->
@@ -39,10 +40,13 @@
          ondblclick="(event) => { event.preventDefault(); }">
    </div>
 
-   <div class="overlay-zoom-controls">
+   <div class="overlay-zoom-in-control">
     <img src="resources/magnifying-glass-search-button.png"
          onclick="zoomIn(event)"
          ondblclick="(event) => { event.preventDefault(); }">
+   </div>
+
+   <div class="overlay-zoom-out-control">
     <img src="resources/zoom-out.png" onclick="zoomOut(event)"
          ondblclick="(event) => { event.preventDefault(); }">
    </div>
@@ -51,6 +55,12 @@
     <img src="resources/camera-diaphragm.png" onclick="takePhoto(event)">
    </div>
 
+
+   <div class="overlay-flipcam">
+    <img src="resources/photo-camera-with-rotating-arrow.png"
+         onclick="delayedTakePhoto(event)"
+         ondblclick="(event) => { event.preventDefault(); }">
+   </div>
 
    <div id="snackbar"></div>
 
@@ -83,7 +93,7 @@
 
 <footer>
 <small>
-<div>Icons made by <a href="http://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+<div>Icons made by <a href="http://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 </small>
 </footer>
 
@@ -92,35 +102,46 @@
 <script type="text/javascript" src="dimsum.js"></script>
 <script>
 
-var loc = window.location.href+'';
-if (loc.indexOf('http://')==0){
-  window.location.href = loc.replace('http://','https://');
-}
-
 // Chrome 57 and 58 hadn't implemented the "new" constraints API.
 const isChrome57or58 =
     navigator.userAgent.match(/Chrome\/(57\.0\.[0-9]+)\./) != null ||
     navigator.userAgent.match(/Chrome\/(58\.0\.[0-9]+)\./) != null;
 
-var videoSelect = document.querySelector('select#videoSource');
-videoSelect.onchange = getUserMedia;
-var focusModeLabel = document.getElementById('focusModeLabel');
-
 var theStream;
 var theTrack;
 var theImageCapturer;
-var theGrabbedFrame;
-var theTakenPhoto;
-var theCapabilities;
-var theImageTag = document.getElementById("imagetag");
+
 
 function createImageCapturer() {
   theImageCapturer = new ImageCapture(theTrack);
 
-  // getPhotoCapabilities() can be called instantly; but the synchronous
-  // theTrack.getCapabilities() is racy and running in parallel, wait a bit.
-  // setTimeout(getCaps, 100);
-  // In principle, we don't need it.
+  document.getElementsByClassName('overlay-shutter')[0].style.opacity = 1.0;
+  document.getElementsByClassName('overlay-timed-capture')[0].style.opacity = 1.0;
+
+  if (isChrome57or58) {
+    theImageCapturer.getPhotoCapabilities()
+      .then(function(caps) {
+        if (caps.zoom.min !== caps.zoom.max) {
+          document.getElementsByClassName('overlay-zoom-in-controlshutter')[0]
+              .style.opacity = 1.0;
+          document.getElementsByClassName('overlay-zoom-out-control')[0]
+              .style.opacity = 1.0;
+        }
+    });
+  } else {
+    // getPhotoCapabilities() can be called instantly; but the synchronous
+    // theTrack.getCapabilities() is racy and running in parallel, wait a bit.
+    // This is a getUserMedia() limitation.
+    setTimeout(()=> {
+      if (theTrack.getCapabilities().zoom) {
+        document.getElementsByClassName('overlay-zoom-in-control')[0]
+            .style.opacity = 1.0;
+        document.getElementsByClassName('overlay-zoom-out-control')[0]
+            .style.opacity = 1.0;
+      }
+    } , 100);
+  }
+
 }
 
 function takePhoto(e) {
@@ -134,8 +155,9 @@ function takePhoto(e) {
     document.getElementsByTagName('footer')[0].innerHTML =
         "photo taken " + blob.type + " of size " + (blob.size/1024).toFixed(2)
         + "KiB - ";
-    theTakenPhoto = blob;
+    var theTakenPhoto = blob;
 
+    var theImageTag = document.getElementById("imagetag");
     theImageTag.style.visibility = "visible";
     theImageTag.src = URL.createObjectURL(theTakenPhoto);
 
@@ -260,6 +282,7 @@ function refreshSources() {
       if (device.kind == 'videoinput') {
         var option = document.createElement('option');
         option.value = device.deviceId;
+        var videoSelect = document.querySelector('select#videoSource');
         option.text = device.label || 'Camera #' + (videoSelect.length + 1);
         console.log("cam [" + option.text + "] with id: " + option.value);
         videoSelect.appendChild(option);
@@ -291,7 +314,7 @@ function getUserMediaFailedCallback(error) {
   console.error('User media request denied with error code ' + error.code);
 }
 function getUserMedia() {
-  var videoSource = videoSelect.value;
+  var videoSource = document.querySelector('select#videoSource').value;
   console.log("opening camera with id: " + videoSource);
   var constraints = {
     "audio": false,
