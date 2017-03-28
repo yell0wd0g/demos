@@ -151,6 +151,8 @@ function takePhoto(e) {
   //e.stopPropagation();
   if (!theImageCapturer) return;
 
+  clickEffect('overlay-shutter');
+
   theImageCapturer.takePhoto()
   .then((blob) => {
 
@@ -169,15 +171,17 @@ function takePhoto(e) {
       setTimeout(() => {
         info.className = info.className.replace("show", "");
       }, 5000);
-
     };
   });
+
 }
 
 function zoomIn(e) {
   console.log('zoomIn()');
   //e.stopPropagation();
   if (!theImageCapturer) return;
+
+  clickEffect('overlay-zoom-in-control');
 
   // We have to do different things for different APIs, M57,58 had the old ways.
   if (isChrome57or58) {
@@ -209,6 +213,8 @@ function zoomOut(e) {
   console.log('zoomOut()');
   //e.stopPropagation();
   if (!theImageCapturer) return;
+
+  clickEffect('overlay-zoom-out-control');
 
   // We have to do different things for different APIs, M57,58 had the old ways.
   if (isChrome57or58) {
@@ -258,6 +264,8 @@ function delayedTakePhoto(e) {
   console.log('delayedTakePhoto()');
   if (!theImageCapturer) return;
 
+  clickEffect('overlay-timed-capture');
+
   var toast = document.getElementById("snackbar");
   toast.innerHTML = "Taking picture in 5 seconds ...";
   toast.className = "show";    // Add the "show" class to our <div>.
@@ -276,6 +284,12 @@ function delayedTakePhoto(e) {
     1000);
 }
 
+function clickEffect(className) {
+  var z = document.getElementsByClassName(className)[0];
+  var previous_opacity = z.style.opacity;
+  z.style.opacity = 0.1;
+  setTimeout(() => { z.style.opacity = previous_opacity; }, 100);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  getUserMedia() related stuff here below: enumerate cameras, open one.
