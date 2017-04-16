@@ -162,7 +162,7 @@ function takePhoto(e) {
 
     theImageTag.onload = function() {
       var info = document.getElementById("photo-taken");
-      info.innerHTML = "Aw snap! " + blob.type + " shot " +
+      info.innerHTML = "Snap! " + blob.type + " shot " +
                        theImageTag.naturalWidth + "x" +
                        theImageTag.naturalHeight + " pixels, size " +
                        (blob.size / 1024).toFixed(2) + "KiB";
@@ -325,7 +325,9 @@ function gotStream(stream) {
   // This is the deprecated, obviously working fine, way. The not deprecated
   // (videoTag.srcObject = theStream) doesn't work so well.
   videoTag.src = URL.createObjectURL(theStream);
-  videoTag.addEventListener("mousedown", onMouseClick, false);
+
+  var w = Math.max(document.documentElement.clientWidth, window.innerWidth);
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight);
 
   createImageCapturer();
 }
