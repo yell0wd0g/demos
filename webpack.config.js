@@ -4,6 +4,7 @@ module.exports = {
   entry: './mediarecorder/demo.js',
   output: {
     path: './mediarecorder',
-    filename: 'demo.bundle.js'
+    filename: 'demo.bundle.js',
+    library: 'Demo'
   }
 };
