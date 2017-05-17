@@ -149,7 +149,7 @@ function getCaps() {
     console.log(" PhotoCapabilities retrieved ", caps);
     theCapabilities = caps;
 
-    if (theCapabilities.imageHeight.min !== theCapabilities.imageHeight.max) {
+    if (theCapabilities.imageHeight) {
       theHeightSlider.min = theCapabilities.imageHeight.min;
       theHeightSlider.max = theCapabilities.imageHeight.max;
       theHeightSlider.value = theCapabilities.imageHeight.current;

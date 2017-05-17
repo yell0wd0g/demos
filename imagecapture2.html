@@ -133,7 +133,7 @@ function createImageCapturer() {
   } else {
     // getPhotoCapabilities() can be called instantly; but the synchronous
     // theTrack.getCapabilities() is racy and running in parallel, wait a bit.
-    // This is a getUserMedia() limitation.
+    // This is a getUserMedia() limitation: https://crbug.com/711524.
     setTimeout(()=> {
       if (theTrack.getCapabilities().zoom) {
         document.getElementsByClassName('overlay-zoom-in-control')[0]
@@ -141,7 +141,7 @@ function createImageCapturer() {
         document.getElementsByClassName('overlay-zoom-out-control')[0]
             .style.opacity = 1.0;
       }
-    } , 100);
+    } , 300);
   }
 
 }
