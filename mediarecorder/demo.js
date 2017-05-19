@@ -1,7 +1,7 @@
 var ebml = require('ts-ebml');
 
 async function reconstructIndex(blob) {
-	return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
       const reader = new FileReader();
       reader.onload = function (event) {
           resolve(reconstructIndexOfArrayBuffer(reader.result));
@@ -16,18 +16,25 @@ async function reconstructIndex(blob) {
 // Extracted from [1] changing input to ArrayBuffer directly and returning the
 // reconstructed Blob.
 // [1] https://github.com/legokichi/ts-ebml/issues/2#issuecomment-294293842
-function reconstructIndexOfArrayBuffer(webm_buf) {
-  let metadataSize = 0;
-  let last_duration = 0;
-  const cluster_ptrs = []; //: number[] = [];
+function reconstructIndexOfArrayBuffer(webmBuf) {
+  let lastDuration = 0;
+  const clusterPtrs = []; //: number[] = [];
 
-  const elms = new ebml.Decoder().decode(webm_buf);
+  const elements = new ebml.Decoder().decode(webmBuf);
+  elements.forEach((element) => {
+    if (element.type != "b")
+      console.log(element.name + ' => ' + element.value);
+  });
 
-  const refined_elms =
-      ebml.tools.putRefinedMetaData(elms, cluster_ptrs, last_duration);
-  const refined_buf = new ebml.Encoder().encode(refined_elms);
+  const correctedElements =
+      ebml.tools.putRefinedMetaData(elements, clusterPtrs, lastDuration);
+  correctedElements.forEach((element) => {
+    if (element.type != "b")
+      console.log(element.name + ' => ' + element.value);
+  });
 
-  return new Blob([refined_buf, webm_buf], {type: "video/webm"});
+  const refined_buf = new ebml.Encoder().encode(correctedElements);
+  return new Blob([refined_buf, webmBuf], {type: "video/webm"});
 }
 
 
@@ -97,13 +104,13 @@ function getUserMediaFailedCallback(error) {
 }
 
 module.exports = {
-	startRecording : function() {
-		navigator.webkitGetUserMedia(constraintsWidthXHeight,
-		                             gotStreamFunction,
-		                             getUserMediaFailedCallback);
-	},
-	stopRecording : function() {
-		theRecorder.stop();
-		theStream.getTracks().forEach((track) => { track.stop(); });
-	}
+  startRecording : function() {
+    navigator.webkitGetUserMedia(constraintsWidthXHeight,
+                                 gotStreamFunction,
+                                 getUserMediaFailedCallback);
+  },
+  stopRecording : function() {
+    theRecorder.stop();
+    theStream.getTracks().forEach((track) => { track.stop(); });
+  }
 }
