@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - '6'
 before_script:
-  -npm install -g webpack
+  - npm install -g webpack
 script:
     # Call script for deploying the demo(s).
   - bash ./.travis-deploy.sh
