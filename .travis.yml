@@ -1,12 +1,9 @@
 language: node_js
 node_js:
   - '6'
-before_install:
-  - openssl aes-256-cbc -K $encrypted_c6e7778391f5_key -iv $encrypted_c6e7778391f5_iv -in deploy_key.enc -out deploy_key -d
 script:
     # Call script for deploying the demo(s).
   - bash ./.travis-deploy.sh
 env:
   global:
-    - secure: "c6e7778391f5"
-
+  - ENCRYPTION_LABEL: c6e7778391f5
