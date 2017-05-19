@@ -21,7 +21,7 @@ cd out
 
 git init
 git config user.name "Travis CI"
-git config user.email "miguelecasassanchez@gmail.compiled"
+git config user.email "miguelecasassanchez@gmail.com"
 
 cp -f ../mediarecorder/demo.bundle.* ./
 
