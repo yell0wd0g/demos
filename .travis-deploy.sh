@@ -25,6 +25,7 @@ git config user.email "miguelecasassanchez@gmail.com"
 
 cp -f ../mediarecorder/demo.bundle.* ./
 cp -f ../imagecapture.html ./
+cp -f ../w3.css ./
 git add .
 git commit -m "Auto deploy ${SHA} to GitHub pages branch"
 
