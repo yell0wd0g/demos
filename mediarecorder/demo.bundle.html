@@ -2,8 +2,14 @@
 
  <script src="demo.bundle.js"></script>
 
- <button onclick="Demo.startRecording()">Start recording</button>
- <button onclick="Demo.stopRecording()">Stop recording</button>
+ <div>
+   <button onclick="Demo.startRecording()">Start recording</button>
+   <button onclick="Demo.stopRecording()">Stop recording</button>
+ </div>
+ <div>
+   <video id="video" width="320" height="240" autoplay=true>
+   </video>
+ </div>
 </body>
 
 <footer>
