@@ -1,12 +1,10 @@
 language: node_js
 node_js:
-  - '6'
+- '6'
 before_script:
-  - npm install -g webpack
+- npm install -g webpack
 script:
-    # Call script for deploying the demo(s).
-  - bash ./.travis-deploy.sh
+- bash ./.travis-deploy.sh
 env:
   global:
-  - ENCRYPTION_LABEL: c6e7778391f5
-  - COMMIT_AUTHOR_EMAIL: "miguelecasassanchez@gmail.com"
+  - secure: YQASSy+AW3spQfB3UJSPrIFzi7COaifi0XTK1JxFMNftZetC6TAp8mVJBhaTGJdGV82wz52wqPFyAAKWuBGLNb2j7c3hyBjxgSxG5oMkbkQaRYw3jNEo/w3zilvKkn5s7+5XOs8Bq942apMCNn41DrbaqkaJpODRaRB9zke0z5blGxQjUnOf2NKQrxWd/9SDfEvtjdyUFBjlu6G8e5Y8laB/dPzKE3yAjQzR/GKjxx/Vpyoag0wAfrIUt3QEDCP+ipfToSlQHBNxeyi6/MBFvhA4NZpU9xCbZTYseDclSWI0JQtxAmhDhtma0/57XVC3s4AQLHD3A6g7AWM6W2hK5cTo6Aj8MOenq0p7xcPPZbsu+iY+WvvN6JelZXhTA9rDsVgCd8spnnoyz244TvDKxRNoiKoz+xy7C2qn0JuurDiC2vuxgvnpX3eB2cPSBXZXmybq1WtQ/Ez5zTb6QrBK3uAfxqI0E05hW/Qbk95UpWfXMed7Vfi12e3WTlYfUEzzi849cGjbeoOYzhVfvlF5om0hyGZb7aaSsWAfkj8+Y54PijKEYqFXIL7p8XNFAxZDWAJRYyrCtqw6bqBVcEA8NAIQczyY5G/l4tkf9aID6dDbSKNemmQKTt2M2hw4LXZ3scnNLJnz/94GPyEUZqyB7nKuMrji4DyDoPfZhX7SmJo=
