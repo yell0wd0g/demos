@@ -9,3 +9,4 @@ script:
 env:
   global:
   - ENCRYPTION_LABEL: c6e7778391f5
+  - COMMIT_AUTHOR_EMAIL: "miguelecasassanchez@gmail.com"
