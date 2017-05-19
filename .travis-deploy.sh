@@ -23,7 +23,7 @@ git init
 git config user.name "Travis CI"
 git config user.email "miguelecasassanchez@gmail.compiled"
 
-cp -f ../demo/demo.bundle.* ./
+cp -f ../mediarecorder/demo.bundle.* ./
 
 git add .
 git commit -m "Auto deploy ${SHA} to GitHub pages branch"
