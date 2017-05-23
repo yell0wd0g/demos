@@ -24,8 +24,12 @@ git config user.name "Travis CI"
 git config user.email "miguelecasassanchez@gmail.com"
 
 cp -f ../mediarecorder/demo.bundle.* ./
-cp -f ../imagecapture.html ./
+cp -f ../imagecapture.html ./ic.html
+cp -f ../imagecapture2.html ./ic2.html
+cp -f ../imagecapture2.css ./
 cp -f ../w3.css ./
+cp -f ../dimsum.js ./
+cp -rf ../resources ./
 git add .
 git commit -m "Auto deploy ${SHA} to GitHub pages branch"
 
