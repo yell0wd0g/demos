@@ -235,7 +235,8 @@ function zoomOut(e) {
     if (!zoom)
       return;  // zoom control is not supported.
 
-    var newZoom = Math.max(zoom.min, zoom.current - (zoom.max - zoom.min) / 10);
+    const current = theTrack.getSettings().zoom;
+    var newZoom = Math.max(zoom.min, current - (zoom.max - zoom.min) / 10);
     const zoomConstraint = { zoom : newZoom };
     theTrack.applyConstraints({ advanced: [zoomConstraint]});
   }
