@@ -23,6 +23,8 @@
 <div class="w3-row">
   <input type="button" id="btn-photo" class="w3-btn-primary w3-teal w3-round"
          onclick="takePhoto()" value="takePhoto()">
+  <input type="button" id="btn-photo" class="w3-btn-primary w3-teal w3-round"
+         onclick="takePhotoWithFlash()" value="takePhotoWithFlash()">
   <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
          onclick="grabFrame()" value="grabFrame()">
 </div>
@@ -141,6 +143,10 @@ function takePhoto() {
           ")";
     };
   });
+}
+function takePhotoWithFlash() {
+  theImageCapturer.setOptions({ fillLightMode: "flash" })
+  .then(() => { takePhoto(); });
 }
 
 function getCaps() {
