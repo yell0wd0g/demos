@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="w3.css">
+<link rel="stylesheet" href="range.css" media="screen" />
+<link rel="manifest" href="manifest.json">
+<head>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>ImageCapture demo</title>
+</head>
+
+<body>
+<div class="w3-container w3-orange"> Open the system camera and grab frame(s) or take (a) picture(s).</div>
+
+<div class="w3-row">
+ <div class="w3-light-green w3-quarter">Video source: </div>
+
+ <!-- onfocus trick to get onchange events also when nothing changes-->
+ <select id="videoSource" class="w3-select w3-threequarter w3-green"
+         onfocus="this.selectedIndex = -1;"></select>
+</div>
+
+<div class="w3-row">
+  <input type="button" id="btn-photo" class="w3-btn-primary w3-teal w3-round"
+         onclick="takePhoto()" value="takePhoto()">
+  <input type="button" id="btn-photo" class="w3-btn-primary w3-teal w3-round"
+         onclick="takePhotoWithFlash()" value="takePhotoWithFlash()">
+  <input type="button" id="btn-frame" class="w3-btn-primary w3-teal w3-round"
+         onclick="grabFrame()" value="grabFrame()">
+</div>
+
+<br>
+<div id="zoom-area" class="w3-row-padding" style="visibility : hidden">
+ <div class="w3-container w3-quarter">Zoom</div>
+ <input type="range" id="zoom-slider" name="zoom"
+        class="w3-input w3-border w3-container w3-quarter">
+ <output id="zoom-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
+</div>
+
+<div class="w3-row-padding w3-center">
+ <div class="w3-container w3-half">
+  <video id="videotag" class="w3-round w3-border w3-card-4"
+         width="240" height="180" autoplay=true>
+  </video>
+ </div>
+ <div class="w3-container w3-half">
+  <img id="imagetag" class="w3-round w3-border w3-card-4" width="240"
+       style="visibility : hidden">
+  </img>
+ </div>
+</div>
+
+<br>
+<div id="height-area" class="w3-row" style="visibility : hidden">
+ <div class="w3-container w3-quarter">Height (pixels)</div>
+ <input type="range" id="height-slider" name="height"
+        class="w3-input w3-border w3-container w3-quarter">
+ <output id="height-slider-value" class="w3-output w3-border w3-container w3-quarter"></output>
+</div>
+
+<footer class="w3-container w3-light-green">Size matters?</footer>
+<div>
+  <label class="w3-validate" id="focusModeLabel">focus: unknown</label>
+  <input type="button" id="btn-single-shot" class="w3-btn-primary w3-teal w3-round"
+         onclick="setSingleShotFocus()" value="kick focus single-shot">
+  <input type="button" id="btn-continuous" class="w3-btn-primary w3-teal w3-round"
+         onclick="setContinuousFocus()" value="set continuous focus">
+</div>
+
+</body>
+
+<script type="text/javascript" src="dimsum.js"></script>
+<script>
+
+// Chrome 57 and 58 hadn't implemented the "new" constraints API.
+const isChrome57or58 =
+    navigator.userAgent.match(/Chrome\/(57\.0\.[0-9]+)\./) != null ||
+    navigator.userAgent.match(/Chrome\/(58\.0\.[0-9]+)\./) != null;
+
+
+var videoSelect = document.querySelector('select#videoSource');
+videoSelect.onchange = getUserMedia;
+var focusModeLabel = document.getElementById('focusModeLabel');
+
+var theStream;
+var theTrack;
+var theImageCapturer;
+var theGrabbedFrame;
+var theTakenPhoto;
+var theCapabilities;
+var theImageTag = document.getElementById("imagetag");
+
+document.body.appendChild(document.createElement("br"));
+var theZoomSlider = document.getElementById("zoom-slider");
+theZoomSlider.name = "zoom";
+theZoomSlider.step = 20;
+var theZoomSliderValue = document.getElementById("zoom-slider-value");
+theZoomSlider.oninput = function() {
+  theZoomSliderValue.value = theZoomSlider.value;
+  const zoomConstraint = { zoom : theZoomSlider.value };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(zoomConstraint);
+  else
+    theTrack.applyConstraints({ advanced: [zoomConstraint]});
+}
+
+var theHeightSlider = document.getElementById("height-slider");
+theHeightSlider.name = "height";
+theHeightSlider.step = 0;
+var theHeightSliderValue = document.getElementById("height-slider-value");
+theHeightSlider.oninput = function() {
+  theHeightSliderValue.value = theHeightSlider.value;
+  theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
+}
+
+document.body.appendChild(document.createElement("br"));
+
+function createImageCapturer() {
+  theImageCapturer = new ImageCapture(theTrack);
+  document.getElementById("btn-frame").disabled = false;
+  document.getElementById("btn-photo").disabled = false;
+
+  // getPhotoCapabilities() can be called instantly; the synchronous
+  // theTrack.getCapabilities() is racy and running in parallel, so wait.
+  setTimeout(getCaps, 100);
+}
+
+function takePhoto() {
+  theImageCapturer.takePhoto()
+  .then((blob) => {
+
+    document.getElementsByTagName('footer')[0].innerHTML =
+        "photo taken " + blob.type + " of size " + (blob.size/1024).toFixed(2)
+        + "KiB - ";
+    theTakenPhoto = blob;
+
+    theImageTag.style.visibility = "visible";
+    theImageTag.src = URL.createObjectURL(theTakenPhoto);
+
+    theImageTag.onload = function() {
+      document.getElementsByTagName('footer')[0].innerHTML +=
+          "(" + theImageTag.naturalWidth + "x" + theImageTag.naturalHeight +
+          ")";
+    };
+  });
+}
+function takePhotoWithFlash() {
+  theImageCapturer.setOptions({ fillLightMode: "flash" })
+  .then(() => { takePhoto(); });
+}
+
+function getCaps() {
+  theImageCapturer.getPhotoCapabilities()
+  .then(function(caps) {
+    console.log(" PhotoCapabilities retrieved ", caps);
+    theCapabilities = caps;
+
+    if (theCapabilities.imageHeight) {
+      theHeightSlider.min = theCapabilities.imageHeight.min;
+      theHeightSlider.max = theCapabilities.imageHeight.max;
+      theHeightSlider.value = theCapabilities.imageHeight.current;
+      theHeightSliderValue.value = theHeightSlider.value;
+      document.getElementById("height-area").style.visibility = "visible";
+      theImageCapturer.setOptions({ imageHeight : theHeightSlider.value });
+    }
+
+    if (isChrome57or58) {
+      if (theCapabilities.zoom.min !== theCapabilities.zoom.max) {
+        theZoomSlider.min = theCapabilities.zoom.min;
+        theZoomSlider.max = theCapabilities.zoom.max;
+        theZoomSlider.value = theCapabilities.zoom.current;
+        theZoomSlider.step = theCapabilities.zoom.step;
+        theZoomSliderValue.value = theZoomSlider.value;
+        document.getElementById("zoom-area").style.visibility = "visible";
+      }
+      focusModeLabel.innerHTML = 'focus : ' + theCapabilities.focusMode;
+
+    } else {  /* ! isChrome57or58 */
+      var zoom = theTrack.getCapabilities().zoom;
+      if (zoom) {
+        theZoomSlider.min = zoom.min;
+        theZoomSlider.max = zoom.max;
+        theZoomSlider.step = zoom.step;
+        theZoomSlider.value = theTrack.getSettings().zoom;
+        theZoomSliderValue.value = theZoomSlider.value;
+        document.getElementById("zoom-area").style.visibility = "visible";
+      }
+
+      focusModeLabel.innerHTML =
+          'focus : ' + theTrack.getCapabilities().focusMode;
+    }
+  });
+
+}
+
+function grabFrame() {
+  theImageCapturer.grabFrame()
+  .then(function(a) {
+    console.log(" frame grabbed " + a);
+    theGrabbedFrame = a;
+
+    var canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+
+    canvas.width  = theGrabbedFrame.width;
+    canvas.height = theGrabbedFrame.height;
+    canvas.className = "w3-round w3-border w3-card-16";
+    var context = canvas.getContext("2d");
+    context.drawImage(theGrabbedFrame, 0, 0);
+    console.log(" theGrabbedFrame has been painted (maybe)");
+  });
+}
+
+function setSingleShotFocus() {
+  const focusConstraint = { focusMode : "single-shot" };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(focusConstraint);
+  else
+    theTrack.applyConstraints({advanced : [focusConstraint]});
+
+  getCaps();
+}
+function setContinuousFocus() {
+  const focusConstraint = { focusMode : "continuous" };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(focusConstraint);
+  else
+    theTrack.applyConstraints({advanced : [focusConstraint]});
+
+  getCaps();
+}
+
+// Set the points of interest on mouse click.
+function onMouseClick(e) {
+  var videoTag = document.getElementById("videotag");
+  const rect = this.getBoundingClientRect();
+  const x_pos = (e.clientX - rect.left) / videoTag.offsetWidth;
+  const y_pos = (e.clientY - rect.top)  / videoTag.offsetHeight;
+  console.log("mouse click @ " + x_pos + "," + y_pos );
+
+  const pointsOfInterestConstraint = {
+    pointsOfInterest : [ {x : x_pos, y : y_pos} ]
+  };
+  if (isChrome57or58)
+    theImageCapturer.setOptions(pointsOfInterestConstraint);
+  else
+    theTrack.applyConstraints({advanced : [pointsOfInterestConstraint]});
+
+  e.preventDefault();
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  getUserMedia() related stuff here below: enumerate cameras, open one.
+////////////////////////////////////////////////////////////////////////////////
+function refreshSources() {
+  navigator.mediaDevices.enumerateDevices()
+  .then((devices) => {
+    devices.forEach((device) => {
+      if (device.kind == 'videoinput') {
+        var option = document.createElement('option');
+        option.value = device.deviceId;
+        option.text = device.label || 'Camera #' + (videoSelect.length + 1);
+        console.log("cam [" + option.text + "] with id: " + option.value);
+        videoSelect.appendChild(option);
+      }
+    });
+  })
+  .catch((err) => {
+    console.log(err.name + ": " + err.message);
+  });
+}
+refreshSources();
+
+
+function gotStream(stream) {
+  if (theStream)
+    theStream.getTracks().forEach((track) => { track.stop(); });
+  theStream = stream;
+  theTrack = stream.getVideoTracks()[0];
+
+  var videoTag = document.getElementById("videotag");
+  // This is the deprecated, obviously working fine, way. The not deprecated
+  // (videoTag.srcObject = theStream) doesn't work so well.
+  videoTag.src = URL.createObjectURL(theStream);
+  videoTag.addEventListener("mousedown", onMouseClick, false);
+
+  createImageCapturer();
+}
+function getUserMediaFailedCallback(error) {
+  console.error('User media request denied with error code ' + error.code);
+}
+function getUserMedia() {
+  var videoSource = videoSelect.value;
+  console.log("opening camera with id: " + videoSource);
+  var constraints = {
+    "audio": false,
+    "video": {
+      deviceId: videoSource ? {exact: videoSource} : undefined,
+      width: { exact: 320 },
+      height: { exact : 240 }
+    }
+  };
+  navigator.getUserMedia(constraints, gotStream, getUserMediaFailedCallback);
+};
+
+</script>
+</html>
